@@ -2,8 +2,8 @@
     "lock": "./deno/deno.lock",
     "tasks" : {
       "genadl" : "deno run --check=all --allow-all deno/genadl.ts",
-      "build-server-image": "cd protoapp-server && docker build --tag protoapp-server:latest .",
-      "build-ui-image": "cd packages/protoapp-ui && docker build --file Dockerfile --tag protapp-ui:latest .."
+      "build-server-image": "cd rust/server && docker build --tag protoapp-server:latest .",
+      "build-ui-image": "cd ts/ui && docker build --file Dockerfile --tag protoapp-ui:latest .."
     },
     "imports" : {
       "adllang_localsetup/": "https://deno.land/x/adllang_localsetup@v0.5/",

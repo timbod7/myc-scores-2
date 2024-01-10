@@ -18,7 +18,7 @@ async function main() {
     //----------------------------------------------------------------------
     // Generate typescript for the protoapp ui
     
-    const outputDir = repo + "/packages/protoapp-ui/src/adl-gen";
+    const outputDir = repo + "/ts/ui/src/adl-gen";
     await genTypescript({
       ...commonFlags,
       adlModules: [
@@ -42,7 +42,7 @@ async function main() {
     //----------------------------------------------------------------------
     // Generate rust for the protoapp server
     
-    const outputDir = repo + "/protoapp-server/src";
+    const outputDir = repo + "/rust/server/src";
     await genRust({
       ...commonFlags,
       adlModules: [
@@ -78,8 +78,8 @@ async function main() {
       adlModules: [
         "protoapp.db"
       ],
-      createFile:  repo + "/protoapp-server/migrations/adl-tables.latest.sql",
-      viewsFile:  repo + "/protoapp-server/migrations/adl-views.latest.sql",
+      createFile:  repo + "/sql/adl-gen/adl-tables.latest.sql",
+      viewsFile:  repo + "/sql/adl-gen/adl-views.latest.sql",
     });
   }
 }
