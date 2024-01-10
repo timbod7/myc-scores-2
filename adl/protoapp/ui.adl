@@ -1,0 +1,7 @@
+/// Some helper types used in the ui
+
+module protoapp.ui {
+
+import common.strings.StringNE;
+
+};

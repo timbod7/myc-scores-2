@@ -1,0 +1,37 @@
+module protoapp.db {
+
+import common.time.Instant;
+import common.db.DbTable;
+import common.db.DbKey;
+import common.db.WithId;
+import common.strings.StringNE;
+import common.strings.StringML;
+
+struct AppUser {
+  StringNE fullname;
+  StringNE email;
+  Bool isAdmin;
+  StringNE hashedPassword = "";
+};
+
+newtype AppUserTable = WithId<AppUser>;
+type AppUserId = DbKey<AppUserTable>;
+
+annotation AppUserTable DbTable {
+  "indexes" : [["email"]]
+};
+
+struct Message {
+  Instant postedAt;
+  AppUserId postedBy;
+  StringML message;
+
+};
+newtype MessageTable = WithId<Message>;
+type MessageId = DbKey<MessageTable>;
+
+annotation MessageTable DbTable {
+  "indexes" : [["posted_at"]]
+};
+
+};

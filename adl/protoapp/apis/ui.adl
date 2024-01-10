@@ -1,0 +1,104 @@
+module protoapp.apis.ui {
+
+import common.http.Unit;
+import common.http.HttpPost;
+import common.http.HttpGet;
+import common.time.Instant;
+import common.strings.StringNE;
+import common.strings.StringML;
+import common.strings.Password;
+
+import protoapp.db.AppUserId;
+import protoapp.db.MessageId;
+
+struct ApiRequests {
+
+  /// AWS default compatible health check
+  HttpGet<Unit> healthy = {
+    "path": "/",
+    "security" : "public"
+  };
+
+
+  /// Test the server is live
+  HttpPost<Unit, Unit> ping = {
+    "path": "/ping",
+    "security" : "public"
+  };
+
+  /// Login a user
+  HttpPost<LoginReq, LoginResp> login = {
+    "path": "/login",
+    "security" : "public"
+  };
+
+  /// Post a message to the noticeboard
+  HttpPost<NewMessageReq, Unit> newMessage = {
+    "path": "/messages/new",
+    "security" : "token"
+  };
+
+  /// Get recent noticeboard messages
+  HttpPost<RecentMessagesReq, Paginated<Message> > recentMessages = {
+    "path": "/messages/recent",
+    "security" : "token"
+  };
+
+  /// Gets the logged in user details
+  // NOTE: Fails with 401 if the token is invalid or user does not exist
+  HttpGet<UserProfile> whoAmI = {
+    "path": "/whoami",
+    "security" : "token"
+  };
+};
+
+struct LoginReq {
+  StringNE email;
+  Password password;
+};
+
+union LoginResp {
+  StringNE accessToken;
+  Void invalidCredentials;
+};
+
+struct NewMessageReq {
+  StringML message;
+};
+
+struct RecentMessagesReq {
+  // Pagination offset
+  Int32 offset = 0;
+
+  // Number of items to return
+  Int32 count = 20;
+};
+
+struct Message {
+  MessageId id;
+  Instant postedAt;
+  String userFullName;
+  StringML message;
+};
+
+struct UserProfile {
+  AppUserId id;
+  String fullname;
+  String email;
+  Bool isAdmin;
+};
+
+/// A holder for paginated results
+struct Paginated<T> {
+
+  /// The paginated items
+  Vector<T> items;
+
+  /// The offset used for this query
+  Int64 current_offset;
+
+  /// The size of the entire date set
+  Int64 total_size;
+};
+
+};
