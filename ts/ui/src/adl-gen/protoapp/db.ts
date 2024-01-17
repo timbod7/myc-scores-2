@@ -40,7 +40,7 @@ export function texprAppUser(): ADL.ATypeExpr<AppUser> {
 export type AppUserTable = common_db.WithId<AppUser>;
 
 const AppUserTable_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"indexes":[["email"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}},"parameters":[]}]}}},"name":"AppUserTable","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"indexes":[["email"]],"uniquenessConstraints":[["email"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}},"parameters":[]}]}}},"name":"AppUserTable","version":{"kind":"nothing"}}};
 
 export const snAppUserTable: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUserTable"};
 

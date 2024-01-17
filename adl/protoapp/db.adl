@@ -18,7 +18,8 @@ newtype AppUserTable = WithId<AppUser>;
 type AppUserId = DbKey<AppUserTable>;
 
 annotation AppUserTable DbTable {
-  "indexes" : [["email"]]
+  "indexes" : [["email"]],
+  "uniquenessConstraints": [["email"]]
 };
 
 struct Message {

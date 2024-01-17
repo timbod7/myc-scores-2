@@ -23,14 +23,6 @@ pub fn create_user(cfg: &ServerConfig, sub: String) -> String {
     create(cfg, ROLE_USER, sub)
 }
 
-pub fn renew(cfg: &ServerConfig, old_claims: &Claims) -> String {
-    let mut claims = old_claims.clone();
-    claims.exp = calc_exp(&cfg);
-
-    let key = EncodingKey::from_secret(&cfg.jwt_secret.as_bytes());
-    jsonwebtoken::encode(&Header::default(), &claims, &key).expect("jwt encode should succeed")
-}
-
 fn create(cfg: &ServerConfig, role: &str, sub: String) -> String {
     let exp = calc_exp(&cfg);
 

@@ -1,0 +1,1 @@
+../../../sql/adl-gen/adl-tables.latest.sql

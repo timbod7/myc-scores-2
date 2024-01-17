@@ -6,13 +6,15 @@ use log::error;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
-use super::Response;
+use super::{db, Response};
 use super::{jwt, AppState};
 use crate::adl::custom::DbKey;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
+use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginResp};
 use crate::adl::gen::protoapp::config::server::ServerConfig;
 use crate::adl::gen::protoapp::db::AppUserId;
+use crate::server::passwords::verify_password;
 
 pub async fn handler(app_state: AppState, req: Request<Body>) -> Result<Response, hyper::Error> {
     let resp = handle_req(&app_state, req).await;
@@ -57,17 +59,42 @@ async fn handle_req(app_state: &AppState, req: Request<Body>) -> HandlerResult<R
         let o = ping(app_state, i).await?;
         return endpoint.encode_resp(o);
     }
+
+    let endpoint = apis::ui::ApiRequests::def_login();
+    if endpoint.matches(&req) {
+        endpoint.check_auth(&app_state.config, &req)?;
+        let i = endpoint.decode_req(req).await?;
+        let o = login(app_state, i).await?;
+        return endpoint.encode_resp(o);
+    }
+
     log::error!("No handler for {} at {}", req.method(), req.uri());
     Err(HandlerError::from(StatusCode::NOT_FOUND))
 }
 
-enum Matcher {
-    Unmatched(Request<Body>),
-    Handled(Response),
-}
-
 async fn ping(_app_state: &AppState, i: Unit) -> HandlerResult<Unit> {
     Ok(i)
+}
+
+async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
+    // Lookup the user details
+    let user = db::get_user_with_email(&app_state.db_pool, &i.email).await?;
+    match user {
+        None => Ok(LoginResp::InvalidCredentials),
+        Some(user) => {
+            if verify_password(&i.password, &user.value.hashed_password) {
+                // If found and we have a valid password return an access token
+                let jwt = if user.value.is_admin {
+                    jwt::create_admin(&app_state.config, user.id)
+                } else {
+                    jwt::create_user(&app_state.config, user.id)
+                };
+                Ok(LoginResp::AccessToken(jwt))
+            } else {
+                Ok(LoginResp::InvalidCredentials)
+            }
+        }
+    }
 }
 
 fn user_from_claims(claims: &jwt::Claims) -> HandlerResult<AppUserId> {
