@@ -11,7 +11,7 @@ struct AppUser {
   StringNE fullname;
   StringNE email;
   Bool isAdmin;
-  StringNE hashedPassword = "";
+  StringNE hashed_password = "";
 };
 
 newtype AppUserTable = WithId<AppUser>;
@@ -23,8 +23,8 @@ annotation AppUserTable DbTable {
 };
 
 struct Message {
-  Instant postedAt;
-  AppUserId postedBy;
+  Instant posted_at;
+  AppUserId posted_by;
   StringML message;
 
 };

@@ -110,10 +110,10 @@ impl LoginReq {
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub enum LoginResp {
-  #[serde(rename="accessToken")]
+  #[serde(rename="access_token")]
   AccessToken(StringNE),
 
-  #[serde(rename="invalidCredentials")]
+  #[serde(rename="invalid_credentials")]
   InvalidCredentials,
 }
 
@@ -160,21 +160,19 @@ impl RecentMessagesReq {
 pub struct Message {
   pub id: MessageId,
 
-  #[serde(rename="postedAt")]
   pub posted_at: Instant,
 
-  #[serde(rename="userFullName")]
-  pub user_full_name: String,
+  pub user_fullname: String,
 
   pub message: StringML,
 }
 
 impl Message {
-  pub fn new(id: MessageId, posted_at: Instant, user_full_name: String, message: StringML) -> Message {
+  pub fn new(id: MessageId, posted_at: Instant, user_fullname: String, message: StringML) -> Message {
     Message {
       id: id,
       posted_at: posted_at,
-      user_full_name: user_full_name,
+      user_fullname: user_fullname,
       message: message,
     }
   }
@@ -188,7 +186,6 @@ pub struct UserProfile {
 
   pub email: String,
 
-  #[serde(rename="isAdmin")]
   pub is_admin: bool,
 }
 

@@ -20,7 +20,6 @@ pub struct AppUser {
   pub is_admin: bool,
 
   #[serde(default="AppUser::def_hashed_password")]
-  #[serde(rename="hashedPassword")]
   pub hashed_password: StringNE,
 }
 
@@ -67,10 +66,8 @@ pub type AppUserId = DbKey<AppUserTable>;
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct Message {
-  #[serde(rename="postedAt")]
   pub posted_at: Instant,
 
-  #[serde(rename="postedBy")]
   pub posted_by: AppUserId,
 
   pub message: StringML,

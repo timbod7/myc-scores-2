@@ -88,25 +88,25 @@ export function texprLoginReq(): ADL.ATypeExpr<LoginReq> {
   return {value : {typeRef : {kind: "reference", value : snLoginReq}, parameters : []}};
 }
 
-export interface LoginResp_AccessToken {
-  kind: 'accessToken';
+export interface LoginResp_Access_token {
+  kind: 'access_token';
   value: common_strings.StringNE;
 }
-export interface LoginResp_InvalidCredentials {
-  kind: 'invalidCredentials';
+export interface LoginResp_Invalid_credentials {
+  kind: 'invalid_credentials';
 }
 
-export type LoginResp = LoginResp_AccessToken | LoginResp_InvalidCredentials;
+export type LoginResp = LoginResp_Access_token | LoginResp_Invalid_credentials;
 
 export interface LoginRespOpts {
-  accessToken: common_strings.StringNE;
-  invalidCredentials: null;
+  access_token: common_strings.StringNE;
+  invalid_credentials: null;
 }
 
 export function makeLoginResp<K extends keyof LoginRespOpts>(kind: K, value: LoginRespOpts[K]) { return {kind, value}; }
 
 const LoginResp_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"accessToken","default":{"kind":"nothing"},"name":"accessToken","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}},{"annotations":[],"serializedName":"invalidCredentials","default":{"kind":"nothing"},"name":"invalidCredentials","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"LoginResp","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"access_token","default":{"kind":"nothing"},"name":"access_token","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}},{"annotations":[],"serializedName":"invalid_credentials","default":{"kind":"nothing"},"name":"invalid_credentials","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"LoginResp","version":{"kind":"nothing"}}};
 
 export const snLoginResp: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"LoginResp"};
 
@@ -165,29 +165,29 @@ export function texprRecentMessagesReq(): ADL.ATypeExpr<RecentMessagesReq> {
 
 export interface Message {
   id: protoapp_db.MessageId;
-  postedAt: common_time.Instant;
-  userFullName: string;
+  posted_at: common_time.Instant;
+  user_fullname: string;
   message: common_strings.StringML;
 }
 
 export function makeMessage(
   input: {
     id: protoapp_db.MessageId,
-    postedAt: common_time.Instant,
-    userFullName: string,
+    posted_at: common_time.Instant,
+    user_fullname: string,
     message: common_strings.StringML,
   }
 ): Message {
   return {
     id: input.id,
-    postedAt: input.postedAt,
-    userFullName: input.userFullName,
+    posted_at: input.posted_at,
+    user_fullname: input.user_fullname,
     message: input.message,
   };
 }
 
 const Message_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"id","default":{"kind":"nothing"},"name":"id","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}},"parameters":[]}},{"annotations":[],"serializedName":"postedAt","default":{"kind":"nothing"},"name":"postedAt","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}},"parameters":[]}},{"annotations":[],"serializedName":"userFullName","default":{"kind":"nothing"},"name":"userFullName","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"message","default":{"kind":"nothing"},"name":"message","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}},"parameters":[]}}]}},"name":"Message","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"id","default":{"kind":"nothing"},"name":"id","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}},"parameters":[]}},{"annotations":[],"serializedName":"posted_at","default":{"kind":"nothing"},"name":"posted_at","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}},"parameters":[]}},{"annotations":[],"serializedName":"user_fullname","default":{"kind":"nothing"},"name":"user_fullname","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"message","default":{"kind":"nothing"},"name":"message","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}},"parameters":[]}}]}},"name":"Message","version":{"kind":"nothing"}}};
 
 export const snMessage: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"Message"};
 
@@ -199,7 +199,7 @@ export interface UserProfile {
   id: protoapp_db.AppUserId;
   fullname: string;
   email: string;
-  isAdmin: boolean;
+  is_admin: boolean;
 }
 
 export function makeUserProfile(
@@ -207,19 +207,19 @@ export function makeUserProfile(
     id: protoapp_db.AppUserId,
     fullname: string,
     email: string,
-    isAdmin: boolean,
+    is_admin: boolean,
   }
 ): UserProfile {
   return {
     id: input.id,
     fullname: input.fullname,
     email: input.email,
-    isAdmin: input.isAdmin,
+    is_admin: input.is_admin,
   };
 }
 
 const UserProfile_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"id","default":{"kind":"nothing"},"name":"id","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}},"parameters":[]}},{"annotations":[],"serializedName":"fullname","default":{"kind":"nothing"},"name":"fullname","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"email","default":{"kind":"nothing"},"name":"email","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"isAdmin","default":{"kind":"nothing"},"name":"isAdmin","typeExpr":{"typeRef":{"kind":"primitive","value":"Bool"},"parameters":[]}}]}},"name":"UserProfile","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"id","default":{"kind":"nothing"},"name":"id","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}},"parameters":[]}},{"annotations":[],"serializedName":"fullname","default":{"kind":"nothing"},"name":"fullname","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"email","default":{"kind":"nothing"},"name":"email","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"is_admin","default":{"kind":"nothing"},"name":"is_admin","typeExpr":{"typeRef":{"kind":"primitive","value":"Bool"},"parameters":[]}}]}},"name":"UserProfile","version":{"kind":"nothing"}}};
 
 export const snUserProfile: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"UserProfile"};
 

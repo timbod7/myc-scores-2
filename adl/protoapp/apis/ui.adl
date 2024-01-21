@@ -58,8 +58,8 @@ struct LoginReq {
 };
 
 union LoginResp {
-  StringNE accessToken;
-  Void invalidCredentials;
+  StringNE access_token;
+  Void invalid_credentials;
 };
 
 struct NewMessageReq {
@@ -76,8 +76,8 @@ struct RecentMessagesReq {
 
 struct Message {
   MessageId id;
-  Instant postedAt;
-  String userFullName;
+  Instant posted_at;
+  String user_fullname;
   StringML message;
 };
 
@@ -85,7 +85,7 @@ struct UserProfile {
   AppUserId id;
   String fullname;
   String email;
-  Bool isAdmin;
+  Bool is_admin;
 };
 
 /// A holder for paginated results
