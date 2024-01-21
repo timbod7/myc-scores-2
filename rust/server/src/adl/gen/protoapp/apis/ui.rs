@@ -38,7 +38,7 @@ pub struct ApiRequests {
    */
   #[serde(default="ApiRequests::def_new_message")]
   #[serde(rename="newMessage")]
-  pub new_message: HttpPost<NewMessageReq, Unit>,
+  pub new_message: HttpPost<NewMessageReq, MessageId>,
 
   /**
    * Get recent noticeboard messages
@@ -79,8 +79,8 @@ impl ApiRequests {
     HttpPost::<LoginReq, LoginResp>{path : "/login".to_string(), security : HttpSecurity::Public, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_new_message() -> HttpPost<NewMessageReq, Unit> {
-    HttpPost::<NewMessageReq, Unit>{path : "/messages/new".to_string(), security : HttpSecurity::Token, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  pub fn def_new_message() -> HttpPost<NewMessageReq, MessageId> {
+    HttpPost::<NewMessageReq, MessageId>{path : "/messages/new".to_string(), security : HttpSecurity::Token, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_recent_messages() -> HttpPost<RecentMessagesReq, Paginated<Message>> {

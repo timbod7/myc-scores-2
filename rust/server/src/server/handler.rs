@@ -6,14 +6,15 @@ use log::error;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 
+use super::jwt::Claims;
 use super::{db, Response};
 use super::{jwt, AppState};
 use crate::adl::custom::DbKey;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
-use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginResp};
+use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginResp, NewMessageReq};
 use crate::adl::gen::protoapp::config::server::ServerConfig;
-use crate::adl::gen::protoapp::db::AppUserId;
+use crate::adl::gen::protoapp::db::{AppUserId, MessageId};
 use crate::server::passwords::verify_password;
 
 pub async fn handler(app_state: AppState, req: Request<Body>) -> Result<Response, hyper::Error> {
@@ -68,6 +69,15 @@ async fn handle_req(app_state: &AppState, req: Request<Body>) -> HandlerResult<R
         return endpoint.encode_resp(o);
     }
 
+    let endpoint = apis::ui::ApiRequests::def_new_message();
+    if endpoint.matches(&req) {
+        let claims = endpoint.require_auth(&app_state.config, &req)?;
+        endpoint.check_auth(&app_state.config, &req)?;
+        let i = endpoint.decode_req(req).await?;
+        let o = new_message(app_state, &claims, i).await?;
+        return endpoint.encode_resp(o);
+    }
+
     log::error!("No handler for {} at {}", req.method(), req.uri());
     Err(HandlerError::from(StatusCode::NOT_FOUND))
 }
@@ -95,6 +105,16 @@ async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
             }
         }
     }
+}
+
+async fn new_message(
+    app_state: &AppState,
+    claims: &Claims,
+    i: NewMessageReq,
+) -> HandlerResult<MessageId> {
+    let user_id = user_from_claims(claims)?;
+    let message_id = db::new_message(&app_state.db_pool, &user_id, &i.message).await?;
+    Ok(message_id)
 }
 
 fn user_from_claims(claims: &jwt::Claims) -> HandlerResult<AppUserId> {

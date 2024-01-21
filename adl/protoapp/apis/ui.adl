@@ -33,7 +33,7 @@ struct ApiRequests {
   };
 
   /// Post a message to the noticeboard
-  HttpPost<NewMessageReq, Unit> newMessage = {
+  HttpPost<NewMessageReq, MessageId> newMessage = {
     "path": "/messages/new",
     "security" : "token"
   };

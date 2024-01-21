@@ -1387,6 +1387,7 @@ checksum = "bbab99b8cd878ab7786157b7eb8df96333a6807cc6e45e8888c85b51534b401a"
 dependencies = [
  "sea-query-derive",
  "serde_json",
+ "time",
 ]
 
 [[package]]
@@ -1398,6 +1399,7 @@ dependencies = [
  "sea-query",
  "serde_json",
  "sqlx",
+ "time",
 ]
 
 [[package]]

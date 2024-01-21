@@ -1,12 +1,18 @@
+use std::time::SystemTime;
+
 use sea_query::{Expr, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 
 use crate::adl::{
+    custom::DbKey,
     db::schema,
-    gen::{common::db::WithId, protoapp::db::AppUser},
+    gen::{
+        common::{db::WithId, time::Instant},
+        protoapp::db::{AppUser, AppUserId, Message, MessageId},
+    },
 };
 
-use self::conversions::AdlFieldGet;
+use self::conversions::{AdlFieldGet, DbConversions};
 
 mod conversions;
 
@@ -42,4 +48,38 @@ pub async fn get_user_with_email(
         .await?;
 
     Ok(v)
+}
+
+pub async fn new_message(
+    pool: &DbPool,
+    user_id: &AppUserId,
+    message: &String,
+) -> sqlx::Result<MessageId> {
+    let id: MessageId = DbKey::new("M-");
+    let posted_at = instant_now();
+    let (sql, values) = Query::insert()
+        .into_table(schema::Message::Table)
+        .columns([
+            schema::Message::Id,
+            schema::Message::PostedAt,
+            schema::Message::PostedBy,
+            schema::Message::Message,
+        ])
+        .values_panic([
+            id.to_db().into(),
+            posted_at.to_db().into(),
+            user_id.to_db().into(),
+            message.to_db().into(),
+        ])
+        .build_sqlx(PostgresQueryBuilder);
+    sqlx::query_with(&sql, values.clone()).execute(pool).await?;
+    Ok(id)
+}
+
+fn instant_now() -> Instant {
+    let millis = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .expect("Time should advance")
+        .as_millis();
+    Instant(millis as i64)
 }
