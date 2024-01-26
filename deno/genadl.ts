@@ -81,6 +81,18 @@ async function main() {
       createFile:  repo + "/sql/adl-gen/adl-tables.latest.sql",
       viewsFile:  repo + "/sql/adl-gen/adl-views.latest.sql",
     });
+
+    // Make the first migrations these two files. Once there is a live 
+    // database, these copy operations should be deleted, and migrations
+    // written by hand
+    Deno.copyFile(
+     repo + "/sql/adl-gen/adl-tables.latest.sql",
+     repo + "/rust/server/migrations/00000000000000_adl-tables.latest.sql",
+    );
+    Deno.copyFile(
+     repo + "/sql/adl-gen/adl-views.latest.sql",
+     repo + "/rust/server/migrations/00000000000001_adl-views.latest.sql",
+    );
   }
 }
 
