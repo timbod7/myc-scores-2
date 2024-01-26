@@ -4,10 +4,11 @@ use serde::Serialize;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::Executor;
 
-use crate::adl::gen::common::http::{HttpPost, Unit};
+use crate::adl::gen::common::http::HttpPost;
 use crate::adl::gen::protoapp::apis;
+use crate::adl::gen::protoapp::apis::ui::LoginReq;
 use crate::adl::gen::protoapp::config::server::{DbConnectionConfig, ServerConfig};
-use crate::server::OServer;
+use crate::server::passwords::hash_password;
 
 pub struct DbTestEnv {
     pub pool: sqlx::PgPool,
@@ -95,6 +96,23 @@ pub async fn server_public_request<I: Serialize, O: DeserializeOwned>(
     resp.json().await.unwrap()
 }
 
+pub async fn server_auth_request<I: Serialize, O: DeserializeOwned>(
+    endpoint: HttpPost<I, O>,
+    jwt: &str,
+    req: &I,
+) -> O {
+    let client = reqwest::Client::new();
+    let resp = client
+        .post(format!("http://localhost:8181{}", endpoint.path))
+        .header("Authorization", format!("Bearer {}", jwt))
+        .json(req)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(resp.status(), 200);
+    resp.json().await.unwrap()
+}
+
 pub fn test_server_config() -> ServerConfig {
     ServerConfig {
         db: DbConnectionConfig {
@@ -108,5 +126,36 @@ pub fn test_server_config() -> ServerConfig {
         jwt_issuer: "adl-protoapp.link".to_owned(),
         jwt_expiry_secs: 300,
         http_bind_addr: "0.0.0.0:8181".to_owned(),
+    }
+}
+
+pub async fn create_test_user(
+    db: &mut DbTestEnv,
+    key: &str,
+    fullname: &str,
+    email: &str,
+    password: &str,
+) -> LoginReq {
+    let hashed_password = hash_password(password).expect("password hash to success");
+
+    db.execute(
+        &format!("INSERT INTO app_user(id,fullname,email,is_admin,hashed_password) VALUES ('{}', '{}', '{}', true, '{}');",
+            key,
+            fullname,
+            email,
+            hashed_password,
+            )
+    ).await;
+    LoginReq {
+        email: email.to_owned(),
+        password: password.to_owned(),
+    }
+}
+
+pub async fn login_user(login_req: &LoginReq) -> String {
+    let resp = server_public_request(apis::ui::ApiRequests::def_login(), login_req).await;
+    match resp {
+        apis::ui::LoginResp::AccessToken(jwt) => jwt,
+        apis::ui::LoginResp::InvalidCredentials => panic!("invalid credentials"),
     }
 }

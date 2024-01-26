@@ -8,7 +8,7 @@ use crate::adl::{
     db::schema,
     gen::{
         common::{db::WithId, time::Instant},
-        protoapp::db::{AppUser, AppUserId, Message, MessageId},
+        protoapp::db::{AppUser, AppUserId, MessageId},
     },
 };
 
