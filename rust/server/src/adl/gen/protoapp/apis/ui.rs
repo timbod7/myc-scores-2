@@ -133,26 +133,26 @@ impl NewMessageReq {
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct RecentMessagesReq {
   #[serde(default="RecentMessagesReq::def_offset")]
-  pub offset: i32,
+  pub offset: u32,
 
-  #[serde(default="RecentMessagesReq::def_count")]
-  pub count: i32,
+  #[serde(default="RecentMessagesReq::def_limit")]
+  pub limit: u32,
 }
 
 impl RecentMessagesReq {
   pub fn new() -> RecentMessagesReq {
     RecentMessagesReq {
       offset: RecentMessagesReq::def_offset(),
-      count: RecentMessagesReq::def_count(),
+      limit: RecentMessagesReq::def_limit(),
     }
   }
 
-  pub fn def_offset() -> i32 {
-    0_i32
+  pub fn def_offset() -> u32 {
+    0_u32
   }
 
-  pub fn def_count() -> i32 {
-    20_i32
+  pub fn def_limit() -> u32 {
+    20_u32
   }
 }
 
@@ -213,20 +213,20 @@ pub struct Paginated<T> {
   /**
    * The offset used for this query
    */
-  pub current_offset: i64,
+  pub current_offset: u32,
 
   /**
    * The size of the entire date set
    */
-  pub total_size: i64,
+  pub total_count: u32,
 }
 
 impl<T> Paginated<T> {
-  pub fn new(items: Vec<T>, current_offset: i64, total_size: i64) -> Paginated<T> {
+  pub fn new(items: Vec<T>, current_offset: u32, total_count: u32) -> Paginated<T> {
     Paginated {
       items: items,
       current_offset: current_offset,
-      total_size: total_size,
+      total_count: total_count,
     }
   }
 }

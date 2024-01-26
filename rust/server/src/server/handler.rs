@@ -12,7 +12,9 @@ use super::{jwt, AppState};
 use crate::adl::custom::DbKey;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
-use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginResp, NewMessageReq};
+use crate::adl::gen::protoapp::apis::ui::{
+    LoginReq, LoginResp, Message, NewMessageReq, Paginated, RecentMessagesReq,
+};
 use crate::adl::gen::protoapp::config::server::ServerConfig;
 use crate::adl::gen::protoapp::db::{AppUserId, MessageId};
 use crate::server::passwords::verify_password;
@@ -78,6 +80,15 @@ async fn handle_req(app_state: &AppState, req: Request<Body>) -> HandlerResult<R
         return endpoint.encode_resp(o);
     }
 
+    let endpoint = apis::ui::ApiRequests::def_recent_messages();
+    if endpoint.matches(&req) {
+        let claims = endpoint.require_auth(&app_state.config, &req)?;
+        endpoint.check_auth(&app_state.config, &req)?;
+        let i = endpoint.decode_req(req).await?;
+        let o = recent_messages(app_state, &claims, i).await?;
+        return endpoint.encode_resp(o);
+    }
+
     log::error!("No handler for {} at {}", req.method(), req.uri());
     Err(HandlerError::from(StatusCode::NOT_FOUND))
 }
@@ -115,6 +126,20 @@ async fn new_message(
     let user_id = user_from_claims(claims)?;
     let message_id = db::new_message(&app_state.db_pool, &user_id, &i.message).await?;
     Ok(message_id)
+}
+
+async fn recent_messages(
+    app_state: &AppState,
+    _claims: &Claims,
+    i: RecentMessagesReq,
+) -> HandlerResult<Paginated<Message>> {
+    let messages = db::recent_messages(&app_state.db_pool, i.offset, i.limit).await?;
+    let total_count = db::message_count(&app_state.db_pool).await?;
+    Ok(Paginated {
+        items: messages,
+        current_offset: i.offset,
+        total_count,
+    })
 }
 
 fn user_from_claims(claims: &jwt::Claims) -> HandlerResult<AppUserId> {

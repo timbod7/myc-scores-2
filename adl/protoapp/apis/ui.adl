@@ -68,10 +68,10 @@ struct NewMessageReq {
 
 struct RecentMessagesReq {
   // Pagination offset
-  Int32 offset = 0;
+  Word32 offset = 0;
 
-  // Number of items to return
-  Int32 count = 20;
+  // Max number of items to return
+  Word32 limit = 20;
 };
 
 struct Message {
@@ -95,10 +95,10 @@ struct Paginated<T> {
   Vector<T> items;
 
   /// The offset used for this query
-  Int64 current_offset;
+  Word32 current_offset;
 
   /// The size of the entire date set
-  Int64 total_size;
+  Word32 total_count;
 };
 
 };

@@ -139,23 +139,23 @@ export function texprNewMessageReq(): ADL.ATypeExpr<NewMessageReq> {
 
 export interface RecentMessagesReq {
   offset: number;
-  count: number;
+  limit: number;
 }
 
 export function makeRecentMessagesReq(
   input: {
     offset?: number,
-    count?: number,
+    limit?: number,
   }
 ): RecentMessagesReq {
   return {
     offset: input.offset === undefined ? 0 : input.offset,
-    count: input.count === undefined ? 20 : input.count,
+    limit: input.limit === undefined ? 20 : input.limit,
   };
 }
 
 const RecentMessagesReq_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"offset","default":{"kind":"just","value":0},"name":"offset","typeExpr":{"typeRef":{"kind":"primitive","value":"Int32"},"parameters":[]}},{"annotations":[],"serializedName":"count","default":{"kind":"just","value":20},"name":"count","typeExpr":{"typeRef":{"kind":"primitive","value":"Int32"},"parameters":[]}}]}},"name":"RecentMessagesReq","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"offset","default":{"kind":"just","value":0},"name":"offset","typeExpr":{"typeRef":{"kind":"primitive","value":"Word32"},"parameters":[]}},{"annotations":[],"serializedName":"limit","default":{"kind":"just","value":20},"name":"limit","typeExpr":{"typeRef":{"kind":"primitive","value":"Word32"},"parameters":[]}}]}},"name":"RecentMessagesReq","version":{"kind":"nothing"}}};
 
 export const snRecentMessagesReq: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"RecentMessagesReq"};
 
@@ -242,25 +242,25 @@ export interface Paginated<T> {
   /**
    * The size of the entire date set
    */
-  total_size: number;
+  total_count: number;
 }
 
 export function makePaginated<T>(
   input: {
     items: T[],
     current_offset: number,
-    total_size: number,
+    total_count: number,
   }
 ): Paginated<T> {
   return {
     items: input.items,
     current_offset: input.current_offset,
-    total_size: input.total_size,
+    total_count: input.total_count,
   };
 }
 
 const Paginated_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[{"value":"A holder for paginated results\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"struct_","value":{"typeParams":["T"],"fields":[{"annotations":[{"value":"The paginated items\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"items","default":{"kind":"nothing"},"name":"items","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"typeParam","value":"T"},"parameters":[]}]}},{"annotations":[{"value":"The offset used for this query\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"current_offset","default":{"kind":"nothing"},"name":"current_offset","typeExpr":{"typeRef":{"kind":"primitive","value":"Int64"},"parameters":[]}},{"annotations":[{"value":"The size of the entire date set\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"total_size","default":{"kind":"nothing"},"name":"total_size","typeExpr":{"typeRef":{"kind":"primitive","value":"Int64"},"parameters":[]}}]}},"name":"Paginated","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.apis.ui","decl":{"annotations":[{"value":"A holder for paginated results\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"struct_","value":{"typeParams":["T"],"fields":[{"annotations":[{"value":"The paginated items\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"items","default":{"kind":"nothing"},"name":"items","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"typeParam","value":"T"},"parameters":[]}]}},{"annotations":[{"value":"The offset used for this query\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"current_offset","default":{"kind":"nothing"},"name":"current_offset","typeExpr":{"typeRef":{"kind":"primitive","value":"Word32"},"parameters":[]}},{"annotations":[{"value":"The size of the entire date set\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"total_count","default":{"kind":"nothing"},"name":"total_count","typeExpr":{"typeRef":{"kind":"primitive","value":"Word32"},"parameters":[]}}]}},"name":"Paginated","version":{"kind":"nothing"}}};
 
 export const snPaginated: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"Paginated"};
 
