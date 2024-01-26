@@ -26,6 +26,20 @@ pub async fn get_user_with_email(
     pool: &DbPool,
     email: &str,
 ) -> sqlx::Result<Option<WithId<AppUser>>> {
+    get_user(pool, Expr::col(schema::AppUser::Email).eq(email)).await
+}
+
+pub async fn get_user_with_id(
+    pool: &DbPool,
+    user_id: &AppUserId,
+) -> sqlx::Result<Option<WithId<AppUser>>> {
+    get_user(pool, Expr::col(schema::AppUser::Id).eq(user_id.0.clone())).await
+}
+
+async fn get_user(
+    pool: &DbPool,
+    where_expr: sea_query::SimpleExpr,
+) -> sqlx::Result<Option<WithId<AppUser>>> {
     let (sql, values) = Query::select()
         .from(schema::AppUser::Table)
         .columns(vec![
@@ -35,7 +49,7 @@ pub async fn get_user_with_email(
             schema::AppUser::IsAdmin,
             schema::AppUser::HashedPassword,
         ])
-        .and_where(Expr::col(schema::AppUser::Email).eq(email))
+        .and_where(where_expr)
         .build_sqlx(PostgresQueryBuilder);
 
     let v = sqlx::query_with(&sql, values.clone())

@@ -2,8 +2,8 @@ use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::protoapp::apis;
 use crate::adl::gen::protoapp::apis::ui::{LoginReq, Message, Paginated};
 use crate::server::tests::helpers::{
-    create_test_user, login_user, server_auth_request, server_public_request, test_server_config,
-    DbTestEnv,
+    create_test_user, login_user, server_auth_get, server_auth_request, server_public_request,
+    test_server_config, DbTestEnv,
 };
 use crate::server::OServer;
 
@@ -56,6 +56,23 @@ async fn server_login() {
     )
     .await;
     assert!(!is_valid_login(resp));
+
+    oserver.shutdown().await.unwrap();
+    db.cleanup().await;
+}
+
+#[tokio::test]
+async fn server_user_profile() {
+    let mut db = DbTestEnv::new().await;
+    let oserver = OServer::spawn(test_server_config(), db.pool.clone());
+
+    let u1 = create_test_user_joe(&mut db).await;
+    let u1_jwt = login_user(&u1).await;
+
+    let resp = server_auth_get(apis::ui::ApiRequests::def_who_am_i(), &u1_jwt).await;
+    assert_eq!(resp.fullname, "Joe");
+    assert_eq!(resp.email, "joe@test.com");
+    assert_eq!(resp.is_admin, true);
 
     oserver.shutdown().await.unwrap();
     db.cleanup().await;
