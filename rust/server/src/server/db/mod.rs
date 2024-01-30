@@ -68,6 +68,29 @@ async fn get_user(
     Ok(v)
 }
 
+pub async fn create_user(pool: &DbPool, user: &AppUser) -> sqlx::Result<AppUserId> {
+    let id: AppUserId = DbKey::new("U-");
+    let (sql, values) = Query::insert()
+        .into_table(schema::AppUser::Table)
+        .columns([
+            schema::AppUser::Id,
+            schema::AppUser::Email,
+            schema::AppUser::Fullname,
+            schema::AppUser::IsAdmin,
+            schema::AppUser::HashedPassword,
+        ])
+        .values_panic([
+            id.to_db().into(),
+            user.email.to_db().into(),
+            user.fullname.to_db().into(),
+            user.is_admin.to_db().into(),
+            user.hashed_password.to_db().into(),
+        ])
+        .build_sqlx(PostgresQueryBuilder);
+    sqlx::query_with(&sql, values.clone()).execute(pool).await?;
+    Ok(id)
+}
+
 pub async fn new_message(
     pool: &DbPool,
     user_id: &AppUserId,

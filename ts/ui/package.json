@@ -12,9 +12,10 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
-    "@mui/material": "latest",
     "@mui/lab": "latest",
+    "@mui/material": "latest",
     "base64-js": "^1.5.1",
+    "jwt-decode": "^4.0.0",
     "raviger": "^4.1.2",
     "react": "latest",
     "react-dom": "latest"

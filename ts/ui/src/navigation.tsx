@@ -11,7 +11,7 @@ export const ROUTES = {
   '/messages': () => <Messages/>,
 };
 
-export function redirectorUrl(): string {
+export function landingUrl(): string {
   return '/';
 }
 

@@ -6,15 +6,18 @@ import { useRoutes } from 'raviger';
 
 import theme from './theme';
 import { ROUTES } from './navigation';
+import { AppStateProvider } from './hooks/use-app-state';
 
 function Root() {
   let route = useRoutes(ROUTES);
   return (
     <React.StrictMode>
+      <AppStateProvider>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {route}
       </ThemeProvider>
+      </AppStateProvider>
     </React.StrictMode>
     );
 }

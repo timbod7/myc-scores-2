@@ -14,7 +14,7 @@ type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 pub mod db;
 mod handler;
 mod jwt;
-mod passwords;
+pub mod passwords;
 
 #[cfg(test)]
 pub mod tests;

@@ -3,15 +3,30 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useTypedFieldState } from '@/components/forms/model/fields/hooks';
 import { EMAIL_FIELD, NON_EMPTY_STRING_FIELD } from '@/components/forms/model/fields/primitive';
-import { Button, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import { AsyncLoadingButton } from '@/components/Button';
+import { useAppState } from '@/hooks/use-app-state';
+import { useState } from 'react';
+import { useNavigate } from 'raviger';
+import { landingUrl } from '@/navigation';
 
 export function Login() {
+  const navigate = useNavigate()
+  const appState = useAppState();
   const email = useTypedFieldState(EMAIL_FIELD);
   const password = useTypedFieldState(NON_EMPTY_STRING_FIELD);
+  const [showErrors, setShowErrors] = useState(false);
   const formValid = email.isValid() && password.isValid();
 
   async function onLogin() {
+    if (formValid) {
+      const resp = await appState.login(email.value(), password.value());
+      if (resp.kind === 'access_token') {
+        navigate(landingUrl());
+      }
+    } else {
+      setShowErrors(true);
+    }
   }
 
   return (
@@ -23,31 +38,39 @@ export function Login() {
 
         <TextField
           label="Email"
-          onChange={e => email.setText(e.target.value)}
           required
           variant="outlined"
           color="secondary"
           type="email"
           sx={{ mb: 3 }}
           fullWidth
+          onChange={e => email.setText(e.target.value)}
           value={email.text}
-          error={!email.isValid()}
+          error={showErrors && !email.isValid()}
+          helperText={showErrors && email.validationError()}
         />
 
         <TextField
           label="Password"
-          onChange={e => password.setText(e.target.value)}
           required
           variant="outlined"
           color="secondary"
           type="password"
+          onChange={e => password.setText(e.target.value)}
           value={password.text}
-          error={!password.isValid()}
+          error={showErrors && !password.isValid()}
+          helperText={showErrors && password.validationError()}
           fullWidth
           sx={{ mb: 3 }}
         />      
 
-        <AsyncLoadingButton variant="contained" onClick={formValid ? onLogin : undefined}>
+        {appState.authState.kind === 'authfailed' && 
+          <Box sx={{marginBottom: "15px", color: 'red'}}>
+            Incorrect username/password.
+          </Box>
+        }
+
+        <AsyncLoadingButton variant="contained" onClick={onLogin}>
           <div/>
           Login
         </AsyncLoadingButton>
