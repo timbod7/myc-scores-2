@@ -8,7 +8,7 @@ import { AsyncLoadingButton } from '@/components/Button';
 import { useAppState } from '@/hooks/use-app-state';
 import { useState } from 'react';
 import { useNavigate } from 'raviger';
-import { landingUrl } from '@/navigation';
+import { messagesUrl } from '@/navigation';
 
 export function Login() {
   const navigate = useNavigate()
@@ -22,7 +22,7 @@ export function Login() {
     if (formValid) {
       const resp = await appState.login(email.value(), password.value());
       if (resp.kind === 'access_token') {
-        navigate(landingUrl());
+        navigate(messagesUrl());
       }
     } else {
       setShowErrors(true);
