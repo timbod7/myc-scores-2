@@ -1,11 +1,5 @@
 import { Service } from "./service";
 
-export type AuthState 
-  = { kind: "noauth" }
-  | { kind: "auth", auth: Auth}
-  | { kind: "authfailed" }
-  ;
-
 export interface Auth {
   jwt: string,
   jwt_decoded: JwtClaims,
@@ -13,8 +7,6 @@ export interface Auth {
 
 export interface JwtClaims {
   sub: string,
-  role: string,
-  tenant: string,
   exp: number,
 };
 

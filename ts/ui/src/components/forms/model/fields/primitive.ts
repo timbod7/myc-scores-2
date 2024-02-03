@@ -56,6 +56,7 @@ export function regexStringFieldFns(regex: string, description: string, returnGr
 // A string field that can't be empty
 
 export const NON_EMPTY_STRING_FIELD: FieldFns<string> = regexStringFieldFns("^.+$", "non-empty", 0);
+export const NON_EMPTY_MULTILINE_STRING_FIELD: FieldFns<string> = regexStringFieldFns("^[^]+$", "non-empty", 0);
 
 // A bounded integer field
 

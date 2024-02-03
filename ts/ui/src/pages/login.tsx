@@ -71,7 +71,6 @@ export function Login() {
         }
 
         <AsyncLoadingButton variant="contained" onClick={onLogin}>
-          <div/>
           Login
         </AsyncLoadingButton>
       </Box>

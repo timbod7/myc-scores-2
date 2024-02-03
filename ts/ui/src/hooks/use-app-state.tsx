@@ -1,8 +1,8 @@
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Service } from '../service';
 import { FetchHttp } from '../service/fetch-http';
-import { ApiWithToken, AuthState, JwtClaims, expiry_secs, localStoreGet, localStorePut, localStoreRemove } from '../auth';
+import { ApiWithToken, Auth, JwtClaims, expiry_secs, localStoreGet, localStorePut, localStoreRemove } from '../auth';
 import { jwtDecode } from "jwt-decode";
 
 import { LoginResp } from '@/adl-gen/protoapp/apis/ui';
@@ -22,6 +22,14 @@ interface AppState {
   logout(): Promise<void>,
 }
 
+export type AuthState
+  = { kind: "loading" }
+  | { kind: "noauth" }
+  | { kind: "auth", auth: Auth }
+  | { kind: "authfailed" }
+  ;
+
+
 export const AppStateContext =
   React.createContext<AppState | undefined>(undefined);
 
@@ -29,7 +37,7 @@ export const AppStateContext =
 export function AppStateProvider(props: {
   children?: React.ReactNode;
 }) {
-  const [authState, setAuthState] = useState<AuthState>({ kind: "noauth" });
+  const [authState, setAuthState] = useState<AuthState>({ kind: "loading" });
   const navigate = useNavigate();
 
   async function setAuthStateFromLogin(resp: LoginResp) {
@@ -53,7 +61,7 @@ export function AppStateProvider(props: {
   async function login(email: string, password: string): Promise<LoginResp> {
     const resp = await protoappApi.login({ email, password });
     if (resp.kind == 'access_token') {
-       console.log(`using new jwt from login`);
+      console.log(`using new jwt from login`);
     }
     await setAuthStateFromLogin(resp);
     return resp;
@@ -69,11 +77,11 @@ export function AppStateProvider(props: {
   // Reuse a token from local storage if it's got more than 30 seconds
   useEffect(() => {
     const auth = localStoreGet();
-    if (auth) {
-      if (expiry_secs(auth.jwt_decoded) > 30) {
-        console.log(`reusing jwt from local storage`);
-        setAuthState({ kind: "auth", auth });
-      }
+    if (auth && expiry_secs(auth.jwt_decoded) > 30) {
+      console.log(`reusing jwt from local storage`);
+      setAuthState({ kind: "auth", auth });
+    } else {
+      setAuthState({ kind: "noauth" });
     }
   }, []);
 
@@ -87,7 +95,7 @@ export function AppStateProvider(props: {
       const timeout = setTimeout(() => logout(), expiry_ms);
       return () => clearTimeout(timeout);
     }
-  }, [authState] );
+  }, [authState]);
 
   const apiManager = {
     api: protoappApi,
