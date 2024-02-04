@@ -76,10 +76,12 @@ async function main() {
       ...commonFlags,
       mergeAdlExts: ['adl-pg'],
       adlModules: [
-        "protoapp.db"
+        "protoapp.db",
+        "common.adminui.db",
       ],
       createFile:  repo + "/sql/adl-gen/adl-tables.latest.sql",
       viewsFile:  repo + "/sql/adl-gen/adl-views.latest.sql",
+      metadataFile: repo + "/sql/adl-gen/adl-metadata.latest.sql",
     });
 
     // Make the first migrations these two files. Once there is a live 
@@ -92,6 +94,10 @@ async function main() {
     Deno.copyFile(
      repo + "/sql/adl-gen/adl-views.latest.sql",
      repo + "/rust/server/migrations/00000000000001_adl-views.latest.sql",
+    );
+    Deno.copyFile(
+     repo + "/sql/adl-gen/adl-metadata.latest.sql",
+     repo + "/rust/server/migrations/00000000000002_adl-metadata.latest.sql",
     );
   }
 }

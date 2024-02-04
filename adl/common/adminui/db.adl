@@ -1,0 +1,32 @@
+module common.adminui.db {
+
+import sys.adlast.Decl;
+import sys.adlast.ModuleName;
+import common.db.DbTable;
+import common.db.DbColumnName;
+import common.db.DbPrimaryKey;
+import common.time.Instant;
+
+struct MetaTable {
+   @DbPrimaryKey
+   String name;
+   String description;
+   ModuleName declModuleName;
+   String declName;
+};
+
+annotation MetaTable DbTable {
+   "tableName": "meta_table"
+};
+
+struct MetaAdlDecl {
+  @DbPrimaryKey
+  ModuleName moduleName;
+  @DbPrimaryKey
+  String name;
+  Decl decl;
+};
+
+annotation MetaAdlDecl DbTable {};
+
+};
