@@ -3,33 +3,33 @@
 import * as ADL from './../runtime/adl';
 
 export interface DbTable {
-  tableName: string;
+  table_name: string;
   indexes: string[][];
-  uniquenessConstraints: string[][];
-  extraSql: string[];
+  uniqueness_constraints: string[][];
+  extra_sql: string[];
   label: string[];
 }
 
 export function makeDbTable(
   input: {
-    tableName?: string,
+    table_name?: string,
     indexes?: string[][],
-    uniquenessConstraints?: string[][],
-    extraSql?: string[],
+    uniqueness_constraints?: string[][],
+    extra_sql?: string[],
     label?: string[],
   }
 ): DbTable {
   return {
-    tableName: input.tableName === undefined ? "" : input.tableName,
+    table_name: input.table_name === undefined ? "" : input.table_name,
     indexes: input.indexes === undefined ? [] : input.indexes,
-    uniquenessConstraints: input.uniquenessConstraints === undefined ? [] : input.uniquenessConstraints,
-    extraSql: input.extraSql === undefined ? [] : input.extraSql,
+    uniqueness_constraints: input.uniqueness_constraints === undefined ? [] : input.uniqueness_constraints,
+    extra_sql: input.extra_sql === undefined ? [] : input.extra_sql,
     label: input.label === undefined ? [] : input.label,
   };
 }
 
 const DbTable_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"tableName","default":{"kind":"just","value":""},"name":"tableName","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"indexes","default":{"kind":"just","value":[]},"name":"indexes","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"uniquenessConstraints","default":{"kind":"just","value":[]},"name":"uniquenessConstraints","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"extraSql","default":{"kind":"just","value":[]},"name":"extraSql","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}},{"annotations":[],"serializedName":"label","default":{"kind":"just","value":[]},"name":"label","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}}]}},"name":"DbTable","version":{"kind":"nothing"}}};
+  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"table_name","default":{"kind":"just","value":""},"name":"table_name","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"indexes","default":{"kind":"just","value":[]},"name":"indexes","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"uniqueness_constraints","default":{"kind":"just","value":[]},"name":"uniqueness_constraints","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"extra_sql","default":{"kind":"just","value":[]},"name":"extra_sql","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}},{"annotations":[],"serializedName":"label","default":{"kind":"just","value":[]},"name":"label","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}}]}},"name":"DbTable","version":{"kind":"nothing"}}};
 
 export const snDbTable: ADL.ScopedName = {moduleName:"common.db", name:"DbTable"};
 
@@ -38,21 +38,21 @@ export function texprDbTable(): ADL.ATypeExpr<DbTable> {
 }
 
 export interface DbView {
-  viewName: string;
+  view_name: string;
 }
 
 export function makeDbView(
   input: {
-    viewName?: string,
+    view_name?: string,
   }
 ): DbView {
   return {
-    viewName: input.viewName === undefined ? "" : input.viewName,
+    view_name: input.view_name === undefined ? "" : input.view_name,
   };
 }
 
 const DbView_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"viewName","default":{"kind":"just","value":""},"name":"viewName","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}]}},"name":"DbView","version":{"kind":"nothing"}}};
+  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"view_name","default":{"kind":"just","value":""},"name":"view_name","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}]}},"name":"DbView","version":{"kind":"nothing"}}};
 
 export const snDbView: ADL.ScopedName = {moduleName:"common.db", name:"DbView"};
 

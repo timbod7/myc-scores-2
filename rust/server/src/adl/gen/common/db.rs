@@ -6,18 +6,15 @@ use serde::Serialize;
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct DbTable {
   #[serde(default="DbTable::def_table_name")]
-  #[serde(rename="tableName")]
   pub table_name: String,
 
   #[serde(default="DbTable::def_indexes")]
   pub indexes: Vec<Vec<String>>,
 
   #[serde(default="DbTable::def_uniqueness_constraints")]
-  #[serde(rename="uniquenessConstraints")]
   pub uniqueness_constraints: Vec<Vec<String>>,
 
   #[serde(default="DbTable::def_extra_sql")]
-  #[serde(rename="extraSql")]
   pub extra_sql: Vec<String>,
 
   #[serde(default="DbTable::def_label")]
@@ -59,7 +56,6 @@ impl DbTable {
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct DbView {
   #[serde(default="DbView::def_view_name")]
-  #[serde(rename="viewName")]
   pub view_name: String,
 }
 

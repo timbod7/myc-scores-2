@@ -11,8 +11,8 @@ struct MetaTable {
    @DbPrimaryKey
    String name;
    String description;
-   ModuleName declModuleName;
-   String declName;
+   ModuleName decl_module_name;
+   String decl_name;
 };
 
 annotation MetaTable DbTable {
@@ -21,12 +21,14 @@ annotation MetaTable DbTable {
 
 struct MetaAdlDecl {
   @DbPrimaryKey
-  ModuleName moduleName;
+  ModuleName module_name;
   @DbPrimaryKey
   String name;
   Decl decl;
 };
 
-annotation MetaAdlDecl DbTable {};
+annotation MetaAdlDecl DbTable {
+  "tableName": "meta_adl_decl"
+};
 
 };
