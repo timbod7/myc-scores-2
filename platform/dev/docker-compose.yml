@@ -1,0 +1,23 @@
+
+version: '3'
+services:
+  db:
+    container_name: protoapp-db
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: xyzzy
+
+  postgrest:
+    container_name: protoapp-postgrest
+    image: postgrest/postgrest:v12.0.2
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://postgres:xyzzy@db:5432/appdb
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+    depends_on:
+      - db
