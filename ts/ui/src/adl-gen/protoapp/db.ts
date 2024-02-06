@@ -40,7 +40,7 @@ export function texprAppUser(): ADL.ATypeExpr<AppUser> {
 export type AppUserTable = common_db.WithId<AppUser>;
 
 const AppUserTable_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"indexes":[["email"]],"uniquenessConstraints":[["email"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}},"parameters":[]}]}}},"name":"AppUserTable","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"extra_sql":["grant select on app_user to admin_user;"],"uniqueness_constraints":[["email"]],"indexes":[["email"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}},"parameters":[]}]}}},"name":"AppUserTable","version":{"kind":"nothing"}}};
 
 export const snAppUserTable: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUserTable"};
 
@@ -91,7 +91,7 @@ export function texprMessage(): ADL.ATypeExpr<Message> {
 export type MessageTable = common_db.WithId<Message>;
 
 const MessageTable_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"indexes":[["posted_at"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"Message"}},"parameters":[]}]}}},"name":"MessageTable","version":{"kind":"nothing"}}};
+  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"extra_sql":["grant all on message to admin_user;"],"indexes":[["posted_at"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"Message"}},"parameters":[]}]}}},"name":"MessageTable","version":{"kind":"nothing"}}};
 
 export const snMessageTable: ADL.ScopedName = {moduleName:"protoapp.db", name:"MessageTable"};
 

@@ -89,15 +89,15 @@ async function main() {
     // written by hand
     Deno.copyFile(
      repo + "/sql/adl-gen/adl-tables.latest.sql",
-     repo + "/rust/server/migrations/00000000000000_adl-tables.latest.sql",
+     repo + "/rust/server/migrations/00000000000020_adl-tables.latest.sql",
     );
     Deno.copyFile(
      repo + "/sql/adl-gen/adl-views.latest.sql",
-     repo + "/rust/server/migrations/00000000000001_adl-views.latest.sql",
+     repo + "/rust/server/migrations/00000000000030_adl-views.latest.sql",
     );
     Deno.copyFile(
      repo + "/sql/adl-gen/adl-metadata.latest.sql",
-     repo + "/rust/server/migrations/00000000000002_adl-metadata.latest.sql",
+     repo + "/rust/server/migrations/00000000000040_adl-metadata.latest.sql",
     );
   }
 }

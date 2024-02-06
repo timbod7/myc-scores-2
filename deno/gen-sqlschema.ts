@@ -155,8 +155,8 @@ async function generateCreateSqlSchema(
   for (const t of dbTables) {
     const ann: JsonObject = t.ann as JsonObject;
     const indexes = (ann["indexes"] || []) as string[][];
-    const uniquenessConstraints = (ann["uniquenessConstraints"] || []) as string[][];
-    const extraSql = (ann["extraSql"] as string[] || []);
+    const uniquenessConstraints = (ann["uniqueness_constraints"] || []) as string[][];
+    const extraSql = (ann["extra_sql"] as string[] || []);
 
     const lines: { code: string; comment?: string }[] = [];
     for (const f of t.fields) {
@@ -269,7 +269,7 @@ export class FileWriter {
  */
 function getDbTableName(scopedDecl: adlast.ScopedDecl): string {
   const ann = getAnnotation(scopedDecl.decl.annotations, DB_TABLE);
-  let tableName = assumeField<string>(ann, "tableName");
+  let tableName = assumeField<string>(ann, "table_name");
   if (tableName) {
     return tableName;
   }
@@ -285,7 +285,7 @@ function getDbTableName(scopedDecl: adlast.ScopedDecl): string {
  */
  function getViewName(scopedDecl: adlast.ScopedDecl): string {
   const ann = getAnnotation(scopedDecl.decl.annotations, DB_VIEW);
-  const viewName = assumeField<string>(ann, "viewName");
+  const viewName = assumeField<string>(ann, "view_name");
   return viewName || snakeCase(scopedDecl.decl.name);
 }
 

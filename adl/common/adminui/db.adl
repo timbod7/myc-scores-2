@@ -16,7 +16,7 @@ struct MetaTable {
 };
 
 annotation MetaTable DbTable {
-   "tableName": "meta_table"
+   "table_name": "meta_table"
 };
 
 struct MetaAdlDecl {
@@ -28,7 +28,7 @@ struct MetaAdlDecl {
 };
 
 annotation MetaAdlDecl DbTable {
-  "tableName": "meta_adl_decl"
+  "table_name": "meta_adl_decl"
 };
 
 };
