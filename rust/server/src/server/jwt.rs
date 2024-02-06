@@ -12,8 +12,8 @@ pub struct Claims {
     pub role: String,
 }
 
-pub const ROLE_ADMIN: &str = "admin";
-pub const ROLE_USER: &str = "user";
+pub const ROLE_ADMIN: &str = "admin_user";
+pub const ROLE_USER: &str = "normal_user";
 
 pub fn create_admin(cfg: &ServerConfig, sub: String) -> String {
     create(cfg, ROLE_ADMIN, sub)

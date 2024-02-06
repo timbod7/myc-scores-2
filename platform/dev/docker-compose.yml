@@ -17,7 +17,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PGRST_DB_URI: postgres://postgres:xyzzy@db:5432/appdb
-      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+      PGRST_DB_URI: postgres://authenticator:pgxyzzy@db:5432/appdb
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_JWT_ROLE_CLAIM_KEY: .role
+      PGRST_JWT_SECRET: shouldbetrulysecretbutnotrightnow
     depends_on:
       - db

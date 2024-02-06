@@ -38,7 +38,7 @@ cargo test -- --test-threads=1
 ## Start a database and postgrest server
 
 ```
-(cd platform/dev; docker-compose up -d db postgrest)
+(cd platform/dev; docker compose up -d db postgrest)
 ```
 
 ## Start the server
@@ -55,7 +55,7 @@ export PROTOAPP_SERVER_CONFIG='{
     "user": "postgres",
     "password": "xyzzy"
   },
-  "jwt_secret": "shouldbeasecret",
+  "jwt_secret": "shouldbetrulysecretbutnotrightnow",
   "jwt_expiry_secs": 3600
  }'
 export RUST_LOG=info
@@ -72,7 +72,7 @@ This will create the db schema and/or apply any necessary migrations
 cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
 cargo run --bin protoapp-tools -- create-user joe@test.com Joe xyzzy
-cargo run --bin protoapp-tools -- create-user sarah@test.com Sarah abcde
+cargo run --bin protoapp-tools -- create-user --is-admin sarah@test.com Sarah abcde
 )
 ```
 
