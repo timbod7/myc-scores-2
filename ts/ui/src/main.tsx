@@ -12,12 +12,14 @@ import { RequireLogin } from './components/RequireLogin';
 
 import theme from './theme';
 import { AppStateProvider } from './hooks/use-app-state';
+import { AdminDashboard } from './admin/pages/admin-dashboard';
 
 const ROUTES = {
   '/': () => <Landing />,
   '/login': () => <Login />,
   '/logout': () => <Logout/>,
   '/messages': () => <RequireLogin><Messages/></RequireLogin>,
+  '/admin': () => <RequireLogin><AdminDashboard/></RequireLogin>,
 };
 
 

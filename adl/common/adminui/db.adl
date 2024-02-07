@@ -16,7 +16,10 @@ struct MetaTable {
 };
 
 annotation MetaTable DbTable {
-   "table_name": "meta_table"
+  "table_name": "meta_table",
+  "extra_sql": [
+     "grant select on meta_table to admin_user;"
+  ]
 };
 
 struct MetaAdlDecl {
@@ -28,7 +31,10 @@ struct MetaAdlDecl {
 };
 
 annotation MetaAdlDecl DbTable {
-  "table_name": "meta_adl_decl"
+  "table_name": "meta_adl_decl",
+  "extra_sql": [
+     "grant select on meta_adl_decl to admin_user;"
+  ]
 };
 
 };

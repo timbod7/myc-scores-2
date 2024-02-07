@@ -13,3 +13,7 @@ export function logoutUrl(): string {
 export function messagesUrl(): string {
   return '/messages';
 }
+
+export function adminUrl(): string {
+  return '/admin';
+}
