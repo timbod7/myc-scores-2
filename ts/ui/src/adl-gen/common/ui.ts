@@ -6,7 +6,7 @@ import * as sys_types from './../sys/types';
 export type FormLabel = string;
 
 const FormLabel_AST : ADL.ScopedDecl =
-  {"moduleName":"common.ui","decl":{"annotations":[],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"FormLabel","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"FormLabel","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.ui"};
 
 export const snFormLabel: ADL.ScopedName = {moduleName:"common.ui", name:"FormLabel"};
 
@@ -17,7 +17,7 @@ export function texprFormLabel(): ADL.ATypeExpr<FormLabel> {
 export type FormGroupKey = string;
 
 const FormGroupKey_AST : ADL.ScopedDecl =
-  {"moduleName":"common.ui","decl":{"annotations":[],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"FormGroupKey","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"FormGroupKey","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.ui"};
 
 export const snFormGroupKey: ADL.ScopedName = {moduleName:"common.ui", name:"FormGroupKey"};
 
@@ -43,7 +43,7 @@ export function makeFormGroups(
 }
 
 const FormGroups_AST : ADL.ScopedDecl =
-  {"moduleName":"common.ui","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"defaultKey","default":{"kind":"nothing"},"name":"defaultKey","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.ui","name":"FormGroupKey"}},"parameters":[]}},{"annotations":[],"serializedName":"labels","default":{"kind":"nothing"},"name":"labels","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"sys.types","name":"Pair"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"common.ui","name":"FormGroupKey"}},"parameters":[]},{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}}]}},"name":"FormGroups","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"FormGroups","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"defaultKey","serializedName":"defaultKey","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.ui","name":"FormGroupKey"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"labels","serializedName":"labels","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.ui","name":"FormGroupKey"}}},{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"reference","value":{"moduleName":"sys.types","name":"Pair"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.ui"};
 
 export const snFormGroups: ADL.ScopedName = {moduleName:"common.ui", name:"FormGroups"};
 
@@ -80,7 +80,7 @@ export function makeValidValues(
 }
 
 const ValidValues_AST : ADL.ScopedDecl =
-  {"moduleName":"common.ui","decl":{"annotations":[{"value":"An field/type alias annotation to constrain the\nvalues allowed by a string to the enumerated values\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[{"value":"The allowed values\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"values","default":{"kind":"nothing"},"name":"values","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}},{"annotations":[{"value":"A (short) user readable string describing the\nexpected text.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"description","default":{"kind":"nothing"},"name":"description","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}]}},"name":"ValidValues","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An field/type alias annotation to constrain the\nvalues allowed by a string to the enumerated values\n"}],"name":"ValidValues","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The allowed values\n"}],"default":{"kind":"nothing"},"name":"values","serializedName":"values","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A (short) user readable string describing the\nexpected text.\n"}],"default":{"kind":"nothing"},"name":"description","serializedName":"description","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.ui"};
 
 export const snValidValues: ADL.ScopedName = {moduleName:"common.ui", name:"ValidValues"};
 
@@ -124,7 +124,7 @@ export function makeValidRegex(
 }
 
 const ValidRegex_AST : ADL.ScopedDecl =
-  {"moduleName":"common.ui","decl":{"annotations":[{"value":"An field/type alias annotation to constrain the\nvalues allowed by a string to a regular expression\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[{"value":"The regexp that must be matched\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"regex","default":{"kind":"nothing"},"name":"regex","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[{"value":"A (short) user readable string describing the\nexpected text.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"description","default":{"kind":"nothing"},"name":"description","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[{"value":"The regex group index to return if matches\n0 is the entire string\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"serializedName":"returnGroup","default":{"kind":"just","value":0},"name":"returnGroup","typeExpr":{"typeRef":{"kind":"primitive","value":"Int8"},"parameters":[]}}]}},"name":"ValidRegex","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An field/type alias annotation to constrain the\nvalues allowed by a string to a regular expression\n"}],"name":"ValidRegex","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The regexp that must be matched\n"}],"default":{"kind":"nothing"},"name":"regex","serializedName":"regex","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A (short) user readable string describing the\nexpected text.\n"}],"default":{"kind":"nothing"},"name":"description","serializedName":"description","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The regex group index to return if matches\n0 is the entire string\n"}],"default":{"kind":"just","value":0},"name":"returnGroup","serializedName":"returnGroup","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Int8"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.ui"};
 
 export const snValidRegex: ADL.ScopedName = {moduleName:"common.ui", name:"ValidRegex"};
 

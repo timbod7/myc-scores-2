@@ -10,7 +10,7 @@ import * as common_strings from './strings';
 export type Instant = number;
 
 const Instant_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"A instant in time, represented as milliseconds from\nthe epoch of \"1970-01-01T00:00:00Z\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"primitive","value":"Int64"},"parameters":[]}}},"name":"Instant","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A instant in time, represented as milliseconds from\nthe epoch of \"1970-01-01T00:00:00Z\n"}],"name":"Instant","type_":{"kind":"newtype_","value":{"default":{"kind":"nothing"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Int64"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snInstant: ADL.ScopedName = {moduleName:"common.time", name:"Instant"};
 
@@ -24,7 +24,7 @@ export function texprInstant(): ADL.ATypeExpr<Instant> {
 export type LocalDate = string;
 
 const LocalDate_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"A date in ISO8601 format\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"just","value":"1970-01-01"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"LocalDate","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A date in ISO8601 format\n"}],"name":"LocalDate","type_":{"kind":"newtype_","value":{"default":{"kind":"just","value":"1970-01-01"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snLocalDate: ADL.ScopedName = {moduleName:"common.time", name:"LocalDate"};
 
@@ -38,7 +38,7 @@ export function texprLocalDate(): ADL.ATypeExpr<LocalDate> {
 export type LocalTime = string;
 
 const LocalTime_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"A time in ISO8601 format\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"just","value":"00:00:00"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"LocalTime","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A time in ISO8601 format\n"}],"name":"LocalTime","type_":{"kind":"newtype_","value":{"default":{"kind":"just","value":"00:00:00"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snLocalTime: ADL.ScopedName = {moduleName:"common.time", name:"LocalTime"};
 
@@ -52,7 +52,7 @@ export function texprLocalTime(): ADL.ATypeExpr<LocalTime> {
 export type LocalDateTime = string;
 
 const LocalDateTime_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"A datetime in ISO8601 format\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"just","value":"1970-01-01T00:00:00"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"LocalDateTime","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A datetime in ISO8601 format\n"}],"name":"LocalDateTime","type_":{"kind":"newtype_","value":{"default":{"kind":"just","value":"1970-01-01T00:00:00"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snLocalDateTime: ADL.ScopedName = {moduleName:"common.time", name:"LocalDateTime"};
 
@@ -64,7 +64,7 @@ export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'frida
 export const valuesDayOfWeek : DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
 const DayOfWeek_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"The day of the week\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"union_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"monday","default":{"kind":"nothing"},"name":"monday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"tuesday","default":{"kind":"nothing"},"name":"tuesday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"wednesday","default":{"kind":"nothing"},"name":"wednesday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"thursday","default":{"kind":"nothing"},"name":"thursday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"friday","default":{"kind":"nothing"},"name":"friday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"saturday","default":{"kind":"nothing"},"name":"saturday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}},{"annotations":[],"serializedName":"sunday","default":{"kind":"nothing"},"name":"sunday","typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}]}},"name":"DayOfWeek","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The day of the week\n"}],"name":"DayOfWeek","type_":{"kind":"union_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"monday","serializedName":"monday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"tuesday","serializedName":"tuesday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"wednesday","serializedName":"wednesday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"thursday","serializedName":"thursday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"friday","serializedName":"friday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"saturday","serializedName":"saturday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sunday","serializedName":"sunday","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snDayOfWeek: ADL.ScopedName = {moduleName:"common.time", name:"DayOfWeek"};
 
@@ -78,7 +78,7 @@ export function texprDayOfWeek(): ADL.ATypeExpr<DayOfWeek> {
 export type Duration = string;
 
 const Duration_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"A duration in ISO8601 format\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"just","value":"P1D"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"Duration","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A duration in ISO8601 format\n"}],"name":"Duration","type_":{"kind":"newtype_","value":{"default":{"kind":"just","value":"P1D"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snDuration: ADL.ScopedName = {moduleName:"common.time", name:"Duration"};
 
@@ -92,7 +92,7 @@ export function texprDuration(): ADL.ATypeExpr<Duration> {
 export type Timezone = common_strings.StringNE;
 
 const Timezone_AST : ADL.ScopedDecl =
-  {"moduleName":"common.time","decl":{"annotations":[{"value":"An IANA timezone\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}}},"name":"Timezone","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An IANA timezone\n"}],"name":"Timezone","type_":{"kind":"newtype_","value":{"default":{"kind":"nothing"},"typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.time"};
 
 export const snTimezone: ADL.ScopedName = {moduleName:"common.time", name:"Timezone"};
 

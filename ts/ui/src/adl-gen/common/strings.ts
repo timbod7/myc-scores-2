@@ -8,7 +8,7 @@ import * as ADL from './../runtime/adl';
 export type StringNE = string;
 
 const StringNE_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":{"regex":"^.*\\S+.*$","returnGroup":0,"description":"non empty"},"key":{"moduleName":"common.ui","name":"ValidRegex"}},{"value":"A string that isn't empty, and isn't only whitespace.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"StringNE","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"common.ui","name":"ValidRegex"},"value":{"description":"non empty","regex":"^.*\\S+.*$","returnGroup":0}},{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A string that isn't empty, and isn't only whitespace.\n"}],"name":"StringNE","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snStringNE: ADL.ScopedName = {moduleName:"common.strings", name:"StringNE"};
 
@@ -22,7 +22,7 @@ export function texprStringNE(): ADL.ATypeExpr<StringNE> {
 export type StringANH = string;
 
 const StringANH_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":{"regex":"^[A-Za-z][A-Za-z0-9-]*$","returnGroup":0,"description":"alphanumeric"},"key":{"moduleName":"common.ui","name":"ValidRegex"}},{"value":"An alphanumeric string, with hyphens for separation.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"StringANH","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"common.ui","name":"ValidRegex"},"value":{"description":"alphanumeric","regex":"^[A-Za-z][A-Za-z0-9-]*$","returnGroup":0}},{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An alphanumeric string, with hyphens for separation.\n"}],"name":"StringANH","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snStringANH: ADL.ScopedName = {moduleName:"common.strings", name:"StringANH"};
 
@@ -36,7 +36,7 @@ export function texprStringANH(): ADL.ATypeExpr<StringANH> {
 export type StringML = string;
 
 const StringML_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":"A multi line, free-form text string\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"StringML","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A multi line, free-form text string\n"}],"name":"StringML","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snStringML: ADL.ScopedName = {moduleName:"common.strings", name:"StringML"};
 
@@ -50,7 +50,7 @@ export function texprStringML(): ADL.ATypeExpr<StringML> {
 export type EmailAddress = string;
 
 const EmailAddress_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":{"regex":"^\\s*((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]))\\s*$","returnGroup":1,"description":"an email address"},"key":{"moduleName":"common.ui","name":"ValidRegex"}},{"value":"An email address\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"EmailAddress","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"common.ui","name":"ValidRegex"},"value":{"description":"an email address","regex":"^\\s*((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\]))\\s*$","returnGroup":1}},{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An email address\n"}],"name":"EmailAddress","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snEmailAddress: ADL.ScopedName = {moduleName:"common.strings", name:"EmailAddress"};
 
@@ -64,7 +64,7 @@ export function texprEmailAddress(): ADL.ATypeExpr<EmailAddress> {
 export type StringMD = string;
 
 const StringMD_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":"A markdown text string\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"StringMD","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A markdown text string\n"}],"name":"StringMD","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snStringMD: ADL.ScopedName = {moduleName:"common.strings", name:"StringMD"};
 
@@ -79,7 +79,7 @@ export function texprStringMD(): ADL.ATypeExpr<StringMD> {
 export type Password = string;
 
 const Password_AST : ADL.ScopedDecl =
-  {"moduleName":"common.strings","decl":{"annotations":[{"value":"A password, which cannot be empty. Other constraints\nare application specific.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"Password","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A password, which cannot be empty. Other constraints\nare application specific.\n"}],"name":"Password","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.strings"};
 
 export const snPassword: ADL.ScopedName = {moduleName:"common.strings", name:"Password"};
 

@@ -5,7 +5,7 @@ import {
   installTo
 } from "adllang_localsetup/mod.ts";
 
-const ADL = packages.adl("1.1.15");
+const ADL = packages.adl("1.2");
 const NODE = packages.nodejs("20.7.0");
 const PNPM = packages.pnpm("8.3.1");
 

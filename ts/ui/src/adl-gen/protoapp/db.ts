@@ -29,7 +29,7 @@ export function makeAppUser(
 }
 
 const AppUser_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"fullname","default":{"kind":"nothing"},"name":"fullname","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}},{"annotations":[],"serializedName":"email","default":{"kind":"nothing"},"name":"email","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}},{"annotations":[],"serializedName":"isAdmin","default":{"kind":"nothing"},"name":"isAdmin","typeExpr":{"typeRef":{"kind":"primitive","value":"Bool"},"parameters":[]}},{"annotations":[],"serializedName":"hashed_password","default":{"kind":"just","value":""},"name":"hashed_password","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}},"parameters":[]}}]}},"name":"AppUser","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"AppUser","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"isAdmin","serializedName":"isAdmin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"just","value":""},"name":"hashed_password","serializedName":"hashed_password","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snAppUser: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUser"};
 
@@ -40,7 +40,7 @@ export function texprAppUser(): ADL.ATypeExpr<AppUser> {
 export type AppUserTable = common_db.WithId<AppUser>;
 
 const AppUserTable_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"extra_sql":["grant select on app_user to admin_user;"],"uniqueness_constraints":[["email"]],"indexes":[["email"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}},"parameters":[]}]}}},"name":"AppUserTable","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"common.db","name":"DbTable"},"value":{"extra_sql":["grant select on app_user to admin_user;"],"indexes":[["email"]],"uniqueness_constraints":[["email"]]}}],"name":"AppUserTable","type_":{"kind":"newtype_","value":{"default":{"kind":"nothing"},"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUser"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snAppUserTable: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUserTable"};
 
@@ -51,7 +51,7 @@ export function texprAppUserTable(): ADL.ATypeExpr<AppUserTable> {
 export type AppUserId = common_db.DbKey<AppUserTable>;
 
 const AppUserId_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"DbKey"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserTable"}},"parameters":[]}]}}},"name":"AppUserId","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"AppUserId","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserTable"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"DbKey"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snAppUserId: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUserId"};
 
@@ -80,7 +80,7 @@ export function makeMessage(
 }
 
 const Message_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"posted_at","default":{"kind":"nothing"},"name":"posted_at","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}},"parameters":[]}},{"annotations":[],"serializedName":"posted_by","default":{"kind":"nothing"},"name":"posted_by","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}},"parameters":[]}},{"annotations":[],"serializedName":"message","default":{"kind":"nothing"},"name":"message","typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}},"parameters":[]}}]}},"name":"Message","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"Message","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"posted_at","serializedName":"posted_at","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"posted_by","serializedName":"posted_by","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"message","serializedName":"message","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snMessage: ADL.ScopedName = {moduleName:"protoapp.db", name:"Message"};
 
@@ -91,7 +91,7 @@ export function texprMessage(): ADL.ATypeExpr<Message> {
 export type MessageTable = common_db.WithId<Message>;
 
 const MessageTable_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[{"value":{"extra_sql":["grant all on message to admin_user;"],"indexes":[["posted_at"]]},"key":{"moduleName":"common.db","name":"DbTable"}}],"type_":{"kind":"newtype_","value":{"typeParams":[],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"Message"}},"parameters":[]}]}}},"name":"MessageTable","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"common.db","name":"DbTable"},"value":{"extra_sql":["grant all on message to admin_user;"],"indexes":[["posted_at"]]}}],"name":"MessageTable","type_":{"kind":"newtype_","value":{"default":{"kind":"nothing"},"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"Message"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"WithId"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snMessageTable: ADL.ScopedName = {moduleName:"protoapp.db", name:"MessageTable"};
 
@@ -102,7 +102,7 @@ export function texprMessageTable(): ADL.ATypeExpr<MessageTable> {
 export type MessageId = common_db.DbKey<MessageTable>;
 
 const MessageId_AST : ADL.ScopedDecl =
-  {"moduleName":"protoapp.db","decl":{"annotations":[],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"DbKey"}},"parameters":[{"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageTable"}},"parameters":[]}]}}},"name":"MessageId","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"MessageId","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageTable"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db","name":"DbKey"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snMessageId: ADL.ScopedName = {moduleName:"protoapp.db", name:"MessageId"};
 

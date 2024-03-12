@@ -29,7 +29,7 @@ export function makeDbTable(
 }
 
 const DbTable_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"table_name","default":{"kind":"just","value":""},"name":"table_name","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[],"serializedName":"indexes","default":{"kind":"just","value":[]},"name":"indexes","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"uniqueness_constraints","default":{"kind":"just","value":[]},"name":"uniqueness_constraints","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}]}},{"annotations":[],"serializedName":"extra_sql","default":{"kind":"just","value":[]},"name":"extra_sql","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}},{"annotations":[],"serializedName":"label","default":{"kind":"just","value":[]},"name":"label","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}]}}]}},"name":"DbTable","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"DbTable","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"just","value":""},"name":"table_name","serializedName":"table_name","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"just","value":[]},"name":"indexes","serializedName":"indexes","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"just","value":[]},"name":"uniqueness_constraints","serializedName":"uniqueness_constraints","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"just","value":[]},"name":"extra_sql","serializedName":"extra_sql","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"just","value":[]},"name":"label","serializedName":"label","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbTable: ADL.ScopedName = {moduleName:"common.db", name:"DbTable"};
 
@@ -52,7 +52,7 @@ export function makeDbView(
 }
 
 const DbView_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[],"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"annotations":[],"serializedName":"view_name","default":{"kind":"just","value":""},"name":"view_name","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}]}},"name":"DbView","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[],"name":"DbView","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"just","value":""},"name":"view_name","serializedName":"view_name","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbView: ADL.ScopedName = {moduleName:"common.db", name:"DbView"};
 
@@ -67,7 +67,7 @@ export function texprDbView(): ADL.ATypeExpr<DbView> {
 export type DbColumnName = string;
 
 const DbColumnName_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"Field level annotation to override the name of the\ndatabase column.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"DbColumnName","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Field level annotation to override the name of the\ndatabase column.\n"}],"name":"DbColumnName","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbColumnName: ADL.ScopedName = {moduleName:"common.db", name:"DbColumnName"};
 
@@ -82,7 +82,7 @@ export function texprDbColumnName(): ADL.ATypeExpr<DbColumnName> {
 export type DbColumnType = string;
 
 const DbColumnType_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"Field or type level annotation to override the type of the\ndatabase column.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"DbColumnType","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Field or type level annotation to override the type of the\ndatabase column.\n"}],"name":"DbColumnType","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbColumnType: ADL.ScopedName = {moduleName:"common.db", name:"DbColumnType"};
 
@@ -98,7 +98,7 @@ export function texprDbColumnType(): ADL.ATypeExpr<DbColumnType> {
 export type DbSpread = null;
 
 const DbSpread_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"Field level annotation to indicate that that the fields\ncontained in this field should be lifted up to the current\ntable.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}},"name":"DbSpread","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Field level annotation to indicate that that the fields\ncontained in this field should be lifted up to the current\ntable.\n"}],"name":"DbSpread","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbSpread: ADL.ScopedName = {moduleName:"common.db", name:"DbSpread"};
 
@@ -113,7 +113,7 @@ export function texprDbSpread(): ADL.ATypeExpr<DbSpread> {
 export type DbPrimaryKey = null;
 
 const DbPrimaryKey_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"Field level annotation to indicate that that field\nis part of the primary key\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"type_","value":{"typeParams":[],"typeExpr":{"typeRef":{"kind":"primitive","value":"Void"},"parameters":[]}}},"name":"DbPrimaryKey","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Field level annotation to indicate that that field\nis part of the primary key\n"}],"name":"DbPrimaryKey","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbPrimaryKey: ADL.ScopedName = {moduleName:"common.db", name:"DbPrimaryKey"};
 
@@ -128,7 +128,7 @@ export function texprDbPrimaryKey(): ADL.ATypeExpr<DbPrimaryKey> {
 export type DbKey<_T> = string;
 
 const DbKey_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"A reference for a database stored value, referenced by a\nstring primary key.\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"newtype_","value":{"typeParams":["T"],"default":{"kind":"nothing"},"typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}}},"name":"DbKey","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A reference for a database stored value, referenced by a\nstring primary key.\n"}],"name":"DbKey","type_":{"kind":"newtype_","value":{"default":{"kind":"nothing"},"typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}},"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snDbKey: ADL.ScopedName = {moduleName:"common.db", name:"DbKey"};
 
@@ -158,7 +158,7 @@ export function makeWithId<T>(
 }
 
 const WithId_AST : ADL.ScopedDecl =
-  {"moduleName":"common.db","decl":{"annotations":[{"value":"Extent a datatype for use as a database table, giving it a\nprimary key\n","key":{"moduleName":"sys.annotations","name":"Doc"}}],"type_":{"kind":"struct_","value":{"typeParams":["T"],"fields":[{"annotations":[{"value":null,"key":{"moduleName":"common.db","name":"DbPrimaryKey"}}],"serializedName":"id","default":{"kind":"nothing"},"name":"id","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]}},{"annotations":[{"value":null,"key":{"moduleName":"common.db","name":"DbSpread"}}],"serializedName":"value","default":{"kind":"nothing"},"name":"value","typeExpr":{"typeRef":{"kind":"typeParam","value":"T"},"parameters":[]}}]}},"name":"WithId","version":{"kind":"nothing"}}};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Extent a datatype for use as a database table, giving it a\nprimary key\n"}],"name":"WithId","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"common.db","name":"DbPrimaryKey"},"value":null}],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[{"key":{"moduleName":"common.db","name":"DbSpread"},"value":null}],"default":{"kind":"nothing"},"name":"value","serializedName":"value","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}}],"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"common.db"};
 
 export const snWithId: ADL.ScopedName = {moduleName:"common.db", name:"WithId"};
 

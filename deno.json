@@ -6,8 +6,8 @@
       "build-ui-image": "cd ts/ui && docker build --file Dockerfile --tag protoapp-ui:latest .."
     },
     "imports" : {
-      "adllang_localsetup/": "https://deno.land/x/adllang_localsetup@v0.5/",
-      "adllang_tsdeno/" : "https://deno.land/x/adllang_tsdeno@v0.5/",
+      "adllang_localsetup/": "https://deno.land/x/adllang_localsetup@v0.11/",
+      "adllang_tsdeno/" : "https://deno.land/x/adllang_tsdeno@v0.7/",
       "path/" : "https://deno.land/std@0.105.0/path/"
     }
 }
