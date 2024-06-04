@@ -45,17 +45,3 @@ async function loadSchema(jwt: string): Promise<unknown> {
   const jv = await resp.json();
   return jv;
 }
-
-
-async function loadMessages(jwt: string) {
-  const client = new PostgrestClient(postgrestUrl, {
-    headers: {
-      "Authorization" : "Bearer " + jwt
-    }
-  });
-  const x = await client.from("message").select();
-  console.log("messages", x);
-  return x;
-}
-
-

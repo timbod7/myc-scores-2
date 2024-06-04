@@ -16,12 +16,17 @@ adlc show --version
 
 # Unit tests
 
-Start postgres using docker:
+Start postgres using docker and setup the roles:
 
 
 ```
-(cd platform/dev; docker-compose up -d db)
+(cd platform/dev; docker compose up -d db)
 ```
+
+```
+(PGPASSWORD=xyzzy psql --host localhost --port 5432 --user postgres --db appdb -f sql/010-postgrest-roles.sql)
+```
+
 
 Run the unit tests via cargo:
 
