@@ -32,10 +32,10 @@ export function Messages() {
   }
 
   let renderedMessages = messages.state == 'loading' ? [] :
-    messages.value.items.map((m) => {
+    messages.value.items.map((m,i) => {
       const posted_at = new Date(m.posted_at);
       return (
-        <Card variant="outlined" sx={{ marginBottom: "10px" }}>
+        <Card variant="outlined" sx={{ marginBottom: "10px" }} key={i}>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
               <b>{m.user_fullname}</b> ({posted_at.toLocaleDateString()} {posted_at.toLocaleTimeString()})

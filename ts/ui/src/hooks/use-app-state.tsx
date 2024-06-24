@@ -1,11 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Service } from '../service';
 import { FetchHttp } from '../service/fetch-http';
-import { ApiWithToken, Auth, JwtClaims, expiry_secs, localStoreGet, localStorePut, localStoreRemove } from '../auth';
+import { ApiWithToken, Auth, JwtClaims, expiry_secs } from '../auth';
 import { jwtDecode } from "jwt-decode";
 
-import { LoginResp } from '@/adl-gen/protoapp/apis/ui';
+import { LoginResp, makeRefreshReq } from '@/adl-gen/protoapp/apis/ui';
 import { logoutUrl } from '@/navigation';
 import { useNavigate } from 'raviger';
 
@@ -42,13 +42,12 @@ export function AppStateProvider(props: {
 
   async function setAuthStateFromLogin(resp: LoginResp) {
     switch (resp.kind) {
-      case "access_token": {
-        const jwt = resp.value;
+      case "tokens": {
+        const jwt = resp.value.access_jwt;
         const jwt_decoded = jwtDecode(jwt) as JwtClaims;
         console.log("jwt", jwt_decoded);
         let auth = { jwt, jwt_decoded };
         setAuthState({ kind: "auth", auth });
-        localStorePut(auth);
         break;
       }
       case "invalid_credentials": {
@@ -60,7 +59,7 @@ export function AppStateProvider(props: {
 
   async function login(email: string, password: string): Promise<LoginResp> {
     const resp = await protoappApi.login({ email, password });
-    if (resp.kind == 'access_token') {
+    if (resp.kind == 'tokens') {
       console.log(`using new jwt from login`);
     }
     await setAuthStateFromLogin(resp);
@@ -68,35 +67,51 @@ export function AppStateProvider(props: {
   }
 
   async function logout() {
+    await protoappApi.logout({});
     console.log(`logout`);
-    localStoreRemove();
     setAuthState({ kind: 'noauth' });
     navigate(logoutUrl());
   }
 
-  // Reuse a token from local storage if it's got more than 30 seconds
-  useEffect(() => {
-    const auth = localStoreGet();
-    if (auth && expiry_secs(auth.jwt_decoded) > 30) {
-      console.log(`reusing jwt from local storage`);
-      setAuthState({ kind: "auth", auth });
-    } else {
-      setAuthState({ kind: "noauth" });
+  async function refresh() {
+    console.log("Refreshing JWT");
+    const resp = await protoappApi.refresh(makeRefreshReq({}));
+    switch (resp.kind) {
+      case 'invalid_refresh_token':
+        setAuthState({kind:'noauth'});
+        break;
+      case 'access_token':
+        const jwt = resp.value;
+        const jwt_decoded = jwtDecode(jwt) as JwtClaims;
+        console.log("jwt", jwt_decoded);
+        let auth = { jwt, jwt_decoded };
+        setAuthState({ kind: "auth", auth });
+        break;
     }
-  }, []);
+  }
 
-
-  // Logout when the jwt expires
-  useEffect(() => {
+  const renewJwt = useCallback( async () =>  {
     if (authState.kind === 'auth') {
       const claims = authState.auth.jwt_decoded;
-      const expiry_ms = expiry_secs(claims) * 1000;
-      console.log(`scheduling auto logout on jwt expiry in ${expiry_ms} milliseconds`);
-      const timeout = setTimeout(() => logout(), expiry_ms);
-      return () => clearTimeout(timeout);
+      if (expiry_secs(claims) < 60) {
+        await refresh();
+      }
     }
   }, [authState]);
 
+
+  // Attempt to refresh a token on page load, relying on the refreshToken cookie
+  useEffect(() => {
+    refresh()
+  }, []);
+
+
+  // Refresh the token whenever we have less than 30 seconds to expire
+  useEffect(() => {
+    const interval = setInterval(renewJwt, 10 * 1000);
+    return () => clearInterval(interval);
+  }, [renewJwt]);
+  
   const apiManager = {
     api: protoappApi,
     authState,

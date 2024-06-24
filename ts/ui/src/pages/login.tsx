@@ -21,7 +21,7 @@ export function Login() {
   async function onLogin() {
     if (formValid) {
       const resp = await appState.login(email.value(), password.value());
-      if (resp.kind === 'access_token') {
+      if (resp.kind === 'tokens') {
         navigate(messagesUrl());
       }
     } else {

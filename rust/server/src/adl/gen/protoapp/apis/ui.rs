@@ -29,9 +29,24 @@ pub struct ApiRequests {
 
   /**
    * Login a user
+   * The response will set an httpOnly cookie containing the refresh token
    */
   #[serde(default="ApiRequests::def_login")]
   pub login: HttpPost<LoginReq, LoginResp>,
+
+  /**
+   * Get a refreshed access token
+   * If the refresh token is not provided in the request body, then it will
+   * be read from the refrestToken cookie in the request.
+   */
+  #[serde(default="ApiRequests::def_refresh")]
+  pub refresh: HttpPost<RefreshReq, RefreshResp>,
+
+  /**
+   * clear the `refreshToken` cookie.
+   */
+  #[serde(default="ApiRequests::def_logout")]
+  pub logout: HttpPost<Unit, Unit>,
 
   /**
    * Post a message to the noticeboard
@@ -61,6 +76,8 @@ impl ApiRequests {
       healthy: ApiRequests::def_healthy(),
       ping: ApiRequests::def_ping(),
       login: ApiRequests::def_login(),
+      refresh: ApiRequests::def_refresh(),
+      logout: ApiRequests::def_logout(),
       new_message: ApiRequests::def_new_message(),
       recent_messages: ApiRequests::def_recent_messages(),
       who_am_i: ApiRequests::def_who_am_i(),
@@ -77,6 +94,14 @@ impl ApiRequests {
 
   pub fn def_login() -> HttpPost<LoginReq, LoginResp> {
     HttpPost::<LoginReq, LoginResp>{path : "/login".to_string(), security : HttpSecurity::Public, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_refresh() -> HttpPost<RefreshReq, RefreshResp> {
+    HttpPost::<RefreshReq, RefreshResp>{path : "/refresh".to_string(), security : HttpSecurity::Public, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_logout() -> HttpPost<Unit, Unit> {
+    HttpPost::<Unit, Unit>{path : "/logout".to_string(), security : HttpSecurity::Public, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_new_message() -> HttpPost<NewMessageReq, MessageId> {
@@ -110,11 +135,54 @@ impl LoginReq {
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub enum LoginResp {
-  #[serde(rename="access_token")]
-  AccessToken(StringNE),
+  #[serde(rename="tokens")]
+  Tokens(LoginTokens),
 
   #[serde(rename="invalid_credentials")]
   InvalidCredentials,
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct RefreshReq {
+  #[serde(default="RefreshReq::def_refresh_token")]
+  pub refresh_token: Option<StringNE>,
+}
+
+impl RefreshReq {
+  pub fn new() -> RefreshReq {
+    RefreshReq {
+      refresh_token: RefreshReq::def_refresh_token(),
+    }
+  }
+
+  pub fn def_refresh_token() -> Option<StringNE> {
+    None
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum RefreshResp {
+  #[serde(rename="access_token")]
+  AccessToken(StringNE),
+
+  #[serde(rename="invalid_refresh_token")]
+  InvalidRefreshToken,
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct LoginTokens {
+  pub access_jwt: StringNE,
+
+  pub refresh_jwt: StringNE,
+}
+
+impl LoginTokens {
+  pub fn new(access_jwt: StringNE, refresh_jwt: StringNE) -> LoginTokens {
+    LoginTokens {
+      access_jwt: access_jwt,
+      refresh_jwt: refresh_jwt,
+    }
+  }
 }
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]

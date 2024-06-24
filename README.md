@@ -60,8 +60,8 @@ export PROTOAPP_SERVER_CONFIG='{
     "user": "postgres",
     "password": "xyzzy"
   },
-  "jwt_secret": "shouldbetrulysecretbutnotrightnow",
-  "jwt_expiry_secs": 3600
+  "jwt_access_secret": "shouldbetrulysecretbutnotrightnow",
+  "jwt_refresh_secret": "nottomentionthisone"
  }'
 export RUST_LOG=info
 cargo run --bin protoapp-server

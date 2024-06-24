@@ -27,8 +27,25 @@ struct ApiRequests {
   };
 
   /// Login a user
+  ///
+  /// The response will set an httpOnly cookie containing the refresh token
   HttpPost<LoginReq, LoginResp> login = {
     "path": "/login",
+    "security" : "public"
+  };
+
+  /// Get a refreshed access token
+  ///
+  /// If the refresh token is not provided in the request body, then it will
+  /// be read from the refrestToken cookie in the request.
+  HttpPost<RefreshReq, RefreshResp> refresh = {
+    "path": "/refresh",
+    "security" : "public"
+  };
+
+  /// Clear the `refreshToken` cookie.
+  HttpPost<Unit, Unit> logout = {
+    "path": "/logout",
     "security" : "public"
   };
 
@@ -58,8 +75,22 @@ struct LoginReq {
 };
 
 union LoginResp {
-  StringNE access_token;
+  LoginTokens tokens;
   Void invalid_credentials;
+};
+
+struct RefreshReq {
+  Nullable<StringNE> refresh_token = null;
+};
+
+union RefreshResp {
+  StringNE access_token;
+  Void invalid_refresh_token;
+};
+
+struct LoginTokens {
+  StringNE access_jwt;
+  StringNE refresh_jwt;
 };
 
 struct NewMessageReq {

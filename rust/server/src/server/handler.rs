@@ -1,22 +1,25 @@
-use std::marker::PhantomData;
-
 use async_trait::async_trait;
+use cookie::Cookie;
+use hyper::header::{CONTENT_TYPE, COOKIE, SET_COOKIE};
 use hyper::{Body, Method, Request, StatusCode};
 use log::error;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
+use std::marker::PhantomData;
 
-use super::jwt::Claims;
+use super::jwt::AccessClaims;
 use super::{db, Response};
 use super::{jwt, AppState};
 use crate::adl::custom::DbKey;
+use crate::adl::gen::common::db::WithId;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
 use crate::adl::gen::protoapp::apis::ui::{
-    LoginReq, LoginResp, Message, NewMessageReq, Paginated, RecentMessagesReq, UserProfile,
+    LoginReq, LoginResp, LoginTokens, Message, NewMessageReq, Paginated, RecentMessagesReq,
+    RefreshReq, RefreshResp, UserProfile,
 };
 use crate::adl::gen::protoapp::config::server::ServerConfig;
-use crate::adl::gen::protoapp::db::{AppUserId, MessageId};
+use crate::adl::gen::protoapp::db::{AppUser, AppUserId, MessageId};
 use crate::server::passwords::verify_password;
 
 pub async fn handler(app_state: AppState, req: Request<Body>) -> Result<Response, hyper::Error> {
@@ -68,7 +71,46 @@ async fn handle_req(app_state: &AppState, req: Request<Body>) -> HandlerResult<R
         endpoint.check_auth(&app_state.config, &req)?;
         let i = endpoint.decode_req(req).await?;
         let o = login(app_state, i).await?;
+        let mut resp = hyper::Response::builder()
+            .status(200)
+            .header("Access-Control-Allow-Origin", "*");
+        if let LoginResp::Tokens(tokens) = &o {
+            resp = resp.header(
+                SET_COOKIE,
+                Cookie::build((REFRESH_TOKEN, tokens.refresh_jwt.clone()))
+                    .http_only(true)
+                    .to_string(),
+            )
+        }
+        let resp = with_json_body(resp, o)?;
+        return Ok(resp);
+    }
+
+    let endpoint = apis::ui::ApiRequests::def_refresh();
+    if endpoint.matches(&req) {
+        endpoint.check_auth(&app_state.config, &req)?;
+        let refresh_jwt = get_cookie(&req, REFRESH_TOKEN);
+        let i = endpoint.decode_req(req).await?;
+        let o = refresh(app_state, refresh_jwt, i).await?;
         return endpoint.encode_resp(o);
+    }
+
+    let endpoint = apis::ui::ApiRequests::def_logout();
+    if endpoint.matches(&req) {
+        endpoint.check_auth(&app_state.config, &req)?;
+        let i = endpoint.decode_req(req).await?;
+        let resp = hyper::Response::builder()
+            .status(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header(
+                SET_COOKIE,
+                Cookie::build((REFRESH_TOKEN, ""))
+                    .max_age(time::Duration::seconds(0))
+                    .http_only(true)
+                    .to_string(),
+            );
+        let resp = with_json_body(resp, i)?;
+        return Ok(resp);
     }
 
     let endpoint = apis::ui::ApiRequests::def_new_message();
@@ -113,12 +155,12 @@ async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
         Some(user) => {
             if verify_password(&i.password, &user.value.hashed_password) {
                 // If found and we have a valid password return an access token
-                let jwt = if user.value.is_admin {
-                    jwt::create_admin(&app_state.config, user.id)
-                } else {
-                    jwt::create_user(&app_state.config, user.id)
-                };
-                Ok(LoginResp::AccessToken(jwt))
+                let access_jwt = access_jwt_from_user(&app_state.config, &user);
+                let refresh_jwt = jwt::create_refresh(&app_state.config, user.id.clone());
+                Ok(LoginResp::Tokens(LoginTokens {
+                    access_jwt,
+                    refresh_jwt,
+                }))
             } else {
                 Ok(LoginResp::InvalidCredentials)
             }
@@ -126,9 +168,55 @@ async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
     }
 }
 
+fn access_jwt_from_user(cfg: &ServerConfig, user: &WithId<AppUser>) -> String {
+    if user.value.is_admin {
+        jwt::create_admin_access(&cfg, user.id.clone())
+    } else {
+        jwt::create_user_access(&cfg, user.id.clone())
+    }
+}
+
+const REFRESH_TOKEN: &str = "refreshToken";
+
+async fn refresh(
+    app_state: &AppState,
+    refresh_jwt_from_cookie: Option<String>,
+    i: RefreshReq,
+) -> HandlerResult<RefreshResp> {
+    match i.refresh_token.or(refresh_jwt_from_cookie) {
+        None => Ok(RefreshResp::InvalidRefreshToken),
+        Some(refresh_jwt) => {
+            let claims = match jwt::decode_refresh(&app_state.config, &refresh_jwt) {
+                Ok(claims) => claims,
+                Err(_) => return Ok(RefreshResp::InvalidRefreshToken),
+            };
+            let user_id: AppUserId = DbKey(claims.sub.clone(), PhantomData);
+            let user = db::get_user_with_id(&app_state.db_pool, &user_id).await?;
+            let user = match user {
+                Some(user) => user,
+                None => return Ok(RefreshResp::InvalidRefreshToken),
+            };
+            let access_jwt = access_jwt_from_user(&app_state.config, &user);
+            Ok(RefreshResp::AccessToken(access_jwt))
+        }
+    }
+}
+
+fn get_cookie(req: &Request<Body>, cookie_name: &str) -> Option<String> {
+    let header_str = req.headers().get(COOKIE)?.to_str().ok()?;
+    for cookie in Cookie::split_parse(header_str) {
+        if let Ok(cookie) = cookie {
+            if cookie.name() == cookie_name {
+                return Some(cookie.value().to_owned());
+            }
+        }
+    }
+    None
+}
+
 async fn new_message(
     app_state: &AppState,
-    claims: &Claims,
+    claims: &AccessClaims,
     i: NewMessageReq,
 ) -> HandlerResult<MessageId> {
     let user_id = user_from_claims(claims)?;
@@ -138,7 +226,7 @@ async fn new_message(
 
 async fn recent_messages(
     app_state: &AppState,
-    _claims: &Claims,
+    _claims: &AccessClaims,
     i: RecentMessagesReq,
 ) -> HandlerResult<Paginated<Message>> {
     let messages = db::recent_messages(&app_state.db_pool, i.offset, i.limit).await?;
@@ -150,7 +238,7 @@ async fn recent_messages(
     })
 }
 
-async fn who_am_i(app_state: &AppState, claims: &Claims) -> HandlerResult<UserProfile> {
+async fn who_am_i(app_state: &AppState, claims: &AccessClaims) -> HandlerResult<UserProfile> {
     let user_id = user_from_claims(claims)?;
     let user = db::get_user_with_id(&app_state.db_pool, &user_id).await?;
     match user {
@@ -164,7 +252,7 @@ async fn who_am_i(app_state: &AppState, claims: &Claims) -> HandlerResult<UserPr
     }
 }
 
-fn user_from_claims(claims: &jwt::Claims) -> HandlerResult<AppUserId> {
+fn user_from_claims(claims: &jwt::AccessClaims) -> HandlerResult<AppUserId> {
     if claims.role == jwt::ROLE_USER || claims.role == jwt::ROLE_ADMIN {
         Ok(DbKey(claims.sub.clone(), PhantomData))
     } else {
@@ -205,9 +293,13 @@ trait EndpointCheckAuth {
         &self,
         cfg: &ServerConfig,
         req: &Request<Body>,
-    ) -> HandlerResult<Option<jwt::Claims>>;
+    ) -> HandlerResult<Option<jwt::AccessClaims>>;
 
-    fn require_auth(&self, cfg: &ServerConfig, req: &Request<Body>) -> HandlerResult<jwt::Claims> {
+    fn require_auth(
+        &self,
+        cfg: &ServerConfig,
+        req: &Request<Body>,
+    ) -> HandlerResult<jwt::AccessClaims> {
         match self.check_auth(cfg, req)? {
             Some(claims) => Ok(claims),
             None => Err(HandlerError::HttpError(StatusCode::FORBIDDEN)),
@@ -226,7 +318,7 @@ impl<I, O> EndpointCheckAuth for HttpPost<I, O> {
         &self,
         cfg: &ServerConfig,
         req: &Request<Body>,
-    ) -> HandlerResult<Option<jwt::Claims>> {
+    ) -> HandlerResult<Option<jwt::AccessClaims>> {
         check_auth(cfg, &self.security, req)
     }
 }
@@ -243,8 +335,11 @@ impl<I: DeserializeOwned + Sync, O: Sync> EndpointWithReqBody<I> for HttpPost<I,
 
 impl<I, O: Serialize> EndpointWithRespBody<O> for HttpPost<I, O> {
     fn encode_resp(&self, o: O) -> HandlerResult<Response> {
-        let s = serde_json::to_string(&o).expect("object should be serializeable");
-        Ok(make_response(hyper::Body::from(s), "application/json"))
+        let resp = hyper::Response::builder()
+            .status(200)
+            .header("Access-Control-Allow-Origin", "*");
+        let resp = with_json_body(resp, o)?;
+        Ok(resp)
     }
 }
 
@@ -259,25 +354,27 @@ impl<O> EndpointCheckAuth for HttpGet<O> {
         &self,
         cfg: &ServerConfig,
         req: &Request<Body>,
-    ) -> HandlerResult<Option<jwt::Claims>> {
+    ) -> HandlerResult<Option<jwt::AccessClaims>> {
         check_auth(cfg, &self.security, req)
     }
 }
 
 impl<O: Serialize> EndpointWithRespBody<O> for HttpGet<O> {
     fn encode_resp(&self, o: O) -> HandlerResult<Response> {
-        let s = serde_json::to_string(&o).expect("object should be serializeable");
-        Ok(make_response(hyper::Body::from(s), "application/json"))
+        let resp = hyper::Response::builder()
+            .status(200)
+            .header("Access-Control-Allow-Origin", "*");
+        let resp = with_json_body(resp, o)?;
+        Ok(resp)
     }
 }
 
-fn make_response(body: hyper::Body, content_type: &str) -> Response {
-    hyper::Response::builder()
-        .status(200)
-        .header("Content-Type", content_type)
-        .header("Access-Control-Allow-Origin", "*")
-        .body(body)
-        .unwrap()
+fn with_json_body<O: Serialize>(resp: http::response::Builder, o: O) -> HandlerResult<Response> {
+    let s = serde_json::to_string(&o).expect("object should be serializeable");
+    let resp = resp
+        .header(CONTENT_TYPE, "application/json")
+        .body(hyper::Body::from(s))?;
+    Ok(resp)
 }
 
 fn make_err_response(code: StatusCode) -> Response {
@@ -291,7 +388,7 @@ fn check_auth(
     cfg: &ServerConfig,
     security: &HttpSecurity,
     req: &Request<Body>,
-) -> HandlerResult<Option<jwt::Claims>> {
+) -> HandlerResult<Option<jwt::AccessClaims>> {
     match security {
         HttpSecurity::Public => Ok(None),
         HttpSecurity::Token => {
@@ -309,9 +406,12 @@ fn check_auth(
     }
 }
 
-fn claims_from_bearer_token(cfg: &ServerConfig, req: &Request<Body>) -> HandlerResult<jwt::Claims> {
+fn claims_from_bearer_token(
+    cfg: &ServerConfig,
+    req: &Request<Body>,
+) -> HandlerResult<jwt::AccessClaims> {
     if let Some(jwt) = get_bearer_token(req) {
-        let claims = jwt::decode(cfg, &jwt).map_err(|e| {
+        let claims = jwt::decode_access(cfg, &jwt).map_err(|e| {
             log::error!("failed to validate jwt: {}", e);
             HandlerError::HttpError(StatusCode::FORBIDDEN)
         })?;
@@ -353,6 +453,12 @@ impl From<sqlx::Error> for HandlerError {
 impl From<StatusCode> for HandlerError {
     fn from(code: StatusCode) -> HandlerError {
         HandlerError::HttpError(code)
+    }
+}
+
+impl From<http::Error> for HandlerError {
+    fn from(err: http::Error) -> HandlerError {
+        HandlerError::Anyhow(anyhow::anyhow!("http error: {}", err.to_string()))
     }
 }
 

@@ -16,6 +16,8 @@ export class Service extends ServiceBase {
 
   ping = this.mkPostFn(api.ping);
   login = this.mkPostFn(api.login);
+  refresh = this.mkPostFn(api.refresh);
+  logout = this.mkPostFn(api.logout);
   newMessage = this.mkAuthPostFn(api.newMessage);
   recentMessages = this.mkAuthPostFn(api.recentMessages);
   whoami = this.mkAuthGetFn(api.whoAmI);

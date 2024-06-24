@@ -134,9 +134,11 @@ pub fn test_server_config() -> ServerConfig {
             user: "postgres".to_owned(),
             password: "xyzzy".to_owned(),
         },
-        jwt_secret: "treyweyetry".to_owned(),
         jwt_issuer: "adl-protoapp.link".to_owned(),
-        jwt_expiry_secs: 300,
+        jwt_access_secret: "treyweyetry".to_owned(),
+        jwt_access_expiry_secs: 300,
+        jwt_refresh_secret: "treyweyetryxx".to_owned(),
+        jwt_refresh_expiry_secs: 300,
         http_bind_addr: "0.0.0.0:8181".to_owned(),
     }
 }
@@ -167,7 +169,7 @@ pub async fn create_test_user(
 pub async fn login_user(login_req: &LoginReq) -> String {
     let resp = server_public_request(apis::ui::ApiRequests::def_login(), login_req).await;
     match resp {
-        apis::ui::LoginResp::AccessToken(jwt) => jwt,
+        apis::ui::LoginResp::Tokens(tokens) => tokens.access_jwt,
         apis::ui::LoginResp::InvalidCredentials => panic!("invalid credentials"),
     }
 }

@@ -42,7 +42,8 @@ async fn run() -> anyhow::Result<()> {
 fn inject_secrets(config: &mut ServerConfig) -> anyhow::Result<()> {
     inject_secret(&mut config.db.user)?;
     inject_secret(&mut config.db.password)?;
-    inject_secret(&mut config.jwt_secret)?;
+    inject_secret(&mut config.jwt_access_secret)?;
+    inject_secret(&mut config.jwt_refresh_secret)?;
     Ok(())
 }
 

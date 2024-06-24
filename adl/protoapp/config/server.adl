@@ -3,9 +3,13 @@ module protoapp.config.server {
 struct ServerConfig {
     DbConnectionConfig db;
 
-    String jwt_secret;
     String jwt_issuer = "adl-protoapp.link";
-    Word32 jwt_expiry_secs = 28800;
+
+    String jwt_access_secret;
+    Word32 jwt_access_expiry_secs = 300;
+
+    String jwt_refresh_secret;
+    Word32 jwt_refresh_expiry_secs = 86400;
 
     String http_bind_addr = "0.0.0.0:8080";
 

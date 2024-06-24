@@ -135,20 +135,24 @@ where
     }
 }
 
+#[allow(dead_code)]
 fn union_to_db<U: Serialize>(u: &U) -> String {
     let jv = serde_json::to_value(&u).expect("should be able to serialize an adl enum");
     jv.as_str().expect("adl enum should be a string").to_owned()
 }
 
+#[allow(dead_code)]
 fn union_from_db<U: DeserializeOwned>(dbv: String) -> U {
     let jv = serde_json::Value::String(dbv);
     serde_json::from_value(jv).expect("db enum should be valid")
 }
 
+#[allow(dead_code)]
 fn adl_to_db<U: Serialize>(u: &U) -> serde_json::Value {
     serde_json::to_value(&u).expect("should be able to serialize an adl enum")
 }
 
+#[allow(dead_code)]
 fn adl_from_db<U: DeserializeOwned>(dbv: serde_json::Value) -> U {
     serde_json::from_value(dbv).expect("db enum should be valid")
 }

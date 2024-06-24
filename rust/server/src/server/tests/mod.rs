@@ -1,6 +1,6 @@
 use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::protoapp::apis;
-use crate::adl::gen::protoapp::apis::ui::{LoginReq, Message, Paginated};
+use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginTokens, Message, Paginated, RefreshReq};
 use crate::server::tests::helpers::{
     create_test_user, login_user, server_auth_get, server_auth_request, server_public_request,
     test_server_config, DbTestEnv,
@@ -34,28 +34,67 @@ async fn server_login() {
 
     let u1 = create_test_user_joe(&mut db).await;
 
-    let resp = server_public_request(apis::ui::ApiRequests::def_login(), &u1).await;
-    assert!(is_valid_login(resp));
+    let tokens = {
+        // Check that we can login as joe
+        let resp = server_public_request(apis::ui::ApiRequests::def_login(), &u1).await;
+        assert!(is_valid_login(&resp));
+        get_login_tokens(resp).unwrap()
+    };
 
-    let resp = server_public_request(
-        apis::ui::ApiRequests::def_login(),
-        &apis::ui::LoginReq {
-            email: "joe@test.com".to_owned(),
-            password: "xxxxxx".to_owned(),
-        },
-    )
-    .await;
-    assert!(!is_valid_login(resp));
+    {
+        // Check that we can refresh using the refresh token
+        let resp = server_public_request(
+            apis::ui::ApiRequests::def_refresh(),
+            &RefreshReq {
+                refresh_token: Some(tokens.refresh_jwt),
+            },
+        )
+        .await;
+        assert!(is_valid_refresh(&resp));
+    }
 
-    let resp = server_public_request(
-        apis::ui::ApiRequests::def_login(),
-        &apis::ui::LoginReq {
-            email: "mike@test.com".to_owned(),
-            password: "abcde".to_owned(),
-        },
-    )
-    .await;
-    assert!(!is_valid_login(resp));
+    {
+        // Check that we can't refresh using the access token
+        let resp = server_public_request(
+            apis::ui::ApiRequests::def_refresh(),
+            &RefreshReq {
+                refresh_token: Some(tokens.access_jwt),
+            },
+        )
+        .await;
+        assert!(!is_valid_refresh(&resp));
+    }
+
+    {
+        // Check that we can logout
+        server_public_request(apis::ui::ApiRequests::def_logout(), &Unit {}).await;
+    }
+
+    {
+        // Check that we can't login with the wrong password
+        let resp = server_public_request(
+            apis::ui::ApiRequests::def_login(),
+            &apis::ui::LoginReq {
+                email: "joe@test.com".to_owned(),
+                password: "xxxxxx".to_owned(),
+            },
+        )
+        .await;
+        assert!(!is_valid_login(&resp));
+    }
+
+    {
+        // Check that we can't login with an invalid email
+        let resp = server_public_request(
+            apis::ui::ApiRequests::def_login(),
+            &apis::ui::LoginReq {
+                email: "mike@test.com".to_owned(),
+                password: "abcde".to_owned(),
+            },
+        )
+        .await;
+        assert!(!is_valid_login(&resp));
+    }
 
     oserver.shutdown().await.unwrap();
     db.cleanup().await;
@@ -133,10 +172,24 @@ async fn recent_messages(jwt: &str, offset: u32, limit: u32) -> Paginated<Messag
     .await
 }
 
-fn is_valid_login(resp: apis::ui::LoginResp) -> bool {
+fn is_valid_login(resp: &apis::ui::LoginResp) -> bool {
     match resp {
-        apis::ui::LoginResp::AccessToken(_) => true,
+        apis::ui::LoginResp::Tokens(_) => true,
         apis::ui::LoginResp::InvalidCredentials => false,
+    }
+}
+
+fn is_valid_refresh(resp: &apis::ui::RefreshResp) -> bool {
+    match resp {
+        apis::ui::RefreshResp::AccessToken(_) => true,
+        _ => false,
+    }
+}
+
+fn get_login_tokens(resp: apis::ui::LoginResp) -> Option<LoginTokens> {
+    match resp {
+        apis::ui::LoginResp::Tokens(tokens) => Some(tokens),
+        apis::ui::LoginResp::InvalidCredentials => None,
     }
 }
 
