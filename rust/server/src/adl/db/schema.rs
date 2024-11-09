@@ -1,25 +1,69 @@
 // This file is generated from the schema definition
 
-use sea_query::Iden;
+use super::types::ColumnSpec;
+use sea_query::{Alias, DynIden, IntoIden};
 
-#[derive(Iden, Clone, Copy)]
-pub enum AppUser {
-    #[iden = "app_user"]
-    Table,
-    Id,
-    Fullname,
-    Email,
-    IsAdmin,
-    HashedPassword,
+use crate::adl::gen as adlgen;
+use crate::adl::rt as adlrt;
+use crate::adl::custom::DbKey;
+
+pub struct AppUser {}
+
+impl AppUser {
+    pub fn table_str() -> &'static str {
+        "app_user"
+    }
+
+    pub fn table() -> DynIden {
+        Alias::new(Self::table_str()).into_iden()
+    }
+
+    pub fn id() -> ColumnSpec<DbKey<adlgen::protoapp::db::AppUserTable>> {
+        ColumnSpec::new(Self::table_str(), "id")
+    }
+
+    pub fn fullname() -> ColumnSpec<adlgen::common::strings::StringNE> {
+        ColumnSpec::new(Self::table_str(), "fullname")
+    }
+
+    pub fn email() -> ColumnSpec<adlgen::common::strings::StringNE> {
+        ColumnSpec::new(Self::table_str(), "email")
+    }
+
+    pub fn is_admin() -> ColumnSpec<bool> {
+        ColumnSpec::new(Self::table_str(), "is_admin")
+    }
+
+    pub fn hashed_password() -> ColumnSpec<adlgen::common::strings::StringNE> {
+        ColumnSpec::new(Self::table_str(), "hashed_password")
+    }
 }
 
-#[derive(Iden, Clone, Copy)]
-pub enum Message {
-    #[iden = "message"]
-    Table,
-    Id,
-    PostedAt,
-    PostedBy,
-    Message,
+pub struct Message {}
+
+impl Message {
+    pub fn table_str() -> &'static str {
+        "message"
+    }
+
+    pub fn table() -> DynIden {
+        Alias::new(Self::table_str()).into_iden()
+    }
+
+    pub fn id() -> ColumnSpec<DbKey<adlgen::protoapp::db::MessageTable>> {
+        ColumnSpec::new(Self::table_str(), "id")
+    }
+
+    pub fn posted_at() -> ColumnSpec<adlgen::common::time::Instant> {
+        ColumnSpec::new(Self::table_str(), "posted_at")
+    }
+
+    pub fn posted_by() -> ColumnSpec<adlgen::protoapp::db::AppUserId> {
+        ColumnSpec::new(Self::table_str(), "posted_by")
+    }
+
+    pub fn message() -> ColumnSpec<adlgen::common::strings::StringML> {
+        ColumnSpec::new(Self::table_str(), "message")
+    }
 }
 

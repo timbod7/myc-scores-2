@@ -6,7 +6,10 @@ use sqlx::Row;
 
 use crate::adl::{
     custom::DbKey,
-    db::schema,
+    db::{
+        schema,
+        types::{InsertRow, SelectStatementExt},
+    },
     gen::{
         common::{db::WithId, time::Instant},
         protoapp::{
@@ -16,50 +19,45 @@ use crate::adl::{
     },
 };
 
-use self::conversions::{AdlFieldGet, DbConversions};
-
-mod conversions;
-
 type DbPool = sqlx::PgPool;
 
 pub async fn get_user_with_email(
     pool: &DbPool,
     email: &str,
 ) -> sqlx::Result<Option<WithId<AppUser>>> {
-    get_user(pool, Expr::col(schema::AppUser::Email).eq(email)).await
+    get_user(pool, schema::AppUser::email().eq_value(&email.to_owned())).await
 }
 
 pub async fn get_user_with_id(
     pool: &DbPool,
     user_id: &AppUserId,
 ) -> sqlx::Result<Option<WithId<AppUser>>> {
-    get_user(pool, Expr::col(schema::AppUser::Id).eq(user_id.0.clone())).await
+    get_user(pool, schema::AppUser::id().eq_value(user_id)).await
 }
 
 async fn get_user(
     pool: &DbPool,
     where_expr: sea_query::SimpleExpr,
 ) -> sqlx::Result<Option<WithId<AppUser>>> {
+    type T = schema::AppUser;
     let (sql, values) = Query::select()
-        .from(schema::AppUser::Table)
-        .columns(vec![
-            schema::AppUser::Id,
-            schema::AppUser::Fullname,
-            schema::AppUser::Email,
-            schema::AppUser::IsAdmin,
-            schema::AppUser::HashedPassword,
-        ])
+        .from(T::table())
+        .scolumn(T::id())
+        .scolumn(T::fullname())
+        .scolumn(T::email())
+        .scolumn(T::is_admin())
+        .scolumn(T::hashed_password())
         .and_where(where_expr)
         .build_sqlx(PostgresQueryBuilder);
 
-    let v = sqlx::query_with(&sql, values.clone())
+    let v = sqlx::query_with(&sql, values)
         .map(|r| WithId {
-            id: r.adl_get(0),
+            id: T::id().from_row(&r).0,
             value: AppUser {
-                fullname: r.adl_get(1),
-                email: r.adl_get(2),
-                is_admin: r.adl_get(3),
-                hashed_password: r.adl_get(4),
+                fullname: T::fullname().from_row(&r),
+                email: T::email().from_row(&r),
+                is_admin: T::is_admin().from_row(&r),
+                hashed_password: T::hashed_password().from_row(&r),
             },
         })
         .fetch_optional(pool)
@@ -69,25 +67,23 @@ async fn get_user(
 }
 
 pub async fn create_user(pool: &DbPool, user: &AppUser) -> sqlx::Result<AppUserId> {
+    type T = schema::AppUser;
     let id: AppUserId = DbKey::new("U-");
+
+    let (icolumns, ivalues) = InsertRow::new()
+        .field(T::id(), &id)
+        .field(T::email(), &user.email)
+        .field(T::fullname(), &user.fullname)
+        .field(T::is_admin(), &user.is_admin)
+        .field(T::hashed_password(), &user.hashed_password)
+        .build();
+
     let (sql, values) = Query::insert()
-        .into_table(schema::AppUser::Table)
-        .columns([
-            schema::AppUser::Id,
-            schema::AppUser::Email,
-            schema::AppUser::Fullname,
-            schema::AppUser::IsAdmin,
-            schema::AppUser::HashedPassword,
-        ])
-        .values_panic([
-            id.to_db().into(),
-            user.email.to_db().into(),
-            user.fullname.to_db().into(),
-            user.is_admin.to_db().into(),
-            user.hashed_password.to_db().into(),
-        ])
+        .into_table(T::table())
+        .columns(icolumns)
+        .values_panic(ivalues)
         .build_sqlx(PostgresQueryBuilder);
-    sqlx::query_with(&sql, values.clone()).execute(pool).await?;
+    sqlx::query_with(&sql, values).execute(pool).await?;
     Ok(id)
 }
 
@@ -98,22 +94,22 @@ pub async fn new_message(
 ) -> sqlx::Result<MessageId> {
     let id: MessageId = DbKey::new("M-");
     let posted_at = instant_now();
+
+    type T = schema::Message;
+
+    let (icolumns, ivalues) = InsertRow::new()
+        .field(T::id(), &id)
+        .field(T::posted_at(), &posted_at)
+        .field(T::posted_by(), &user_id)
+        .field(T::message(), &message)
+        .build();
+
     let (sql, values) = Query::insert()
-        .into_table(schema::Message::Table)
-        .columns([
-            schema::Message::Id,
-            schema::Message::PostedAt,
-            schema::Message::PostedBy,
-            schema::Message::Message,
-        ])
-        .values_panic([
-            id.to_db().into(),
-            posted_at.to_db().into(),
-            user_id.to_db().into(),
-            message.to_db().into(),
-        ])
+        .into_table(schema::Message::table())
+        .columns(icolumns)
+        .values_panic(ivalues)
         .build_sqlx(PostgresQueryBuilder);
-    sqlx::query_with(&sql, values.clone()).execute(pool).await?;
+    sqlx::query_with(&sql, values).execute(pool).await?;
     Ok(id)
 }
 
@@ -122,32 +118,26 @@ pub async fn recent_messages(
     offset: u32,
     limit: u32,
 ) -> sqlx::Result<Vec<apis::ui::Message>> {
+    type U = schema::AppUser;
+    type M = schema::Message;
     let (sql, values) = Query::select()
-        .columns([
-            (schema::Message::Table, schema::Message::Id),
-            (schema::Message::Table, schema::Message::PostedAt),
-            (schema::Message::Table, schema::Message::Message),
-        ])
-        .columns([schema::AppUser::Fullname])
-        .from(schema::Message::Table)
-        .inner_join(
-            schema::AppUser::Table,
-            Expr::col((schema::AppUser::Table, schema::AppUser::Id)).eq(Expr::col((
-                schema::Message::Table,
-                schema::Message::PostedBy,
-            ))),
-        )
-        .order_by(schema::Message::PostedAt, Order::Desc)
+        .scolumn(M::id())
+        .scolumn(M::posted_at())
+        .scolumn(M::message())
+        .scolumn(U::fullname())
+        .from(M::table())
+        .inner_join(U::table(), U::id().expr().eq(M::posted_by().expr()))
+        .order_by(schema::Message::posted_at().iden(), Order::Desc)
         .offset(offset as u64)
         .limit(limit as u64)
         .build_sqlx(PostgresQueryBuilder);
 
     let messages = sqlx::query_with(&sql, values.clone())
         .map(|r| apis::ui::Message {
-            id: r.adl_get(0),
-            posted_at: r.adl_get(1),
-            message: r.adl_get(2),
-            user_fullname: r.adl_get(3),
+            id: M::id().from_row(&r),
+            posted_at: M::posted_at().from_row(&r),
+            message: M::message().from_row(&r),
+            user_fullname: U::fullname().from_row(&r),
         })
         .fetch_all(pool)
         .await?;
@@ -155,11 +145,14 @@ pub async fn recent_messages(
 }
 
 pub async fn message_count(pool: &DbPool) -> sqlx::Result<u32> {
+    type M = schema::Message;
+
     let (sql, values) = Query::select()
-        .from(schema::Message::Table)
+        .from(M::table())
         .expr(Func::count(Expr::asterisk()))
         .build_sqlx(PostgresQueryBuilder);
-    let count: i64 = sqlx::query_with(&sql, values.clone())
+
+    let count: i64 = sqlx::query_with(&sql, values)
         .map(|r| r.get(0))
         .fetch_one(pool)
         .await?;
