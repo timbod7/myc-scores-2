@@ -43,7 +43,7 @@ pub struct ApiRequests {
   pub refresh: HttpPost<RefreshReq, RefreshResp>,
 
   /**
-   * clear the `refreshToken` cookie.
+   * Clear the `refreshToken` cookie.
    */
   #[serde(default="ApiRequests::def_logout")]
   pub logout: HttpPost<Unit, Unit>,
