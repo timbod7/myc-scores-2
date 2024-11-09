@@ -11,7 +11,6 @@ use super::jwt::AccessClaims;
 use super::{db, Response};
 use super::{jwt, AppState};
 use crate::adl::custom::DbKey;
-use crate::adl::gen::common::db::WithId;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
 use crate::adl::gen::protoapp::apis::ui::{
@@ -152,11 +151,11 @@ async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
     let user = db::get_user_with_email(&app_state.db_pool, &i.email).await?;
     match user {
         None => Ok(LoginResp::InvalidCredentials),
-        Some(user) => {
-            if verify_password(&i.password, &user.value.hashed_password) {
+        Some((user_id, user)) => {
+            if verify_password(&i.password, &user.hashed_password) {
                 // If found and we have a valid password return an access token
-                let access_jwt = access_jwt_from_user(&app_state.config, &user);
-                let refresh_jwt = jwt::create_refresh(&app_state.config, user.id.clone());
+                let access_jwt = access_jwt_from_user(&app_state.config, &user_id, &user);
+                let refresh_jwt = jwt::create_refresh(&app_state.config, user_id.clone().0);
                 Ok(LoginResp::Tokens(LoginTokens {
                     access_jwt,
                     refresh_jwt,
@@ -168,11 +167,11 @@ async fn login(app_state: &AppState, i: LoginReq) -> HandlerResult<LoginResp> {
     }
 }
 
-fn access_jwt_from_user(cfg: &ServerConfig, user: &WithId<AppUser>) -> String {
-    if user.value.is_admin {
-        jwt::create_admin_access(&cfg, user.id.clone())
+fn access_jwt_from_user(cfg: &ServerConfig, user_id: &AppUserId, user: &AppUser) -> String {
+    if user.is_admin {
+        jwt::create_admin_access(&cfg, user_id.0.clone())
     } else {
-        jwt::create_user_access(&cfg, user.id.clone())
+        jwt::create_user_access(&cfg, user_id.0.clone())
     }
 }
 
@@ -193,10 +192,10 @@ async fn refresh(
             let user_id: AppUserId = DbKey(claims.sub.clone(), PhantomData);
             let user = db::get_user_with_id(&app_state.db_pool, &user_id).await?;
             let user = match user {
-                Some(user) => user,
+                Some((_, user)) => user,
                 None => return Ok(RefreshResp::InvalidRefreshToken),
             };
-            let access_jwt = access_jwt_from_user(&app_state.config, &user);
+            let access_jwt = access_jwt_from_user(&app_state.config, &user_id, &user);
             Ok(RefreshResp::AccessToken(access_jwt))
         }
     }
@@ -242,11 +241,11 @@ async fn who_am_i(app_state: &AppState, claims: &AccessClaims) -> HandlerResult<
     let user_id = user_from_claims(claims)?;
     let user = db::get_user_with_id(&app_state.db_pool, &user_id).await?;
     match user {
-        Some(user) => Ok(UserProfile {
-            id: DbKey::from_string(user.id),
-            fullname: user.value.fullname,
-            email: user.value.email,
-            is_admin: user.value.is_admin,
+        Some((user_id, user)) => Ok(UserProfile {
+            id: user_id.clone(),
+            fullname: user.fullname,
+            email: user.email,
+            is_admin: user.is_admin,
         }),
         None => Err(forbidden("invalid user")),
     }

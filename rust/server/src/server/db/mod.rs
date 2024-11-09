@@ -11,7 +11,7 @@ use crate::adl::{
         types::{InsertRow, SelectStatementExt},
     },
     gen::{
-        common::{db::WithId, time::Instant},
+        common::time::Instant,
         protoapp::{
             apis,
             db::{AppUser, AppUserId, MessageId},
@@ -24,21 +24,21 @@ type DbPool = sqlx::PgPool;
 pub async fn get_user_with_email(
     pool: &DbPool,
     email: &str,
-) -> sqlx::Result<Option<WithId<AppUser>>> {
+) -> sqlx::Result<Option<(AppUserId, AppUser)>> {
     get_user(pool, schema::AppUser::email().eq_value(&email.to_owned())).await
 }
 
 pub async fn get_user_with_id(
     pool: &DbPool,
     user_id: &AppUserId,
-) -> sqlx::Result<Option<WithId<AppUser>>> {
+) -> sqlx::Result<Option<(AppUserId, AppUser)>> {
     get_user(pool, schema::AppUser::id().eq_value(user_id)).await
 }
 
 async fn get_user(
     pool: &DbPool,
     where_expr: sea_query::SimpleExpr,
-) -> sqlx::Result<Option<WithId<AppUser>>> {
+) -> sqlx::Result<Option<(AppUserId, AppUser)>> {
     type T = schema::AppUser;
     let (sql, values) = Query::select()
         .from(T::table())
@@ -51,14 +51,16 @@ async fn get_user(
         .build_sqlx(PostgresQueryBuilder);
 
     let v = sqlx::query_with(&sql, values)
-        .map(|r| WithId {
-            id: T::id().from_row(&r).0,
-            value: AppUser {
-                fullname: T::fullname().from_row(&r),
-                email: T::email().from_row(&r),
-                is_admin: T::is_admin().from_row(&r),
-                hashed_password: T::hashed_password().from_row(&r),
-            },
+        .map(|r| {
+            (
+                T::id().from_row(&r),
+                AppUser {
+                    fullname: T::fullname().from_row(&r),
+                    email: T::email().from_row(&r),
+                    is_admin: T::is_admin().from_row(&r),
+                    hashed_password: T::hashed_password().from_row(&r),
+                },
+            )
         })
         .fetch_optional(pool)
         .await?;
