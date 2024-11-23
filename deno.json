@@ -5,9 +5,12 @@
       "build-server-image": "cd rust/server && docker build --tag protoapp-server:latest .",
       "build-ui-image": "cd ts/ui && docker build --file Dockerfile --tag protoapp-ui:latest .."
     },
-    "imports" : {
-      "adllang_localsetup/": "https://deno.land/x/adllang_localsetup@v0.11/",
-      "adllang_tsdeno/" : "https://deno.land/x/adllang_tsdeno@v0.7/",
-      "path/" : "https://deno.land/std@0.105.0/path/"
+    "imports": {
+      "@adllang/local-setup": "jsr:@adllang/local-setup@^0.16.0",
+      "@adllang/adl-runtime": "jsr:@adllang/adl-runtime@^0.1.0",
+      "@adllang/adlc-tools": "jsr:@adllang/adlc-tools@^0.1.4",
+      "@mesqueeb/case-anything": "jsr:@mesqueeb/case-anything@^3.1.0",
+      "@std/path": "jsr:@std/path@^1.0.8",
+      "mustache_ts": "https://deno.land/x/mustache_ts@v0.4.1.1/mustache.ts"
     }
 }

@@ -1,10 +1,9 @@
-import { changeCase, mustache } from "adllang_tsdeno/deps.ts";
+import * as adl from "@adllang/adl-runtime";
+import * as adlast from "@adllang/adlc-tools/adlgen/sys/adlast";
 
-import * as adlast from "adllang_tsdeno/adl-gen/sys/adlast.ts";
-import * as adl from "adllang_tsdeno/adl-gen/runtime/adl.ts";
-import { JsonObject, JsonValue, createJsonBinding } from "adllang_tsdeno/adl-gen/runtime/json.ts";
-import { isEnum, typeExprToStringUnscoped } from "adllang_tsdeno/adl-gen/runtime/utils.ts";
-import { AdlSourceParams } from "adllang_tsdeno/utils/sources.ts";
+import { JsonObject, Json, createJsonBinding, scopedName } from "@adllang/adl-runtime";
+import { AdlSourceParams } from "@adllang/adlc-tools/utils/sources";
+
 import {
   decodeTypeExpr,
   expandNewType,
@@ -14,11 +13,10 @@ import {
   getAnnotation,
   LoadedAdl,
   parseAdlModules,
-  scopedName,
-  scopedNamesEqual,
-} from "adllang_tsdeno/utils/adl.ts";
+} from "@adllang/adlc-tools/utils/adl";
 
-const snakeCase = changeCase.snakeCase;
+import { snakeCase } from "@mesqueeb/case-anything";
+import mustache from "mustache_ts";
 
 export interface GenSqlParams  extends AdlSourceParams {
   extensions?: string[];
@@ -47,7 +45,7 @@ export interface DbTable {
   scopedName: adlast.ScopedName;
   scopedDecl: adlast.ScopedDecl;
   fields: adlast.Field[];
-  ann: JsonValue;
+  ann: Json;
   name: string;
   primaryKey: string[],
 }
@@ -55,7 +53,7 @@ export interface DbTable {
 export interface DbView {
   scopedDecl: adlast.ScopedDecl;
   fields: adlast.Field[];
-  ann: JsonValue;
+  ann: Json;
   name: string;
 }
 
@@ -116,7 +114,7 @@ async function writeOtherFiles(
   }
   if (params.templates) {
     for (const t of params.templates) {
-      await generateTemplate(t, dbResources);
+      generateTemplate(t, dbResources);
     }
   }
 }
@@ -166,7 +164,7 @@ async function generateCreateSqlSchema(
         code: `${columnName} ${columnType.sqltype}${
           columnType.notNullable ? " not null" : ""
         }`,
-        comment: typeExprToStringUnscoped(f.typeExpr),
+        comment: adl.typeExprToStringUnscoped(f.typeExpr),
       });
       if (columnType.fkey) {
         constraints.push(
@@ -367,7 +365,7 @@ function getPrimaryKey(fields: DbField[]): string[] {
 
 
 function assumeField<T>(
-  obj: JsonValue | undefined,
+  obj: Json | undefined,
   key: string,
 ): T | undefined {
   if (obj == undefined) {
@@ -429,7 +427,7 @@ function getColumnType(
   const dtype = decodeTypeExpr(typeExpr);
   if (
     dtype.kind == "Nullable" ||
-    dtype.kind == "Reference" && scopedNamesEqual(dtype.refScopedName, MAYBE)
+    dtype.kind == "Reference" && adl.scopedNamesEqual(dtype.refScopedName, MAYBE)
   ) {
     return {
       sqltype: annctype ||
@@ -463,7 +461,7 @@ function getColumnType1(
       }
 
       if (
-        sdecl.decl.type_.kind == "union_" && isEnum(sdecl.decl.type_.value)
+        sdecl.decl.type_.kind == "union_" && adl.isEnum(sdecl.decl.type_.value)
       ) {
         return dbProfile.enumColumnType;
       }
@@ -492,11 +490,11 @@ function getForeignKeyRef(
   });
   const dtype = decodeTypeExpr(typeExpr);
   if (
-    dtype.kind == "Reference" && scopedNamesEqual(dtype.refScopedName, DB_KEY)
+    dtype.kind == "Reference" && adl.scopedNamesEqual(dtype.refScopedName, DB_KEY)
   ) {
     const param0 = dtype.parameters[0];
     if (param0.kind == "Reference") {
-      const table = dbTables.find( t =>scopedNamesEqual(param0.refScopedName, t.scopedName));
+      const table = dbTables.find( t =>adl.scopedNamesEqual(param0.refScopedName, t.scopedName));
       if (!table) {
         throw new Error(`No table declaration for ${param0.refScopedName.moduleName}.${param0.refScopedName.name}`);
       }

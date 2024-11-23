@@ -1,6 +1,5 @@
-import { changeCase } from "adllang_tsdeno/deps.ts";
-import { AdlSourceParams } from "adllang_tsdeno/utils/sources.ts";
-import { FileWriter, loadDbResources } from "./gen-sqlschema.ts";
+import { isEnum }  from "@adllang/adl-runtime";
+import { AdlSourceParams } from "@adllang/adlc-tools/utils/sources";
 import {
   decodeTypeExpr,
   DecodedTypeExpr,
@@ -8,11 +7,15 @@ import {
   getAnnotation,
   hasAnnotation,
   scopedName,
-} from "adllang_tsdeno/utils/adl.ts";
-import * as adlast from "adllang_tsdeno/adl-gen/sys/adlast.ts"
+} from "@adllang/adlc-tools/utils/adl";
+import * as adlast from "@adllang/adlc-tools/adlgen/sys/adlast";
+import { pascalCase, snakeCase } from "@mesqueeb/case-anything";
 
 
-export interface GenRustSeaQuerySchemaParams  extends AdlSourceParams {
+import { FileWriter, loadDbResources } from "./gen-sqlschema.ts";
+
+
+export interface GenRustSeaQuerySchemaParams extends AdlSourceParams {
   outputFile: string
 }
 
@@ -128,8 +131,7 @@ function genTypeParams(loadedAdl: LoadedAdl, dtes: DecodedTypeExpr[]): string {
   return `<${params.join(', ')}>`;
 }
 
-const titleCase = changeCase.pascalCase;
-const snakeCase = changeCase.snakeCase;
+const titleCase = pascalCase;
 
 const SN_RUST_CUSTOM_TYPE = scopedName("adlc.config.rust", "RustCustomType");
 const SN_DB_PRIMARY_KEY = scopedName("common.db", "DbPrimaryKey");

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Configures tooling, downloading as required
 
-denoversion=1.41.2
+denoversion=2.0.6
 
 if [ -n "$ZSH_VERSION" ]; then
   # zsh is the default shell on osx

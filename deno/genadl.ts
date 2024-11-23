@@ -1,8 +1,6 @@
-import {
-  genRust,
-  genTypescript,
-} from "adllang_tsdeno/mod.ts";
-import * as path from "path/mod.ts";
+import * as path from "@std/path";
+import { genRust, genTypescript } from "@adllang/adlc-tools";
+
 import { genCreateSqlSchema } from "./gen-sqlschema.ts";
 import { genRustSeaQuerySchema } from "./gen-rs-seaquery-schema.ts";
 

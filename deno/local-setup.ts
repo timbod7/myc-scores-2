@@ -3,9 +3,9 @@ import {
   forPlatform,
   getHostPlatform,
   installTo
-} from "adllang_localsetup/mod.ts";
+} from "@adllang/local-setup";
 
-const ADL = packages.adl("1.2");
+const ADL = packages.adl("1.2.1");
 const NODE = packages.nodejs("20.7.0");
 const PNPM = packages.pnpm("8.3.1");
 
