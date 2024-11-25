@@ -1,10 +1,10 @@
 // @generated from adl module protoapp.db
 
-use crate::adl::custom::DbKey;
+use crate::adl::custom::common::db::DbKey;
+use crate::adl::custom::common::time::Instant;
 use crate::adl::gen::common::db::WithId;
 use crate::adl::gen::common::strings::StringML;
 use crate::adl::gen::common::strings::StringNE;
-use crate::adl::gen::common::time::Instant;
 use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
@@ -16,7 +16,6 @@ pub struct AppUser {
 
   pub email: StringNE,
 
-  #[serde(rename="isAdmin")]
   pub is_admin: bool,
 
   #[serde(default="AppUser::def_hashed_password")]

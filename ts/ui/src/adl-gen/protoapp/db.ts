@@ -8,7 +8,7 @@ import * as common_time from './../common/time';
 export interface AppUser {
   fullname: common_strings.StringNE;
   email: common_strings.StringNE;
-  isAdmin: boolean;
+  is_admin: boolean;
   hashed_password: common_strings.StringNE;
 }
 
@@ -16,20 +16,20 @@ export function makeAppUser(
   input: {
     fullname: common_strings.StringNE,
     email: common_strings.StringNE,
-    isAdmin: boolean,
+    is_admin: boolean,
     hashed_password?: common_strings.StringNE,
   }
 ): AppUser {
   return {
     fullname: input.fullname,
     email: input.email,
-    isAdmin: input.isAdmin,
+    is_admin: input.is_admin,
     hashed_password: input.hashed_password === undefined ? "" : input.hashed_password,
   };
 }
 
 const AppUser_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"AppUser","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"isAdmin","serializedName":"isAdmin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"just","value":""},"name":"hashed_password","serializedName":"hashed_password","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
+  {"decl":{"annotations":[],"name":"AppUser","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"is_admin","serializedName":"is_admin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"just","value":""},"name":"hashed_password","serializedName":"hashed_password","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.db"};
 
 export const snAppUser: ADL.ScopedName = {moduleName:"protoapp.db", name:"AppUser"};
 

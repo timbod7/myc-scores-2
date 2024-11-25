@@ -10,7 +10,7 @@ use std::marker::PhantomData;
 use super::jwt::AccessClaims;
 use super::{db, Response};
 use super::{jwt, AppState};
-use crate::adl::custom::DbKey;
+use crate::adl::custom::common::db::DbKey;
 use crate::adl::gen::common::http::{HttpGet, HttpPost, HttpSecurity, Unit};
 use crate::adl::gen::protoapp::apis;
 use crate::adl::gen::protoapp::apis::ui::{

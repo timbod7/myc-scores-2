@@ -37,11 +37,14 @@ export async function genRustSeaQuerySchema(
   writer.write('use super::types::ColumnSpec;\n');
   writer.write('use sea_query::{Alias, DynIden, IntoIden};\n');
   writer.write('\n');
+  writer.write('use crate::adl::custom::common::db::DbKey;\n');
   writer.write('use crate::adl::gen as adlgen;\n');
   writer.write('use crate::adl::rt as adlrt;\n');
-  writer.write('use crate::adl::custom::DbKey;\n');
+  writer.write('use crate::derive_db_conversions_adl;\n');
+  writer.write('use crate::derive_db_conversions_adl_enum;\n');
   writer.write('\n');
 
+  const declsToDerive: { [key: string]: DeclToDerive } = {};
   for (const dbt of dbResources.tables) {
     writer.write(`pub struct ${titleCase(dbt.name)} {}\n`);
     writer.write('\n');
@@ -54,23 +57,67 @@ export async function genRustSeaQuerySchema(
     writer.write(`        Alias::new(Self::table_str()).into_iden()\n`);
     writer.write(`    }\n`);
     for (const f of dbt.fields) {
-      let typeStr = genTypeExpr(loadedAdl, decodeTypeExpr(f.typeExpr));
+      const dte = decodeTypeExpr(f.typeExpr);
+      const dtd = declToDerive(loadedAdl, dte);
+      if (dtd) {
+        declsToDerive[rustScopedName(dtd.sn)] = dtd;
+      }
+
+      let typeStr = genTypeExpr(loadedAdl, dte);
+
       if (hasAnnotation(f.annotations, SN_DB_PRIMARY_KEY)) {
         typeStr = `DbKey<${rustScopedName(dbt.scopedName)}>`;
       }
       writer.write('\n');
-      writer.write(`    pub fn ${snakeCase(f.name)}() -> ColumnSpec<${typeStr}> {\n`);
-      writer.write(`        ColumnSpec::new(Self::table_str(), "${snakeCase(f.name)}")\n`);
+      writer.write(`    pub fn ${f.name}() -> ColumnSpec<${typeStr}> {\n`);
+      writer.write(`        ColumnSpec::new(Self::table_str(), "${f.name}")\n`);
       writer.write(`    }\n`);
     }
     writer.write('}\n');
     writer.write('\n');
   }
 
+  const dtdKeys = Object.keys(declsToDerive);
+  dtdKeys.sort();
+  if (dtdKeys.length > 0) {
+    writer.write('\n');
+    for (const key of dtdKeys) {
+      const dtd = declsToDerive[key];
+      if (dtd.isEnum) {
+        writer.write(`derive_db_conversions_adl_enum!(${rustScopedName(dtd.sn)});\n`);
+      } else {
+        writer.write(`derive_db_conversions_adl!(${rustScopedName(dtd.sn)});\n`);
+      }
+    }
+  }
+
   writer.close();
 }
 
-function genTypeExpr(loadedAdl:LoadedAdl, dte: DecodedTypeExpr): string {
+interface DeclToDerive {
+  sn: adlast.ScopedName,
+  isEnum: boolean,
+}
+
+function declToDerive(loadedAdl: LoadedAdl, dte: DecodedTypeExpr): DeclToDerive | undefined {
+  if (dte.kind === 'Reference') {
+    const sn = dte.refScopedName;
+    const decl = loadedAdl.allAdlDecls[sn.moduleName + '.' + sn.name].decl;
+    if (decl.type_.kind === 'type_' || decl.type_.kind === 'newtype_') {
+      return declToDerive(loadedAdl, decodeTypeExpr(decl.type_.value.typeExpr));
+    }
+    const customAnnotation = getRustCustomTypeAnnotation(loadedAdl, sn);
+    if (!customAnnotation) {
+      if (decl.type_.kind === 'union_') {
+        return {sn, isEnum: isEnum(decl.type_.value)}
+      }
+      return {sn, isEnum: false}
+    }
+  }
+  return undefined;
+}
+
+function genTypeExpr(loadedAdl: LoadedAdl, dte: DecodedTypeExpr): string {
   const custom = genTypeExprForCustomType(loadedAdl, dte);
   if (custom) {
     return custom;
@@ -104,22 +151,17 @@ function genTypeExprForCustomType(loadedAdl: LoadedAdl, dte: DecodedTypeExpr): s
   if (dte.kind !== 'Reference') {
     return;
   }
-  const module = loadedAdl.modules[dte.refScopedName.moduleName];
-  if (!module) {
-    return
-  }
-  const decl = module.decls[dte.refScopedName.name];
-  const customAnnotation = getAnnotation(decl.annotations, SN_RUST_CUSTOM_TYPE);
-  if (!customAnnotation) {
+  const customAnnotation = getRustCustomTypeAnnotation(loadedAdl, dte.refScopedName);
+  if (customAnnotation === undefined) {
     return;
   }
-  const ref = (customAnnotation as {rustname: string}).rustname.replace("{{STDLIBMODULE}}", "adlrt");
+  const ref = customAnnotation.rustname.replace("{{STDLIBMODULE}}", "adlrt");
   return ref + genTypeParams(loadedAdl, dte.parameters);
 }
 
 function rustScopedName(scopedName: adlast.ScopedName): string {
   const scope = scopedName.moduleName.replace('.', '::');
-  const name= scopedName.name;
+  const name = scopedName.name;
   return `adlgen::${scope}::${name}`;
 }
 
@@ -127,8 +169,18 @@ function genTypeParams(loadedAdl: LoadedAdl, dtes: DecodedTypeExpr[]): string {
   if (dtes.length === 0) {
     return '';
   }
-  const params = dtes.map(te => genTypeExpr(loadedAdl, te)); 
+  const params = dtes.map(te => genTypeExpr(loadedAdl, te));
   return `<${params.join(', ')}>`;
+}
+
+function getRustCustomTypeAnnotation(loadedAdl: LoadedAdl, sn: adlast.ScopedName): {rustname: string} | undefined {
+  const module = loadedAdl.modules[sn.moduleName];
+  if (!module) {
+    return
+  }
+  const decl = module.decls[sn.name];
+  const customAnnotation = getAnnotation(decl.annotations, SN_RUST_CUSTOM_TYPE);
+  return customAnnotation as { rustname: string };
 }
 
 const titleCase = pascalCase;

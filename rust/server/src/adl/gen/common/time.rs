@@ -7,34 +7,6 @@ use serde::Serialize;
 use serde::Serializer;
 
 /**
- * A instant in time, represented as milliseconds from
- * the epoch of "1970-01-01T00:00:00Z
- */
-#[derive(Clone,Eq,Hash,PartialEq)]
-pub struct Instant(pub i64);
-
-impl Serialize for Instant
-{
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-      S: Serializer,
-  {
-      self.0.serialize(serializer)
-  }
-}
-
-impl<'de> Deserialize<'de> for Instant
-{
-  fn deserialize<D>(deserializer: D) -> Result<Instant, D::Error>
-  where
-      D: Deserializer<'de>,
-  {
-      let v = i64::deserialize(deserializer)?;
-      Ok(Instant(v))
-  }
-}
-
-/**
  * A date in ISO8601 format
  */
 #[derive(Clone,Eq,Hash,PartialEq)]

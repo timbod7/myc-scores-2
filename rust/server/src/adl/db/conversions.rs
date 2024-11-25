@@ -1,44 +1,27 @@
-use serde::{de::DeserializeOwned, Serialize};
-use sqlx::{postgres::PgRow, types::time::OffsetDateTime, ColumnIndex, Postgres, Row};
-use std::marker::PhantomData;
+use sqlx::types::time::OffsetDateTime;
+use std::{
+    marker::PhantomData,
+    time::{Duration, UNIX_EPOCH},
+};
 
-use crate::{adl::custom::DbKey, adl::gen::common::time::Instant};
+use crate::adl::{
+    custom::common::db::DbKey, custom::common::time::Instant, rt::custom::sys::types::maybe::Maybe,
+};
 
-/// Helper trait to extract values from a db row and decode them
-pub trait AdlFieldGet<'r, I, T> {
-    fn adl_get(&'r self, index: I) -> T;
-}
-
-impl<'r, I, T> AdlFieldGet<'r, I, T> for PgRow
-where
-    I: ColumnIndex<PgRow>,
-    T: DbConversions,
-    T::DbType: sqlx::Type<Postgres> + sqlx::Decode<'r, Postgres>,
-{
-    fn adl_get(&'r self, index: I) -> T {
-        let dbv: T::DbType = self.get(index);
-        T::from_db_impl(dbv)
-    }
-}
-
-pub trait DbConversions {
-    type DbType;
-
-    fn to_db(&self) -> Self::DbType;
-    fn from_db_impl(dbv: Self::DbType) -> Self;
-}
+use super::types::DbConversions;
 
 impl DbConversions for Instant {
     type DbType = OffsetDateTime;
 
     fn to_db(&self) -> OffsetDateTime {
-        OffsetDateTime::from_unix_timestamp_nanos(self.0 as i128 * 1_000_000)
+        let nanos = self.0.duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        OffsetDateTime::from_unix_timestamp_nanos(nanos as i128)
             .expect("instant should be in range")
     }
 
-    fn from_db_impl(dbv: OffsetDateTime) -> Self {
-        let timestamp_millis = dbv.unix_timestamp_nanos() / 1_000_000;
-        Instant(timestamp_millis as i64)
+    fn from_db(dbv: OffsetDateTime) -> Self {
+        let t = UNIX_EPOCH + Duration::from_nanos(dbv.unix_timestamp_nanos() as u64);
+        Instant(t)
     }
 }
 
@@ -49,7 +32,7 @@ impl DbConversions for String {
         self.clone()
     }
 
-    fn from_db_impl(dbv: String) -> Self {
+    fn from_db(dbv: String) -> Self {
         dbv
     }
 }
@@ -61,7 +44,7 @@ impl DbConversions for bool {
         self.clone()
     }
 
-    fn from_db_impl(dbv: bool) -> Self {
+    fn from_db(dbv: bool) -> Self {
         dbv
     }
 }
@@ -73,7 +56,7 @@ impl DbConversions for serde_json::Value {
         self.clone()
     }
 
-    fn from_db_impl(dbv: Self::DbType) -> Self {
+    fn from_db(dbv: Self::DbType) -> Self {
         dbv
     }
 }
@@ -85,7 +68,7 @@ impl DbConversions for u32 {
         *self as Self::DbType
     }
 
-    fn from_db_impl(dbv: Self::DbType) -> Self {
+    fn from_db(dbv: Self::DbType) -> Self {
         dbv as Self
     }
 }
@@ -97,7 +80,7 @@ impl DbConversions for u64 {
         *self as Self::DbType
     }
 
-    fn from_db_impl(dbv: Self::DbType) -> Self {
+    fn from_db(dbv: Self::DbType) -> Self {
         dbv as Self
     }
 }
@@ -109,7 +92,7 @@ impl<T> DbConversions for DbKey<T> {
         self.0.clone()
     }
 
-    fn from_db_impl(dbv: String) -> Self {
+    fn from_db(dbv: String) -> Self {
         DbKey(dbv, PhantomData)
     }
 }
@@ -127,32 +110,64 @@ where
         }
     }
 
-    fn from_db_impl(dbv: Option<T::DbType>) -> Self {
+    fn from_db(dbv: Option<T::DbType>) -> Self {
         match dbv {
             None => None,
-            Some(dbv) => Some(T::from_db_impl(dbv)),
+            Some(dbv) => Some(T::from_db(dbv)),
         }
     }
 }
 
-#[allow(dead_code)]
-fn union_to_db<U: Serialize>(u: &U) -> String {
-    let jv = serde_json::to_value(&u).expect("should be able to serialize an adl enum");
-    jv.as_str().expect("adl enum should be a string").to_owned()
+impl<T> DbConversions for Maybe<T>
+where
+    T: DbConversions,
+{
+    type DbType = Option<T::DbType>;
+
+    fn to_db(&self) -> Option<T::DbType> {
+        match self {
+            Maybe(None) => None,
+            Maybe(Some(v)) => Some(v.to_db()),
+        }
+    }
+
+    fn from_db(dbv: Option<T::DbType>) -> Self {
+        match dbv {
+            None => Maybe(None),
+            Some(dbv) => Maybe(Some(T::from_db(dbv))),
+        }
+    }
 }
 
-#[allow(dead_code)]
-fn union_from_db<U: DeserializeOwned>(dbv: String) -> U {
-    let jv = serde_json::Value::String(dbv);
-    serde_json::from_value(jv).expect("db enum should be valid")
+#[macro_export]
+macro_rules! derive_db_conversions_adl {
+    ($name:ty) => {
+        impl crate::adl::db::types::DbConversions for $name {
+            type DbType = serde_json::Value;
+            fn to_db(&self) -> Self::DbType {
+                serde_json::to_value(self).expect("should be able to serialize an adl value")
+            }
+            fn from_db(dbv: Self::DbType) -> Self {
+                serde_json::from_value(dbv).expect("db adl value should be valid")
+            }
+        }
+    };
 }
 
-#[allow(dead_code)]
-fn adl_to_db<U: Serialize>(u: &U) -> serde_json::Value {
-    serde_json::to_value(&u).expect("should be able to serialize an adl enum")
-}
-
-#[allow(dead_code)]
-fn adl_from_db<U: DeserializeOwned>(dbv: serde_json::Value) -> U {
-    serde_json::from_value(dbv).expect("db enum should be valid")
+#[macro_export]
+macro_rules! derive_db_conversions_adl_enum {
+    ($name:ty) => {
+        impl crate::adl::db::types::DbConversions for $name {
+            type DbType = String;
+            fn to_db(&self) -> Self::DbType {
+                let jv =
+                    serde_json::to_value(self).expect("should be able to serialize an adl enum");
+                jv.as_str().expect("adl enum should be a string").to_owned()
+            }
+            fn from_db(dbv: Self::DbType) -> Self {
+                let jv = serde_json::Value::String(dbv);
+                serde_json::from_value(jv).expect("db enum should be valid")
+            }
+        }
+    };
 }

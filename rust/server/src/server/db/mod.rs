@@ -5,17 +5,14 @@ use sea_query_binder::SqlxBinder;
 use sqlx::Row;
 
 use crate::adl::{
-    custom::DbKey,
+    custom::common::{db::DbKey, time::Instant},
     db::{
         schema,
         types::{InsertRow, SelectStatementExt},
     },
-    gen::{
-        common::time::Instant,
-        protoapp::{
-            apis,
-            db::{AppUser, AppUserId, MessageId},
-        },
+    gen::protoapp::{
+        apis,
+        db::{AppUser, AppUserId, MessageId},
     },
 };
 
@@ -162,9 +159,5 @@ pub async fn message_count(pool: &DbPool) -> sqlx::Result<u32> {
 }
 
 fn instant_now() -> Instant {
-    let millis = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .expect("Time should advance")
-        .as_millis();
-    Instant(millis as i64)
+    Instant(SystemTime::now())
 }

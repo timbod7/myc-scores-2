@@ -10,7 +10,7 @@ import common.strings.StringML;
 struct AppUser {
   StringNE fullname;
   StringNE email;
-  Bool isAdmin;
+  Bool is_admin;
   StringNE hashed_password = "";
 };
 

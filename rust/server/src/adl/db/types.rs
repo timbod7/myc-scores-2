@@ -4,7 +4,12 @@ use sea_query::{Alias, ColumnRef, DynIden, Expr, IntoColumnRef, IntoIden, Simple
 use sqlx::postgres::PgRow;
 use sqlx::Row;
 
-use super::conversions::DbConversions;
+pub trait DbConversions {
+    type DbType;
+
+    fn to_db(&self) -> Self::DbType;
+    fn from_db(dbv: Self::DbType) -> Self;
+}
 
 pub struct ColumnSpec<T> {
     pub table: &'static str,
@@ -51,7 +56,7 @@ where
     }
 
     pub fn from_db<'r>(&self, dbv: D) -> T {
-        T::from_db_impl(dbv)
+        T::from_db(dbv)
     }
 
     pub fn to_db<'r>(&self, v: &T) -> D {
@@ -63,7 +68,7 @@ where
         D: sqlx::Decode<'r, sqlx::Postgres>,
     {
         let alias = self.alias();
-        T::from_db_impl(row.get(alias.as_str()))
+        T::from_db(row.get(alias.as_str()))
     }
 
     // Useful for getting column values that are optional as the
@@ -74,7 +79,7 @@ where
     {
         let alias = self.alias();
         let odbv: Option<D> = row.get(alias.as_str());
-        odbv.map(|dbv| T::from_db_impl(dbv))
+        odbv.map(|dbv| T::from_db(dbv))
     }
 
     pub fn alias(&self) -> String {

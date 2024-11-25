@@ -1,5 +1,6 @@
 // @generated from adl module protoapp.apis.ui
 
+use crate::adl::custom::common::time::Instant;
 use crate::adl::gen::common::http::HttpGet;
 use crate::adl::gen::common::http::HttpPost;
 use crate::adl::gen::common::http::HttpSecurity;
@@ -7,7 +8,6 @@ use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::common::strings::Password;
 use crate::adl::gen::common::strings::StringML;
 use crate::adl::gen::common::strings::StringNE;
-use crate::adl::gen::common::time::Instant;
 use crate::adl::gen::protoapp::db::AppUserId;
 use crate::adl::gen::protoapp::db::MessageId;
 use serde::Deserialize;
