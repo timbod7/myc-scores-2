@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@adllang/adl-runtime": "npm:@jsr/adllang__adl-runtime",
+    "@adllang/adl-runtime": "npm:@jsr/adllang__adl-runtime@0.1.2",
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
@@ -20,7 +20,8 @@
     "jwt-decode": "^4.0.0",
     "raviger": "^4.1.2",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-json-view-lite": "^2.0.1"
   },
   "devDependencies": {
     "@types/react": "latest",

@@ -37,7 +37,7 @@ export class ServiceBase {
   }
 
 
-  private async requestAdl<O>(
+  async requestAdl<O>(
     method: "get" | "post",
     path: string,
     jsonArgs: {} | null,
@@ -62,8 +62,8 @@ export class ServiceBase {
 
     // Check for errors
     if (!resp.ok) {
-      throw new Error(
-        `Encountered server error attempting ${httpReq.method} request to ${httpReq.url} failed: ${resp.status} ${resp.statusText}`
+      throw new AdlRequestError(
+        httpReq, resp.status, await resp.text()
       );
     }
 
@@ -72,6 +72,12 @@ export class ServiceBase {
     return respJB.fromJsonE(respJson);
   }
 }
+
+export class AdlRequestError extends Error {
+  constructor(readonly httpReq: HttpRequest, readonly respStatus: number, readonly respBody: string) {
+    super(`Encountered server error attempting ${httpReq.method} request to ${httpReq.url} failed: ${respStatus}`)
+  }
+} 
 
 export type ReqFn<I, O> = (req: I) => Promise<O>;
 

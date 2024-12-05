@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@adllang/adl-runtime@npm:@jsr/adllang__adl-runtime":
-  version "0.1.1"
-  resolved "https://npm.jsr.io/~/11/@jsr/adllang__adl-runtime/0.1.1.tgz#C813404C980DA59903EE0494AB4B33C31D9E67FC"
-  integrity sha512-hLe09OlYzYPRpnb7DARWqmWVw9rCiLkqsZAOtQAc7wRglAujX+s3BTRUqMcuamZW8ckBvSI6UjVm/yq57123aw==
+"@adllang/adl-runtime@npm:@jsr/adllang__adl-runtime@0.1.2":
+  version "0.1.2"
+  resolved "https://npm.jsr.io/~/11/@jsr/adllang__adl-runtime/0.1.2.tgz#B2DE5120DA27C9E000326997D527403944250BB1"
+  integrity sha512-PhDngUalx4M3jlz2BaX4stJfoDYuI2uLj2fi/zk5tsFGhZyF03e9FqbftOhB284mTAVMfI07tsdnHgun/Q4s/A==
   dependencies:
     "@jsr/adllang__jsonbinding" "^0.2.3"
     "@jsr/std__encoding" "^1.0.5"
@@ -1153,6 +1153,11 @@ react-is@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
+
+react-json-view-lite@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-json-view-lite/-/react-json-view-lite-2.0.1.tgz#aa4473103301cb6dc49c1f5d9e29684be460b838"
+  integrity sha512-yElNMSzL7UJ9rMDQIbTiBemXbvfAoqpxM/0IQd3nr52CLLBC0HxOSKcta/bayct2QCq7ZVzLzI8CGfuf387hHw==
 
 react-refresh@^0.14.0:
   version "0.14.0"
