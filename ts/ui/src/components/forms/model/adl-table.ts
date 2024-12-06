@@ -2,8 +2,8 @@ import { FieldFns } from "./fields/type";
 
 import { getFormLabelFromAnnotation } from "./adl-annotations";
 import { enumField, maybeField, nullableField, adlPrimitiveFieldFns } from "./fields/adl";
-import { ATypeExpr, DeclResolver, ScopedDecl } from "@/adl-gen/runtime/adl";
-import { isEnum } from "@/adl-gen/runtime/utils";
+import { ATypeExpr, DeclResolver, ScopedDecl } from "@adllang/adl-runtime";
+import { isEnum } from "@adllang/adl-runtime";
 import * as adlast from "@/adl-gen/sys/adlast";
 import * as adltree from "./adl-tree";
 import { CustomContext, fieldLabel } from "./veditor/adlfactory";

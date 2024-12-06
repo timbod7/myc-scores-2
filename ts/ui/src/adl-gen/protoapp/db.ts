@@ -1,6 +1,6 @@
 /* @generated from adl module protoapp.db */
 
-import * as ADL from './../runtime/adl';
+import * as ADL from '@adllang/adl-runtime';
 import * as common_db from './../common/db';
 import * as common_strings from './../common/strings';
 import * as common_time from './../common/time';

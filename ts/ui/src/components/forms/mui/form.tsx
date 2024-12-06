@@ -1,5 +1,5 @@
 import  { useState } from "react";
-import { isJsonParseException, JsonBinding } from '@/adl-gen/runtime/json';
+import { isJsonParseException, JsonBinding } from '@adllang/adl-runtime';
 import { Toggle } from "./toggle";
 import { VEditor } from "./veditor";
 import { Button, styled, TextField } from "@mui/material";

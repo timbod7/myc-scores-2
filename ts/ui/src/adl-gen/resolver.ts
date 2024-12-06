@@ -1,5 +1,5 @@
 /* @generated from adl */
-import { declResolver, ScopedDecl } from "./runtime/adl";
+import { declResolver, ScopedDecl } from "@adllang/adl-runtime";
 import { _AST_MAP as common_db } from "./common/db";
 import { _AST_MAP as common_http } from "./common/http";
 import { _AST_MAP as common_strings } from "./common/strings";

@@ -7,7 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import {Factory, StructEditorProps, FieldEditorProps, UnionEditorProps, UnimplementedEditorProps, MaybeEditorProps, VectorEditorProps, CustomContext, VEditorCustomize, FieldCustomize, } from "../model/veditor/adlfactory";
 import {FieldFns} from "../model/fields/type";
-import { typeExprToStringUnscoped } from '@/adl-gen/runtime/utils';
+import { typeExprToStringUnscoped } from '@adllang/adl-runtime';
 import { Select } from "./select";
 import { Toggle } from "./toggle";
 import { CellContent } from '../model/adl-table';

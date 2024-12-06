@@ -1,6 +1,6 @@
 /* @generated from adl module sys.annotations */
 
-import * as ADL from './../runtime/adl';
+import * as ADL from '@adllang/adl-runtime';
 
 export type Doc = string;
 

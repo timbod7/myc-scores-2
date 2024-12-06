@@ -1,6 +1,6 @@
 /* @generated from adl module common.db */
 
-import * as ADL from './../runtime/adl';
+import * as ADL from '@adllang/adl-runtime';
 
 export interface DbTable {
   table_name: string;

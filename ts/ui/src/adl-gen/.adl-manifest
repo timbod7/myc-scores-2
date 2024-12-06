@@ -8,13 +8,6 @@ protoapp/apis/ui.ts
 protoapp/db.ts
 protoapp/ui.ts
 resolver.ts
-runtime/adl.ts
-runtime/dynamic.ts
-runtime/json.ts
-runtime/sys/adlast.ts
-runtime/sys/dynamic.ts
-runtime/sys/types.ts
-runtime/utils.ts
 sys/adlast.ts
 sys/annotations.ts
 sys/types.ts

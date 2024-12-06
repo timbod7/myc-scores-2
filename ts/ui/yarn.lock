@@ -2,6 +2,14 @@
 # yarn lockfile v1
 
 
+"@adllang/adl-runtime@npm:@jsr/adllang__adl-runtime":
+  version "0.1.1"
+  resolved "https://npm.jsr.io/~/11/@jsr/adllang__adl-runtime/0.1.1.tgz#C813404C980DA59903EE0494AB4B33C31D9E67FC"
+  integrity sha512-hLe09OlYzYPRpnb7DARWqmWVw9rCiLkqsZAOtQAc7wRglAujX+s3BTRUqMcuamZW8ckBvSI6UjVm/yq57123aw==
+  dependencies:
+    "@jsr/adllang__jsonbinding" "^0.2.3"
+    "@jsr/std__encoding" "^1.0.5"
+
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@ampproject/remapping/-/remapping-2.2.1.tgz#99e8e11851128b8702cd57c33684f1d0f260b630"
@@ -495,6 +503,16 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
+
+"@jsr/adllang__jsonbinding@^0.2.3":
+  version "0.2.4"
+  resolved "https://npm.jsr.io/~/11/@jsr/adllang__jsonbinding/0.2.4.tgz#507208FA12BE197991240894E98D7396C1AF476B"
+  integrity sha512-fNXp6tgDXt54m5Ll37rr3SRTlQ6VdVpNQ29oaErnOSOdPA+Z300DRhzuIwpVcHKq13NhpJrLHhC4hJmLN31MxQ==
+
+"@jsr/std__encoding@^1.0.5":
+  version "1.0.5"
+  resolved "https://npm.jsr.io/~/11/@jsr/std__encoding/1.0.5.tgz#6666332EB3068D7D7F0875CB64878A6E0FC1B68E"
+  integrity sha512-blLadT0G3SiwsneatWsUwH5s+Sb+zSsQCgtHZlT+nQkoFci2OiErHx4XqdoFcwuz3IH6wOdPZqjhcSrbNS0jqA==
 
 "@mui/base@5.0.0-beta.33":
   version "5.0.0-beta.33"

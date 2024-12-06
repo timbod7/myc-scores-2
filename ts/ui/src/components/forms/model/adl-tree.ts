@@ -1,4 +1,4 @@
-import { DeclResolver } from "@/adl-gen/runtime/adl";
+import { DeclResolver } from "@adllang/adl-runtime";
 import * as ast from "@/adl-gen/sys/adlast";
 
 // A fully resolved tree structure corresponding to an ADL type.

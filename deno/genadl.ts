@@ -27,8 +27,6 @@ async function main() {
       ],
       tsStyle: "tsc",
       outputDir: outputDir,
-      runtimeDir: "runtime",
-      includeRuntime: true,
       includeResolver: true,
       manifest: outputDir + "/.adl-manifest",
       generateTransitive: true,

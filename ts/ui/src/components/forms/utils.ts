@@ -1,5 +1,5 @@
-import { ScopedDecl, texprString } from "@/adl-gen/runtime/adl";
-import { typeExprsEqual } from "@/adl-gen/runtime/utils";
+import { ScopedDecl, texprString } from "@adllang/adl-runtime";
+import { typeExprsEqual } from "@adllang/adl-runtime";
 
 import { getValidRegexAnnotation } from "./model/adl-annotations";
 import { regexStringFieldFns } from "./model/fields/primitive";
