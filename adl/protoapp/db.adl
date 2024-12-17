@@ -19,10 +19,7 @@ type AppUserId = DbKey<AppUserTable>;
 
 annotation AppUserTable DbTable {
   "indexes" : [["email"]],
-  "uniqueness_constraints": [["email"]],
-  "extra_sql": [
-     "grant select on app_user to admin_user;"
-  ]
+  "uniqueness_constraints": [["email"]]
 };
 
 struct Message {
@@ -35,10 +32,7 @@ newtype MessageTable = WithId<Message>;
 type MessageId = DbKey<MessageTable>;
 
 annotation MessageTable DbTable {
-  "indexes" : [["posted_at"]],
-  "extra_sql": [
-     "grant all on message to admin_user;"
-  ]
+  "indexes" : [["posted_at"]]
 };
 
 };

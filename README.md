@@ -14,19 +14,14 @@ adlc show --version
 ```
 
 
-# Unit tests
+# Run locally
 
-Start postgres using docker and setup the roles:
+Start postgres using docker and setup some roles:
 
 
 ```
 (cd platform/dev; docker compose up -d db)
 ```
-
-```
-(PGPASSWORD=xyzzy psql --host localhost --port 5432 --user postgres --db appdb -f sql/010-postgrest-roles.sql)
-```
-
 
 Run the unit tests via cargo:
 
@@ -36,14 +31,6 @@ cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
 cargo test -- --test-threads=1
 )
-```
-
-# Run locally
-
-## Start a database and postgrest server
-
-```
-(cd platform/dev; docker compose up -d db postgrest)
 ```
 
 ## Start the server
