@@ -2,7 +2,7 @@ A demonstration 3 tier application using ADL as the "typing glue".
 
 # Local setup
 
-Install docker for your platform. Then install deno, node, and adl into a repo
+Install docker and rust/cargo for your platform. Then install deno, node, pnpm, and adl into a repo
 local directory by running the local setup script:
 
 ```bash
@@ -16,7 +16,7 @@ adlc show --version
 
 # Run locally
 
-Start postgres using docker and setup some roles:
+Start postgres using docker:
 
 
 ```bash
