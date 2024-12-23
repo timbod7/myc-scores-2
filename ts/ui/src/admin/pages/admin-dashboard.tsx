@@ -1,26 +1,22 @@
-import * as ADL from "@adllang/adl-runtime";
+import { HttpSecurity, snHttpPost, texprHttpPost } from "@/adl-gen/common/http";
 import * as API from "@/adl-gen/protoapp/apis/ui";
-import * as AST from "@/adl-gen/sys/adlast";
-import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
-import { HttpPost, HttpSecurity, snHttpPost, texprHttpPost } from "@/adl-gen/common/http";
 import { RESOLVER } from "@/adl-gen/resolver";
-
-import React, { useMemo, useRef, useState } from "react";
-import { css } from "@emotion/react";
-
-import { useApiWithToken, useAppState } from "@/hooks/use-app-state";
-import { Box, Button, Card, CircularProgress, Container, Divider, GlobalStyles, Menu, MenuItem, Paper, Typography } from "@mui/material";
+import * as AST from "@/adl-gen/sys/adlast";
+import { texprDoc } from "@/adl-gen/sys/annotations";
+import { createVEditor } from "@/components/forms/model/veditor/adlfactory";
+import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
+import { Modal } from "@/components/forms/mui/modal";
 import { VEditor } from "@/components/forms/mui/veditor";
 import { createUiFactory } from "@/components/forms/utils";
-import { createVEditor } from "@/components/forms/model/veditor/adlfactory";
-import { Modal } from "@/components/forms/mui/modal";
-import { texprDoc } from "@/adl-gen/sys/annotations";
-import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
-
-import { JsonView, allExpanded, darkStyles, defaultStyles } from 'react-json-view-lite';
+import { useApiWithToken } from "@/hooks/use-app-state";
+import { AdlRequestError, ServiceBase } from "@/service/service-base";
+import * as ADL from "@adllang/adl-runtime";
+import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
+import { Box, Button, Card, CircularProgress, Container, Divider, Typography } from "@mui/material";
+import { JSX, useMemo, useRef, useState } from "react";
+import { JsonView, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import './admin-dashboard.css';
-import { AdlRequestError, ServiceBase } from "@/service/service-base";
 
 type ModalState = ChooseEndpoint | CreateRequest;
 
@@ -70,7 +66,7 @@ export function AdminDashboard() {
     setPrevRequests(pr => [...pr, completed]);
     setCurrentRequest(undefined);
     setTimeout(
-      () =>  newRequestButtonRef?.current?.scrollIntoView({behavior: "smooth"}),
+      () => newRequestButtonRef?.current?.scrollIntoView({ behavior: "smooth" }),
       100
     );
   }
@@ -105,9 +101,9 @@ export function AdminDashboard() {
         {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
         {currentRequest && <ExecutingRequest value={currentRequest} />}
         <div ref={newRequestButtonRef}>
-        <Button sx={{marginBottom:"20px"}} disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
-          NEW REQUEST
-        </Button>
+          <Button sx={{ marginBottom: "20px" }} disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
+            NEW REQUEST
+          </Button>
         </div>
       </Box>
       {renderModal()}
@@ -187,11 +183,11 @@ function ExecutingRequest<I, O>(props: {
       <Box sx={{ margin: "10px" }}>
         <b>{endpoint.name}</b>
       </Box>
-      <Divider/>
+      <Divider />
       <Box sx={{ marginTop: "10px", marginBottom: "10px" }}>
         <MyJsonView data={jsonI} />
       </Box>
-      <Divider/>
+      <Divider />
       <CircularProgress sx={{ margin: "10px" }} size="20px" />
     </Card>
   );
