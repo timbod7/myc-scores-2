@@ -5,7 +5,7 @@ A demonstration 3 tier application using ADL as the "typing glue".
 Install docker for your platform. Then install deno, node, and adl into a repo
 local directory by running the local setup script:
 
-```
+```bash
 . deno/local-setup.sh
 
 deno --version
@@ -19,13 +19,13 @@ adlc show --version
 Start postgres using docker and setup some roles:
 
 
-```
+```bash
 (cd platform/dev; docker compose up -d db)
 ```
 
 Run the unit tests via cargo:
 
-```
+```bash
 (
 cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
@@ -35,7 +35,7 @@ cargo test -- --test-threads=1
 
 ## Start the server
 
-```
+```bash
 (
 cd rust/server
 export PROTOAPP_SERVER_CONFIG='{
@@ -59,7 +59,7 @@ This will create the db schema and/or apply any necessary migrations
 
 # Create some test users
 
-```
+```bash
 (
 cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
@@ -70,10 +70,11 @@ cargo run --bin protoapp-tools -- create-user --is-admin sarah@test.com Sarah ab
 
 ## Start the ui in dev mode
 
-```
+```bash
 (
 cd ts/ui
-yarn
-yarn dev
+# note pnpm is installed by local-setup.sh
+pnpm install
+pnpm run dev
 )
 ```
