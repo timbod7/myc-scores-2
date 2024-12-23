@@ -66,7 +66,7 @@ export function AdminDashboard() {
     setPrevRequests(pr => [...pr, completed]);
     setCurrentRequest(undefined);
     setTimeout(
-      () =>  newRequestButtonRef?.current?.scrollIntoView({behavior: "smooth"}),
+      () => newRequestButtonRef?.current?.scrollIntoView({ behavior: "smooth" }),
       100
     );
   }
@@ -101,9 +101,9 @@ export function AdminDashboard() {
         {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
         {currentRequest && <ExecutingRequest value={currentRequest} />}
         <div ref={newRequestButtonRef}>
-        <Button sx={{marginBottom:"20px"}} disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
-          NEW REQUEST
-        </Button>
+          <Button sx={{ marginBottom: "20px" }} disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
+            NEW REQUEST
+          </Button>
         </div>
       </Box>
       {renderModal()}
@@ -183,11 +183,11 @@ function ExecutingRequest<I, O>(props: {
       <Box sx={{ margin: "10px" }}>
         <b>{endpoint.name}</b>
       </Box>
-      <Divider/>
+      <Divider />
       <Box sx={{ marginTop: "10px", marginBottom: "10px" }}>
         <MyJsonView data={jsonI} />
       </Box>
-      <Divider/>
+      <Divider />
       <CircularProgress sx={{ margin: "10px" }} size="20px" />
     </Card>
   );
