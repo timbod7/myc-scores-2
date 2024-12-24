@@ -7,16 +7,15 @@ import { createVEditor } from "@/components/forms/model/veditor/adlfactory";
 import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
 import { Modal } from "@/components/forms/mui/modal";
 import { VEditor } from "@/components/forms/mui/veditor";
-import { createUiFactory } from "@/components/forms/utils";
+import { createUiFactory } from "@/components/forms/factory";
 import { useApiWithToken } from "@/hooks/use-app-state";
 import { AdlRequestError, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
 import { Box, Button, Card, CircularProgress, Container, Divider, Typography } from "@mui/material";
 import { JSX, useMemo, useRef, useState } from "react";
-import { JsonView, defaultStyles } from 'react-json-view-lite';
-import 'react-json-view-lite/dist/index.css';
-import './admin-dashboard.css';
+import JsonView from 'react18-json-view';
+import 'react18-json-view/src/style.css';
 
 type ModalState = ChooseEndpoint | CreateRequest;
 
@@ -238,19 +237,14 @@ function CompletedRequest<I, O>(props: {
 function MyJsonView(props: {
   data: Json
 }) {
-
-  const customJsonStyles: typeof defaultStyles = {
-    ...defaultStyles,
-    container: "jsonview-container",
-    quotesForFieldNames: true,
-  }
-  return props.data === null
-    ? <div>null</div>
-    : <JsonView
-      data={props.data}
-      style={customJsonStyles}
-    />
-    ;
+  return (
+    <Box sx={{fontSize:"0.8rem"}} >
+     { props.data === null
+       ? <div>null</div>
+       : <JsonView src={props.data}/>
+     }
+    </Box>
+  );
 }
 
 async function executeRequest<I, O>(service: ServiceBase, jwt: string, endpoint: HttpPostEndpoint<I, O>, req: I, startedAt: Date): Promise<CompletedRequest<I, O>> {
