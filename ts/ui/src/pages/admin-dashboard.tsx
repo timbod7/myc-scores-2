@@ -94,7 +94,7 @@ export function AdminDashboard() {
   return (
     <Container fixed>
       <Box>
-        <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 2, marginTop: "20px" }}>
           Admin Dashboard
         </Typography>
         {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
@@ -178,12 +178,12 @@ function ExecutingRequest<I, O>(props: {
     [endpoint, req]
   );
   return (
-    <Card sx={{ marginTop: "10px", marginBottom: "10px" }}>
+    <Card sx={{ margin: "10px"}}>
       <Box sx={{ margin: "10px" }}>
         <b>{endpoint.name}</b>
       </Box>
       <Divider />
-      <Box sx={{ marginTop: "10px", marginBottom: "10px" }}>
+      <Box sx={{ margin: "10px"}}>
         <MyJsonView data={jsonI} />
       </Box>
       <Divider />
@@ -216,17 +216,18 @@ function CompletedRequest<I, O>(props: {
         <b>{endpoint.name}</b>
       </Box>
       <Divider />
-      <Box sx={{ marginTop: "10px", marginBottom: "10px" }}>
+      <Box sx={{ margin: "10px" }}>
         <MyJsonView data={jsonI} />
       </Box>
       <Divider />
-      <Box sx={{ marginTop: "10px", marginBottom: "10px" }}>
+      <Box sx={{ margin: "10px"}}>
         {resp.success
           ? <MyJsonView data={jsonO} />
-          : (<>
-            <div>Http Status: {resp.httpStatus}</div>
-            <div>Body: {resp.responseBody}</div>
-          </>
+          : (
+            <Box sx={{color:"red"}}>
+              <Box>Http Status: {resp.httpStatus}</Box>
+              {resp.responseBody && <Box>Body: {resp.responseBody}</Box>}
+            </Box>
           )
         }
       </Box>
