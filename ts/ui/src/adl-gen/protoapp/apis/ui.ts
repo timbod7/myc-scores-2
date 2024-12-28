@@ -33,15 +33,27 @@ export interface ApiRequests {
   /**
    * Post a message to the noticeboard
    */
-  newMessage: common_http.HttpPost<NewMessageReq, protoapp_db.MessageId>;
+  new_message: common_http.HttpPost<NewMessageReq, protoapp_db.MessageId>;
   /**
    * Get recent noticeboard messages
    */
-  recentMessages: common_http.HttpPost<RecentMessagesReq, Paginated<Message>>;
+  recent_messages: common_http.HttpPost<RecentMessagesReq, Paginated<Message>>;
   /**
-   * Gets the logged in user details
+   * Gets info about the logged in user
    */
-  whoAmI: common_http.HttpGet<UserProfile>;
+  who_am_i: common_http.HttpGet<User>;
+  /**
+   * Create a new user
+   */
+  create_user: common_http.HttpPost<UserDetails, protoapp_db.AppUserId>;
+  /**
+   * Update a user
+   */
+  update_user: common_http.HttpPost<WithId<protoapp_db.AppUserId, UserDetails>, common_http.Unit>;
+  /**
+   * Query users
+   */
+  query_users: common_http.HttpPost<QueryUsersReq, Paginated<User>>;
 }
 
 export function makeApiRequests(
@@ -51,9 +63,12 @@ export function makeApiRequests(
     login?: common_http.HttpPost<LoginReq, LoginResp>,
     refresh?: common_http.HttpPost<RefreshReq, RefreshResp>,
     logout?: common_http.HttpPost<common_http.Unit, common_http.Unit>,
-    newMessage?: common_http.HttpPost<NewMessageReq, protoapp_db.MessageId>,
-    recentMessages?: common_http.HttpPost<RecentMessagesReq, Paginated<Message>>,
-    whoAmI?: common_http.HttpGet<UserProfile>,
+    new_message?: common_http.HttpPost<NewMessageReq, protoapp_db.MessageId>,
+    recent_messages?: common_http.HttpPost<RecentMessagesReq, Paginated<Message>>,
+    who_am_i?: common_http.HttpGet<User>,
+    create_user?: common_http.HttpPost<UserDetails, protoapp_db.AppUserId>,
+    update_user?: common_http.HttpPost<WithId<protoapp_db.AppUserId, UserDetails>, common_http.Unit>,
+    query_users?: common_http.HttpPost<QueryUsersReq, Paginated<User>>,
   }
 ): ApiRequests {
   return {
@@ -62,14 +77,17 @@ export function makeApiRequests(
     login: input.login === undefined ? {path : "/login", security : {kind : "public"}, rateLimit : null, reqType : texprLoginReq(), respType : texprLoginResp()} : input.login,
     refresh: input.refresh === undefined ? {path : "/refresh", security : {kind : "public"}, rateLimit : null, reqType : texprRefreshReq(), respType : texprRefreshResp()} : input.refresh,
     logout: input.logout === undefined ? {path : "/logout", security : {kind : "public"}, rateLimit : null, reqType : common_http.texprUnit(), respType : common_http.texprUnit()} : input.logout,
-    newMessage: input.newMessage === undefined ? {path : "/messages/new", security : {kind : "token"}, rateLimit : null, reqType : texprNewMessageReq(), respType : protoapp_db.texprMessageId()} : input.newMessage,
-    recentMessages: input.recentMessages === undefined ? {path : "/messages/recent", security : {kind : "token"}, rateLimit : null, reqType : texprRecentMessagesReq(), respType : texprPaginated(texprMessage())} : input.recentMessages,
-    whoAmI: input.whoAmI === undefined ? {path : "/whoami", security : {kind : "token"}, rateLimit : null, respType : texprUserProfile()} : input.whoAmI,
+    new_message: input.new_message === undefined ? {path : "/messages/new", security : {kind : "token"}, rateLimit : null, reqType : texprNewMessageReq(), respType : protoapp_db.texprMessageId()} : input.new_message,
+    recent_messages: input.recent_messages === undefined ? {path : "/messages/recent", security : {kind : "token"}, rateLimit : null, reqType : texprRecentMessagesReq(), respType : texprPaginated(texprMessage())} : input.recent_messages,
+    who_am_i: input.who_am_i === undefined ? {path : "/whoami", security : {kind : "token"}, rateLimit : null, respType : texprUser()} : input.who_am_i,
+    create_user: input.create_user === undefined ? {path : "/users/create", security : {kind : "tokenWithRole", value : "admin"}, rateLimit : null, reqType : texprUserDetails(), respType : protoapp_db.texprAppUserId()} : input.create_user,
+    update_user: input.update_user === undefined ? {path : "/users/update", security : {kind : "tokenWithRole", value : "admin"}, rateLimit : null, reqType : texprWithId(protoapp_db.texprAppUserId(), texprUserDetails()), respType : common_http.texprUnit()} : input.update_user,
+    query_users: input.query_users === undefined ? {path : "/users/query", security : {kind : "tokenWithRole", value : "admin"}, rateLimit : null, reqType : texprQueryUsersReq(), respType : texprPaginated(texprUser())} : input.query_users,
   };
 }
 
 const ApiRequests_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpGet"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Test the server is live\n"}],"default":{"kind":"just","value":{"path":"/ping","security":"public"}},"name":"ping","serializedName":"ping","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Post a message to the noticeboard\n"}],"default":{"kind":"just","value":{"path":"/messages/new","security":"token"}},"name":"newMessage","serializedName":"newMessage","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"NewMessageReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get recent noticeboard messages\n"}],"default":{"kind":"just","value":{"path":"/messages/recent","security":"token"}},"name":"recentMessages","serializedName":"recentMessages","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RecentMessagesReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"Message"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets the logged in user details\n"}],"default":{"kind":"just","value":{"path":"/whoami","security":"token"}},"name":"whoAmI","serializedName":"whoAmI","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"UserProfile"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpGet"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpGet"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Test the server is live\n"}],"default":{"kind":"just","value":{"path":"/ping","security":"public"}},"name":"ping","serializedName":"ping","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Post a message to the noticeboard\n"}],"default":{"kind":"just","value":{"path":"/messages/new","security":"token"}},"name":"new_message","serializedName":"new_message","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"NewMessageReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get recent noticeboard messages\n"}],"default":{"kind":"just","value":{"path":"/messages/recent","security":"token"}},"name":"recent_messages","serializedName":"recent_messages","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"RecentMessagesReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"Message"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets info about the logged in user\n"}],"default":{"kind":"just","value":{"path":"/whoami","security":"token"}},"name":"who_am_i","serializedName":"who_am_i","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"User"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpGet"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new user\n"}],"default":{"kind":"just","value":{"path":"/users/create","security":{"tokenWithRole":"admin"}}},"name":"create_user","serializedName":"create_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"UserDetails"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a user\n"}],"default":{"kind":"just","value":{"path":"/users/update","security":{"tokenWithRole":"admin"}}},"name":"update_user","serializedName":"update_user","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"UserDetails"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query users\n"}],"default":{"kind":"just","value":{"path":"/users/query","security":{"tokenWithRole":"admin"}}},"name":"query_users","serializedName":"query_users","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"QueryUsersReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"User"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpPost"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
 
 export const snApiRequests: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"ApiRequests"};
 
@@ -228,24 +246,21 @@ export function texprNewMessageReq(): ADL.ATypeExpr<NewMessageReq> {
 }
 
 export interface RecentMessagesReq {
-  offset: number;
-  limit: number;
+  page: PageReq;
 }
 
 export function makeRecentMessagesReq(
   input: {
-    offset?: number,
-    limit?: number,
+    page: PageReq,
   }
 ): RecentMessagesReq {
   return {
-    offset: input.offset === undefined ? 0 : input.offset,
-    limit: input.limit === undefined ? 20 : input.limit,
+    page: input.page,
   };
 }
 
 const RecentMessagesReq_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"RecentMessagesReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"just","value":0},"name":"offset","serializedName":"offset","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word32"}}},{"annotations":[],"default":{"kind":"just","value":20},"name":"limit","serializedName":"limit","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word32"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+  {"decl":{"annotations":[],"name":"RecentMessagesReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"page","serializedName":"page","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"PageReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
 
 export const snRecentMessagesReq: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"RecentMessagesReq"};
 
@@ -253,68 +268,30 @@ export function texprRecentMessagesReq(): ADL.ATypeExpr<RecentMessagesReq> {
   return {value : {typeRef : {kind: "reference", value : snRecentMessagesReq}, parameters : []}};
 }
 
-export interface Message {
-  id: protoapp_db.MessageId;
-  posted_at: common_time.Instant;
-  user_fullname: string;
-  message: common_strings.StringML;
+export interface PageReq {
+  offset: number;
+  limit: number;
 }
 
-export function makeMessage(
+export function makePageReq(
   input: {
-    id: protoapp_db.MessageId,
-    posted_at: common_time.Instant,
-    user_fullname: string,
-    message: common_strings.StringML,
+    offset?: number,
+    limit?: number,
   }
-): Message {
+): PageReq {
   return {
-    id: input.id,
-    posted_at: input.posted_at,
-    user_fullname: input.user_fullname,
-    message: input.message,
+    offset: input.offset === undefined ? 0 : input.offset,
+    limit: input.limit === undefined ? 20 : input.limit,
   };
 }
 
-const Message_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"Message","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"posted_at","serializedName":"posted_at","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"user_fullname","serializedName":"user_fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"message","serializedName":"message","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+const PageReq_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"PageReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"just","value":0},"name":"offset","serializedName":"offset","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word64"}}},{"annotations":[],"default":{"kind":"just","value":20},"name":"limit","serializedName":"limit","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word64"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
 
-export const snMessage: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"Message"};
+export const snPageReq: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"PageReq"};
 
-export function texprMessage(): ADL.ATypeExpr<Message> {
-  return {value : {typeRef : {kind: "reference", value : snMessage}, parameters : []}};
-}
-
-export interface UserProfile {
-  id: protoapp_db.AppUserId;
-  fullname: string;
-  email: string;
-  is_admin: boolean;
-}
-
-export function makeUserProfile(
-  input: {
-    id: protoapp_db.AppUserId,
-    fullname: string,
-    email: string,
-    is_admin: boolean,
-  }
-): UserProfile {
-  return {
-    id: input.id,
-    fullname: input.fullname,
-    email: input.email,
-    is_admin: input.is_admin,
-  };
-}
-
-const UserProfile_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"UserProfile","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"is_admin","serializedName":"is_admin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
-
-export const snUserProfile: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"UserProfile"};
-
-export function texprUserProfile(): ADL.ATypeExpr<UserProfile> {
-  return {value : {typeRef : {kind: "reference", value : snUserProfile}, parameters : []}};
+export function texprPageReq(): ADL.ATypeExpr<PageReq> {
+  return {value : {typeRef : {kind: "reference", value : snPageReq}, parameters : []}};
 }
 
 /**
@@ -350,12 +327,157 @@ export function makePaginated<T>(
 }
 
 const Paginated_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A holder for paginated results\n"}],"name":"Paginated","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The paginated items\n"}],"default":{"kind":"nothing"},"name":"items","serializedName":"items","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The offset used for this query\n"}],"default":{"kind":"nothing"},"name":"current_offset","serializedName":"current_offset","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word32"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The size of the entire date set\n"}],"default":{"kind":"nothing"},"name":"total_count","serializedName":"total_count","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word32"}}}],"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A holder for paginated results\n"}],"name":"Paginated","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The paginated items\n"}],"default":{"kind":"nothing"},"name":"items","serializedName":"items","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The offset used for this query\n"}],"default":{"kind":"nothing"},"name":"current_offset","serializedName":"current_offset","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word64"}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"The size of the entire date set\n"}],"default":{"kind":"nothing"},"name":"total_count","serializedName":"total_count","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word64"}}}],"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
 
 export const snPaginated: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"Paginated"};
 
 export function texprPaginated<T>(texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<Paginated<T>> {
   return {value : {typeRef : {kind: "reference", value : {moduleName : "protoapp.apis.ui",name : "Paginated"}}, parameters : [texprT.value]}};
+}
+
+export interface Message {
+  id: protoapp_db.MessageId;
+  posted_at: common_time.Instant;
+  user_fullname: string;
+  message: common_strings.StringML;
+}
+
+export function makeMessage(
+  input: {
+    id: protoapp_db.MessageId,
+    posted_at: common_time.Instant,
+    user_fullname: string,
+    message: common_strings.StringML,
+  }
+): Message {
+  return {
+    id: input.id,
+    posted_at: input.posted_at,
+    user_fullname: input.user_fullname,
+    message: input.message,
+  };
+}
+
+const Message_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"Message","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"MessageId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"posted_at","serializedName":"posted_at","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"user_fullname","serializedName":"user_fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"message","serializedName":"message","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+
+export const snMessage: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"Message"};
+
+export function texprMessage(): ADL.ATypeExpr<Message> {
+  return {value : {typeRef : {kind: "reference", value : snMessage}, parameters : []}};
+}
+
+export interface QueryUsersReq {
+  page: PageReq;
+}
+
+export function makeQueryUsersReq(
+  input: {
+    page?: PageReq,
+  }
+): QueryUsersReq {
+  return {
+    page: input.page === undefined ? {offset : 0, limit : 20} : input.page,
+  };
+}
+
+const QueryUsersReq_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"QueryUsersReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"just","value":{}},"name":"page","serializedName":"page","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.apis.ui","name":"PageReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+
+export const snQueryUsersReq: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"QueryUsersReq"};
+
+export function texprQueryUsersReq(): ADL.ATypeExpr<QueryUsersReq> {
+  return {value : {typeRef : {kind: "reference", value : snQueryUsersReq}, parameters : []}};
+}
+
+export interface User {
+  id: protoapp_db.AppUserId;
+  fullname: common_strings.StringNE;
+  email: common_strings.EmailAddress;
+  is_admin: boolean;
+}
+
+export function makeUser(
+  input: {
+    id: protoapp_db.AppUserId,
+    fullname: common_strings.StringNE,
+    email: common_strings.EmailAddress,
+    is_admin: boolean,
+  }
+): User {
+  return {
+    id: input.id,
+    fullname: input.fullname,
+    email: input.email,
+    is_admin: input.is_admin,
+  };
+}
+
+const User_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"User","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"protoapp.db","name":"AppUserId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"EmailAddress"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"is_admin","serializedName":"is_admin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+
+export const snUser: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"User"};
+
+export function texprUser(): ADL.ATypeExpr<User> {
+  return {value : {typeRef : {kind: "reference", value : snUser}, parameters : []}};
+}
+
+export interface UserDetails {
+  fullname: common_strings.StringNE;
+  email: common_strings.EmailAddress;
+  is_admin: boolean;
+  password: common_strings.Password;
+}
+
+export function makeUserDetails(
+  input: {
+    fullname: common_strings.StringNE,
+    email: common_strings.EmailAddress,
+    is_admin: boolean,
+    password: common_strings.Password,
+  }
+): UserDetails {
+  return {
+    fullname: input.fullname,
+    email: input.email,
+    is_admin: input.is_admin,
+    password: input.password,
+  };
+}
+
+const UserDetails_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"UserDetails","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"fullname","serializedName":"fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"email","serializedName":"email","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"EmailAddress"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"is_admin","serializedName":"is_admin","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"password","serializedName":"password","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"Password"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+
+export const snUserDetails: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"UserDetails"};
+
+export function texprUserDetails(): ADL.ATypeExpr<UserDetails> {
+  return {value : {typeRef : {kind: "reference", value : snUserDetails}, parameters : []}};
+}
+
+export interface WithId<I, T> {
+  id: I;
+  value: T;
+}
+
+export function makeWithId<I, T>(
+  input: {
+    id: I,
+    value: T,
+  }
+): WithId<I, T> {
+  return {
+    id: input.id,
+    value: input.value,
+  };
+}
+
+const WithId_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"WithId","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"value","serializedName":"value","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}}],"typeParams":["I","T"]}},"version":{"kind":"nothing"}},"moduleName":"protoapp.apis.ui"};
+
+export const snWithId: ADL.ScopedName = {moduleName:"protoapp.apis.ui", name:"WithId"};
+
+export function texprWithId<I, T>(texprI : ADL.ATypeExpr<I>, texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<WithId<I, T>> {
+  return {value : {typeRef : {kind: "reference", value : {moduleName : "protoapp.apis.ui",name : "WithId"}}, parameters : [texprI.value, texprT.value]}};
 }
 
 export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
@@ -367,7 +489,11 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "protoapp.apis.ui.LoginTokens" : LoginTokens_AST,
   "protoapp.apis.ui.NewMessageReq" : NewMessageReq_AST,
   "protoapp.apis.ui.RecentMessagesReq" : RecentMessagesReq_AST,
+  "protoapp.apis.ui.PageReq" : PageReq_AST,
+  "protoapp.apis.ui.Paginated" : Paginated_AST,
   "protoapp.apis.ui.Message" : Message_AST,
-  "protoapp.apis.ui.UserProfile" : UserProfile_AST,
-  "protoapp.apis.ui.Paginated" : Paginated_AST
+  "protoapp.apis.ui.QueryUsersReq" : QueryUsersReq_AST,
+  "protoapp.apis.ui.User" : User_AST,
+  "protoapp.apis.ui.UserDetails" : UserDetails_AST,
+  "protoapp.apis.ui.WithId" : WithId_AST
 };

@@ -4,9 +4,10 @@ import common.http.Unit;
 import common.http.HttpPost;
 import common.http.HttpGet;
 import common.time.Instant;
+import common.strings.EmailAddress;
+import common.strings.Password;
 import common.strings.StringNE;
 import common.strings.StringML;
-import common.strings.Password;
 
 import protoapp.db.AppUserId;
 import protoapp.db.MessageId;
@@ -50,22 +51,40 @@ struct ApiRequests {
   };
 
   /// Post a message to the noticeboard
-  HttpPost<NewMessageReq, MessageId> newMessage = {
+  HttpPost<NewMessageReq, MessageId> new_message = {
     "path": "/messages/new",
     "security" : "token"
   };
 
   /// Get recent noticeboard messages
-  HttpPost<RecentMessagesReq, Paginated<Message> > recentMessages = {
+  HttpPost<RecentMessagesReq, Paginated<Message> > recent_messages = {
     "path": "/messages/recent",
     "security" : "token"
   };
 
-  /// Gets the logged in user details
+  /// Gets info about the logged in user
   // NOTE: Fails with 401 if the token is invalid or user does not exist
-  HttpGet<UserProfile> whoAmI = {
+  HttpGet<User> who_am_i = {
     "path": "/whoami",
     "security" : "token"
+  };
+
+  /// Create a new user
+  HttpPost<UserDetails, AppUserId> create_user = {
+    "path": "/users/create",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Update a user
+  HttpPost<WithId<AppUserId,UserDetails>, Unit> update_user = {
+    "path": "/users/update",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Query users
+  HttpPost<QueryUsersReq, Paginated<User>> query_users = {
+    "path": "/users/query",
+    "security" : { "tokenWithRole": "admin" }
   };
 };
 
@@ -98,25 +117,15 @@ struct NewMessageReq {
 };
 
 struct RecentMessagesReq {
+  PageReq page;
+};
+
+struct PageReq {
   // Pagination offset
-  Word32 offset = 0;
+  Word64 offset = 0;
 
   // Max number of items to return
-  Word32 limit = 20;
-};
-
-struct Message {
-  MessageId id;
-  Instant posted_at;
-  String user_fullname;
-  StringML message;
-};
-
-struct UserProfile {
-  AppUserId id;
-  String fullname;
-  String email;
-  Bool is_admin;
+  Word64 limit = 20;
 };
 
 /// A holder for paginated results
@@ -126,10 +135,40 @@ struct Paginated<T> {
   Vector<T> items;
 
   /// The offset used for this query
-  Word32 current_offset;
+  Word64 current_offset;
 
   /// The size of the entire date set
-  Word32 total_count;
+  Word64 total_count;
+};
+
+struct Message {
+  MessageId id;
+  Instant posted_at;
+  String user_fullname;
+  StringML message;
+};
+
+struct QueryUsersReq {
+  PageReq page = {};
+};
+
+struct User {
+  AppUserId id;
+  StringNE fullname;
+  EmailAddress email;
+  Bool is_admin;
+};
+
+struct UserDetails {
+  StringNE fullname;
+  EmailAddress email;
+  Bool is_admin;
+  Password password;
+};
+
+struct WithId<I,T> {
+ I id;
+ T value;
 };
 
 };

@@ -5,8 +5,8 @@ use poem::web::Json;
 use crate::adl::custom::common::db::DbKey;
 use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::protoapp::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, Message, Paginated, RecentMessagesReq,
-    RefreshReq, RefreshResp, UserProfile,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, Message, Paginated, QueryUsersReq,
+    RecentMessagesReq, RefreshReq, RefreshResp, User, UserDetails, WithId,
 };
 use crate::adl::gen::protoapp::config::server::ServerConfig;
 use crate::adl::gen::protoapp::db::{AppUser, AppUserId};
@@ -14,7 +14,7 @@ use crate::adl::gen::protoapp::{apis::ui::NewMessageReq, db::MessageId};
 use crate::server::poem_adl_interop::get_adl_request_context;
 
 use super::jwt::AccessClaims;
-use super::passwords::verify_password;
+use super::passwords::{hash_password, verify_password};
 use super::poem_adl_interop::{forbidden, AdlReqContext, HandlerResult};
 use super::{db, jwt, AppState};
 
@@ -84,20 +84,20 @@ pub async fn recent_messages(
     ctx: ReqContext,
     i: RecentMessagesReq,
 ) -> HandlerResult<Paginated<Message>> {
-    let messages = db::recent_messages(&ctx.state.db_pool, i.offset, i.limit).await?;
+    let messages = db::recent_messages(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
     let total_count = db::message_count(&ctx.state.db_pool).await?;
     Ok(Paginated {
         items: messages,
-        current_offset: i.offset,
+        current_offset: i.page.offset,
         total_count,
     })
 }
 
-pub async fn who_am_i(ctx: ReqContext) -> HandlerResult<UserProfile> {
+pub async fn who_am_i(ctx: ReqContext) -> HandlerResult<User> {
     let user_id = user_from_claims(&ctx.claims)?;
     let user = db::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
     match user {
-        Some((user_id, user)) => Ok(UserProfile {
+        Some((user_id, user)) => Ok(User {
             id: user_id.clone(),
             fullname: user.fullname,
             email: user.email,
@@ -105,6 +105,44 @@ pub async fn who_am_i(ctx: ReqContext) -> HandlerResult<UserProfile> {
         }),
         None => Err(forbidden()),
     }
+}
+
+pub async fn create_user(ctx: ReqContext, i: UserDetails) -> HandlerResult<AppUserId> {
+    let hashed_password = hash_password(&i.password).expect("password can be hashed");
+    let user = AppUser {
+        fullname: i.fullname.clone(),
+        email: i.email.clone(),
+        is_admin: i.is_admin,
+        hashed_password,
+    };
+    let id = db::create_user(&ctx.state.db_pool, &user).await?;
+    Ok(id)
+}
+
+pub async fn update_user(
+    ctx: ReqContext,
+    i: WithId<AppUserId, UserDetails>,
+) -> HandlerResult<Unit> {
+    let hashed_password = hash_password(&i.value.password).expect("password can be hashed");
+    let user = AppUser {
+        fullname: i.value.fullname.clone(),
+        email: i.value.email.clone(),
+        is_admin: i.value.is_admin,
+        hashed_password,
+    };
+    db::update_user(&ctx.state.db_pool, &i.id, &user).await?;
+    Ok(Unit {})
+}
+
+pub async fn query_users(ctx: ReqContext, i: QueryUsersReq) -> HandlerResult<Paginated<User>> {
+    let users = db::query_users(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
+    let total_count = db::user_count(&ctx.state.db_pool).await?;
+    let page = Paginated {
+        items: users,
+        current_offset: i.page.offset,
+        total_count,
+    };
+    Ok(page)
 }
 
 #[handler]

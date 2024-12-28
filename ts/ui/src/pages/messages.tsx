@@ -14,7 +14,7 @@ export function Messages() {
   const { api, jwt } = useApiWithToken();
 
   const [messages, reloadMessages] = useAsyncLoad(
-    () => api.recentMessages(jwt, { offset: 0, limit: 10 }),
+    () => api.recent_messages(jwt, {page: { offset: 0, limit: 10 }}),
     [api, jwt]
   );
   const message = useTypedFieldState(NON_EMPTY_MULTILINE_STRING_FIELD);;
@@ -23,7 +23,7 @@ export function Messages() {
   async function onPost() {
     if (message.isValid()) {
       setShowErrors(false);
-      await api.newMessage(jwt, { message: message.value() });
+      await api.new_message(jwt, { message: message.value() });
       message.setText("");
       reloadMessages()
     } else {

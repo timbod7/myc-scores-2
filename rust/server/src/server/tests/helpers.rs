@@ -101,6 +101,15 @@ pub async fn server_auth_request<I: Serialize, O: DeserializeOwned>(
     jwt: &str,
     req: &I,
 ) -> O {
+    let resp = server_auth_request1(endpoint, jwt, req).await;
+    resp.json().await.unwrap()
+}
+
+pub async fn server_auth_request1<I: Serialize, O: DeserializeOwned>(
+    endpoint: HttpPost<I, O>,
+    jwt: &str,
+    req: &I,
+) -> reqwest::Response {
     let client = reqwest::Client::new();
     let resp = client
         .post(format!("http://localhost:8181{}", endpoint.path))
@@ -109,8 +118,7 @@ pub async fn server_auth_request<I: Serialize, O: DeserializeOwned>(
         .send()
         .await
         .unwrap();
-    assert_eq!(resp.status(), 200);
-    resp.json().await.unwrap()
+    resp
 }
 
 pub async fn server_auth_get<O: DeserializeOwned>(endpoint: HttpGet<O>, jwt: &str) -> O {
@@ -150,14 +158,16 @@ pub async fn create_test_user(
     fullname: &str,
     email: &str,
     password: &str,
+    is_admin: bool,
 ) -> LoginReq {
     let hashed_password = hash_password(password).expect("password hash to success");
 
     db.execute(
-        &format!("INSERT INTO app_user(id,fullname,email,is_admin,hashed_password) VALUES ('{}', '{}', '{}', true, '{}');",
+        &format!("INSERT INTO app_user(id,fullname,email,is_admin,hashed_password) VALUES ('{}', '{}', '{}', {}, '{}');",
             key,
             fullname,
             email,
+            is_admin,
             hashed_password,
             )
     ).await;

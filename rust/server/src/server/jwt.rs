@@ -19,8 +19,8 @@ pub struct RefreshClaims {
     pub exp: usize,
 }
 
-pub const ROLE_ADMIN: &str = "admin_user";
-pub const ROLE_USER: &str = "normal_user";
+pub const ROLE_ADMIN: &str = "admin";
+pub const ROLE_USER: &str = "user";
 
 pub fn create_admin_access(cfg: &ServerConfig, sub: String) -> String {
     create_access_token(cfg, ROLE_ADMIN, sub)

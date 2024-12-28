@@ -1,9 +1,11 @@
 use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::protoapp::apis;
-use crate::adl::gen::protoapp::apis::ui::{LoginReq, LoginTokens, Message, Paginated, RefreshReq};
+use crate::adl::gen::protoapp::apis::ui::{
+    LoginReq, LoginTokens, Message, PageReq, Paginated, RefreshReq,
+};
 use crate::server::tests::helpers::{
-    create_test_user, login_user, server_auth_get, server_auth_request, server_public_request,
-    test_server_config, DbTestEnv,
+    create_test_user, login_user, server_auth_get, server_auth_request, server_auth_request1,
+    server_public_request, test_server_config, DbTestEnv,
 };
 use crate::server::{AppState, OServer};
 
@@ -111,7 +113,7 @@ async fn server_user_profile() {
     let resp = server_auth_get(apis::ui::ApiRequests::def_who_am_i(), &u1_jwt).await;
     assert_eq!(resp.fullname, "Joe");
     assert_eq!(resp.email, "joe@test.com");
-    assert_eq!(resp.is_admin, true);
+    assert_eq!(resp.is_admin, false);
 
     oserver.shutdown().await.unwrap();
     db.cleanup().await;
@@ -152,6 +154,75 @@ async fn server_messages() {
     db.cleanup().await;
 }
 
+#[tokio::test]
+async fn server_user_crud() {
+    let mut db = DbTestEnv::new().await;
+    let oserver = OServer::spawn(AppState::new(test_server_config(), db.pool.clone()));
+
+    let u1 = create_test_user_joe(&mut db).await;
+    let u2 = create_test_user_sarah(&mut db).await;
+
+    let u1_jwt =
+        get_login_tokens(server_public_request(apis::ui::ApiRequests::def_login(), &u1).await)
+            .unwrap()
+            .access_jwt;
+    let u2_jwt =
+        get_login_tokens(server_public_request(apis::ui::ApiRequests::def_login(), &u2).await)
+            .unwrap()
+            .access_jwt;
+
+    // u1 is not an admin, so shouldn't be allowed to create new users
+    {
+        let http_resp = server_auth_request1(
+            apis::ui::ApiRequests::def_create_user(),
+            &u1_jwt,
+            &apis::ui::UserDetails {
+                fullname: "Austin".to_owned(),
+                email: "austin@mycompany.org".to_owned(),
+                is_admin: false,
+                password: "sukpepolup".to_owned(),
+            },
+        )
+        .await;
+        assert_eq!(http_resp.status(), 403);
+    }
+
+    // u2 is an admin, so can create new users
+    {
+        let http_resp = server_auth_request1(
+            apis::ui::ApiRequests::def_create_user(),
+            &u2_jwt,
+            &apis::ui::UserDetails {
+                fullname: "Austin".to_owned(),
+                email: "austin@mycompany.org".to_owned(),
+                is_admin: false,
+                password: "sukpepolup".to_owned(),
+            },
+        )
+        .await;
+        assert_eq!(http_resp.status(), 200);
+    }
+
+    // and can query existing users
+    {
+        let resp = server_auth_request(
+            apis::ui::ApiRequests::def_query_users(),
+            &u2_jwt,
+            &apis::ui::QueryUsersReq {
+                page: PageReq {
+                    offset: 0,
+                    limit: 100,
+                },
+            },
+        )
+        .await;
+        assert_eq!(resp.items.len(), 3);
+    }
+
+    oserver.shutdown().await.unwrap();
+    db.cleanup().await;
+}
+
 async fn send_message(jwt: &str, message: &str) {
     let _ = server_auth_request(
         apis::ui::ApiRequests::def_new_message(),
@@ -163,11 +234,13 @@ async fn send_message(jwt: &str, message: &str) {
     .await;
 }
 
-async fn recent_messages(jwt: &str, offset: u32, limit: u32) -> Paginated<Message> {
+async fn recent_messages(jwt: &str, offset: u64, limit: u64) -> Paginated<Message> {
     server_auth_request(
         apis::ui::ApiRequests::def_recent_messages(),
         jwt,
-        &apis::ui::RecentMessagesReq { offset, limit },
+        &apis::ui::RecentMessagesReq {
+            page: PageReq { offset, limit },
+        },
     )
     .await
 }
@@ -194,9 +267,9 @@ fn get_login_tokens(resp: apis::ui::LoginResp) -> Option<LoginTokens> {
 }
 
 async fn create_test_user_joe(db: &mut DbTestEnv) -> LoginReq {
-    create_test_user(db, "U-1", "Joe", "joe@test.com", "abcde").await
+    create_test_user(db, "U-1", "Joe", "joe@test.com", "abcde", false).await
 }
 
 async fn create_test_user_sarah(db: &mut DbTestEnv) -> LoginReq {
-    create_test_user(db, "U-2", "Sarah", "sarah@test.com", "uvwxyz").await
+    create_test_user(db, "U-2", "Sarah", "sarah@test.com", "uvwxyz", true).await
 }

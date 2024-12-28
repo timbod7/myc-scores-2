@@ -5,6 +5,7 @@ use crate::adl::gen::common::http::HttpGet;
 use crate::adl::gen::common::http::HttpPost;
 use crate::adl::gen::common::http::HttpSecurity;
 use crate::adl::gen::common::http::Unit;
+use crate::adl::gen::common::strings::EmailAddress;
 use crate::adl::gen::common::strings::Password;
 use crate::adl::gen::common::strings::StringML;
 use crate::adl::gen::common::strings::StringNE;
@@ -52,22 +53,37 @@ pub struct ApiRequests {
    * Post a message to the noticeboard
    */
   #[serde(default="ApiRequests::def_new_message")]
-  #[serde(rename="newMessage")]
   pub new_message: HttpPost<NewMessageReq, MessageId>,
 
   /**
    * Get recent noticeboard messages
    */
   #[serde(default="ApiRequests::def_recent_messages")]
-  #[serde(rename="recentMessages")]
   pub recent_messages: HttpPost<RecentMessagesReq, Paginated<Message>>,
 
   /**
-   * Gets the logged in user details
+   * Gets info about the logged in user
    */
   #[serde(default="ApiRequests::def_who_am_i")]
-  #[serde(rename="whoAmI")]
-  pub who_am_i: HttpGet<UserProfile>,
+  pub who_am_i: HttpGet<User>,
+
+  /**
+   * Create a new user
+   */
+  #[serde(default="ApiRequests::def_create_user")]
+  pub create_user: HttpPost<UserDetails, AppUserId>,
+
+  /**
+   * Update a user
+   */
+  #[serde(default="ApiRequests::def_update_user")]
+  pub update_user: HttpPost<WithId<AppUserId, UserDetails>, Unit>,
+
+  /**
+   * Query users
+   */
+  #[serde(default="ApiRequests::def_query_users")]
+  pub query_users: HttpPost<QueryUsersReq, Paginated<User>>,
 }
 
 impl ApiRequests {
@@ -81,6 +97,9 @@ impl ApiRequests {
       new_message: ApiRequests::def_new_message(),
       recent_messages: ApiRequests::def_recent_messages(),
       who_am_i: ApiRequests::def_who_am_i(),
+      create_user: ApiRequests::def_create_user(),
+      update_user: ApiRequests::def_update_user(),
+      query_users: ApiRequests::def_query_users(),
     }
   }
 
@@ -112,8 +131,20 @@ impl ApiRequests {
     HttpPost::<RecentMessagesReq, Paginated<Message>>{path : "/messages/recent".to_string(), security : HttpSecurity::Token, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_who_am_i() -> HttpGet<UserProfile> {
-    HttpGet::<UserProfile>{path : "/whoami".to_string(), security : HttpSecurity::Token, rate_limit : None, resp_type : std::marker::PhantomData}
+  pub fn def_who_am_i() -> HttpGet<User> {
+    HttpGet::<User>{path : "/whoami".to_string(), security : HttpSecurity::Token, rate_limit : None, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_create_user() -> HttpPost<UserDetails, AppUserId> {
+    HttpPost::<UserDetails, AppUserId>{path : "/users/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_update_user() -> HttpPost<WithId<AppUserId, UserDetails>, Unit> {
+    HttpPost::<WithId<AppUserId, UserDetails>, Unit>{path : "/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_query_users() -> HttpPost<QueryUsersReq, Paginated<User>> {
+    HttpPost::<QueryUsersReq, Paginated<User>>{path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 }
 
@@ -200,27 +231,71 @@ impl NewMessageReq {
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct RecentMessagesReq {
-  #[serde(default="RecentMessagesReq::def_offset")]
-  pub offset: u32,
-
-  #[serde(default="RecentMessagesReq::def_limit")]
-  pub limit: u32,
+  pub page: PageReq,
 }
 
 impl RecentMessagesReq {
-  pub fn new() -> RecentMessagesReq {
+  pub fn new(page: PageReq) -> RecentMessagesReq {
     RecentMessagesReq {
-      offset: RecentMessagesReq::def_offset(),
-      limit: RecentMessagesReq::def_limit(),
+      page: page,
+    }
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct PageReq {
+  #[serde(default="PageReq::def_offset")]
+  pub offset: u64,
+
+  #[serde(default="PageReq::def_limit")]
+  pub limit: u64,
+}
+
+impl PageReq {
+  pub fn new() -> PageReq {
+    PageReq {
+      offset: PageReq::def_offset(),
+      limit: PageReq::def_limit(),
     }
   }
 
-  pub fn def_offset() -> u32 {
-    0_u32
+  pub fn def_offset() -> u64 {
+    0_u64
   }
 
-  pub fn def_limit() -> u32 {
-    20_u32
+  pub fn def_limit() -> u64 {
+    20_u64
+  }
+}
+
+/**
+ * A holder for paginated results
+ */
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct Paginated<T> {
+  /**
+   * The paginated items
+   */
+  pub items: Vec<T>,
+
+  /**
+   * The offset used for this query
+   */
+  pub current_offset: u64,
+
+  /**
+   * The size of the entire date set
+   */
+  pub total_count: u64,
+}
+
+impl<T> Paginated<T> {
+  pub fn new(items: Vec<T>, current_offset: u64, total_count: u64) -> Paginated<T> {
+    Paginated {
+      items: items,
+      current_offset: current_offset,
+      total_count: total_count,
+    }
   }
 }
 
@@ -247,19 +322,37 @@ impl Message {
 }
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct UserProfile {
+pub struct QueryUsersReq {
+  #[serde(default="QueryUsersReq::def_page")]
+  pub page: PageReq,
+}
+
+impl QueryUsersReq {
+  pub fn new() -> QueryUsersReq {
+    QueryUsersReq {
+      page: QueryUsersReq::def_page(),
+    }
+  }
+
+  pub fn def_page() -> PageReq {
+    PageReq{offset : 0_u64, limit : 20_u64}
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct User {
   pub id: AppUserId,
 
-  pub fullname: String,
+  pub fullname: StringNE,
 
-  pub email: String,
+  pub email: EmailAddress,
 
   pub is_admin: bool,
 }
 
-impl UserProfile {
-  pub fn new(id: AppUserId, fullname: String, email: String, is_admin: bool) -> UserProfile {
-    UserProfile {
+impl User {
+  pub fn new(id: AppUserId, fullname: StringNE, email: EmailAddress, is_admin: bool) -> User {
+    User {
       id: id,
       fullname: fullname,
       email: email,
@@ -268,33 +361,40 @@ impl UserProfile {
   }
 }
 
-/**
- * A holder for paginated results
- */
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct Paginated<T> {
-  /**
-   * The paginated items
-   */
-  pub items: Vec<T>,
+pub struct UserDetails {
+  pub fullname: StringNE,
 
-  /**
-   * The offset used for this query
-   */
-  pub current_offset: u32,
+  pub email: EmailAddress,
 
-  /**
-   * The size of the entire date set
-   */
-  pub total_count: u32,
+  pub is_admin: bool,
+
+  pub password: Password,
 }
 
-impl<T> Paginated<T> {
-  pub fn new(items: Vec<T>, current_offset: u32, total_count: u32) -> Paginated<T> {
-    Paginated {
-      items: items,
-      current_offset: current_offset,
-      total_count: total_count,
+impl UserDetails {
+  pub fn new(fullname: StringNE, email: EmailAddress, is_admin: bool, password: Password) -> UserDetails {
+    UserDetails {
+      fullname: fullname,
+      email: email,
+      is_admin: is_admin,
+      password: password,
+    }
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct WithId<I, T> {
+  pub id: I,
+
+  pub value: T,
+}
+
+impl<I, T> WithId<I, T> {
+  pub fn new(id: I, value: T) -> WithId<I, T> {
+    WithId {
+      id: id,
+      value: value,
     }
   }
 }

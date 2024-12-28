@@ -8,7 +8,7 @@ use crate::adl::{
     custom::common::{db::DbKey, time::Instant},
     db::{
         schema,
-        types::{InsertRow, SelectStatementExt},
+        types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
     gen::protoapp::{
         apis,
@@ -86,6 +86,62 @@ pub async fn create_user(pool: &DbPool, user: &AppUser) -> sqlx::Result<AppUserI
     Ok(id)
 }
 
+pub async fn update_user(pool: &DbPool, user_id: &AppUserId, user: &AppUser) -> sqlx::Result<()> {
+    type T = schema::AppUser;
+    let (sql, values) = Query::update()
+        .table(T::table())
+        .svalue(T::email(), &user.email)
+        .svalue(T::fullname(), &user.fullname)
+        .svalue(T::is_admin(), &user.is_admin)
+        .svalue(T::hashed_password(), &user.hashed_password)
+        .and_where(T::id().eq_value(user_id))
+        .build_sqlx(PostgresQueryBuilder);
+    sqlx::query_with(&sql, values).execute(pool).await?;
+    Ok(())
+}
+
+pub async fn query_users(
+    pool: &DbPool,
+    offset: u64,
+    limit: u64,
+) -> sqlx::Result<Vec<apis::ui::User>> {
+    type T = schema::AppUser;
+    let (sql, values) = Query::select()
+        .from(T::table())
+        .scolumn(T::id())
+        .scolumn(T::fullname())
+        .scolumn(T::email())
+        .scolumn(T::is_admin())
+        .offset(offset)
+        .limit(limit)
+        .build_sqlx(PostgresQueryBuilder);
+    let users = sqlx::query_with(&sql, values)
+        .map(|r| apis::ui::User {
+            id: T::id().from_row(&r),
+            fullname: T::fullname().from_row(&r),
+            email: T::fullname().from_row(&r),
+            is_admin: T::is_admin().from_row(&r),
+        })
+        .fetch_all(pool)
+        .await?;
+    Ok(users)
+}
+
+pub async fn user_count(pool: &DbPool) -> sqlx::Result<u64> {
+    type M = schema::AppUser;
+
+    let (sql, values) = Query::select()
+        .from(M::table())
+        .expr(Func::count(Expr::asterisk()))
+        .build_sqlx(PostgresQueryBuilder);
+
+    let count: i64 = sqlx::query_with(&sql, values)
+        .map(|r| r.get(0))
+        .fetch_one(pool)
+        .await?;
+    Ok(count as u64)
+}
+
 pub async fn new_message(
     pool: &DbPool,
     user_id: &AppUserId,
@@ -114,8 +170,8 @@ pub async fn new_message(
 
 pub async fn recent_messages(
     pool: &DbPool,
-    offset: u32,
-    limit: u32,
+    offset: u64,
+    limit: u64,
 ) -> sqlx::Result<Vec<apis::ui::Message>> {
     type U = schema::AppUser;
     type M = schema::Message;
@@ -127,8 +183,8 @@ pub async fn recent_messages(
         .from(M::table())
         .inner_join(U::table(), U::id().expr().eq(M::posted_by().expr()))
         .order_by(schema::Message::posted_at().iden(), Order::Desc)
-        .offset(offset as u64)
-        .limit(limit as u64)
+        .offset(offset)
+        .limit(limit)
         .build_sqlx(PostgresQueryBuilder);
 
     let messages = sqlx::query_with(&sql, values.clone())
@@ -143,7 +199,7 @@ pub async fn recent_messages(
     Ok(messages)
 }
 
-pub async fn message_count(pool: &DbPool) -> sqlx::Result<u32> {
+pub async fn message_count(pool: &DbPool) -> sqlx::Result<u64> {
     type M = schema::Message;
 
     let (sql, values) = Query::select()
@@ -155,7 +211,7 @@ pub async fn message_count(pool: &DbPool) -> sqlx::Result<u32> {
         .map(|r| r.get(0))
         .fetch_one(pool)
         .await?;
-    Ok(count as u32)
+    Ok(count as u64)
 }
 
 fn instant_now() -> Instant {
