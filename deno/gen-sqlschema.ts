@@ -47,7 +47,8 @@ export interface DbTable {
   fields: adlast.Field[];
   ann: Json;
   name: string;
-  primaryKey: string[],
+  primaryKey: string[];
+  idPrefix: string;
 }
 
 export interface DbView {
@@ -83,7 +84,8 @@ export async function loadDbResources(
       const name = getDbTableName(scopedDecl);
       const fields = getDbFields(loadedAdl, scopedDecl);
       const primaryKey = getPrimaryKey(fields);
-      dbResources.tables.push({ scopedName, scopedDecl, fields, ann, name, primaryKey });
+      const idPrefix = (ann as {id_prefix: string}).id_prefix || '';
+      dbResources.tables.push({ scopedName, scopedDecl, fields, ann, name, primaryKey, idPrefix });
     }
   });
   dbResources.tables.sort((t1, t2) => t1.name < t2.name ? -1 : t1.name > t2.name ? 1 : 0);

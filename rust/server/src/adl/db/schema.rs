@@ -17,6 +17,10 @@ impl AppUser {
         "app_user"
     }
 
+    pub fn id_prefix() -> &'static str {
+        "U-"
+    }
+
     pub fn table() -> DynIden {
         Alias::new(Self::table_str()).into_iden()
     }
@@ -47,6 +51,10 @@ pub struct Message {}
 impl Message {
     pub fn table_str() -> &'static str {
         "message"
+    }
+
+    pub fn id_prefix() -> &'static str {
+        "M-"
     }
 
     pub fn table() -> DynIden {

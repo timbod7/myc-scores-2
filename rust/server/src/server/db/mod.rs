@@ -67,7 +67,7 @@ async fn get_user(
 
 pub async fn create_user(pool: &DbPool, user: &AppUser) -> sqlx::Result<AppUserId> {
     type T = schema::AppUser;
-    let id: AppUserId = DbKey::new("U-");
+    let id: AppUserId = DbKey::new(T::id_prefix());
 
     let (icolumns, ivalues) = InsertRow::new()
         .field(T::id(), &id)
@@ -149,10 +149,10 @@ pub async fn new_message(
     user_id: &AppUserId,
     message: &String,
 ) -> sqlx::Result<MessageId> {
-    let id: MessageId = DbKey::new("M-");
-    let posted_at = instant_now();
-
     type T = schema::Message;
+
+    let id: MessageId = DbKey::new(T::id_prefix());
+    let posted_at = instant_now();
 
     let (icolumns, ivalues) = InsertRow::new()
         .field(T::id(), &id)

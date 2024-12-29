@@ -22,6 +22,9 @@ struct DbTable
   // The textual columns used to assemble a label for the row
   // (to be shown in UIs alongside  the id)
   Vector<String> label = [];
+
+  // A text prefix for primary keys for this table (if it has them)
+  String id_prefix = "";
 };
 
 // Annotation to indicate that an ADL type is to be

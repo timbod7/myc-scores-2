@@ -54,6 +54,12 @@ export async function genRustSeaQuerySchema(
     writer.write(`        "${dbt.name}"\n`);
     writer.write(`    }\n`);
     writer.write(`\n`);
+    if (dbt.idPrefix !== "") {
+      writer.write(`    pub fn id_prefix() -> &'static str {\n`);
+      writer.write(`        "${dbt.idPrefix}"\n`);
+      writer.write(`    }\n`);
+      writer.write(`\n`);
+    }
     writer.write(`    pub fn table() -> DynIden {\n`);
     writer.write(`        Alias::new(Self::table_str()).into_iden()\n`);
     writer.write(`    }\n`);

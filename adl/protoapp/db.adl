@@ -19,7 +19,8 @@ type AppUserId = DbKey<AppUserTable>;
 
 annotation AppUserTable DbTable {
   "indexes" : [["email"]],
-  "uniqueness_constraints": [["email"]]
+  "uniqueness_constraints": [["email"]],
+  "id_prefix": "U-"
 };
 
 struct Message {
@@ -32,7 +33,8 @@ newtype MessageTable = WithId<Message>;
 type MessageId = DbKey<MessageTable>;
 
 annotation MessageTable DbTable {
-  "indexes" : [["posted_at"]]
+  "indexes" : [["posted_at"]],
+  "id_prefix": "M-"
 };
 
 };

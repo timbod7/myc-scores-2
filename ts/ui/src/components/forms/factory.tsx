@@ -1,4 +1,4 @@
-import { ScopedDecl, scopedNamesEqual, texprString } from "@adllang/adl-runtime";
+import { createJsonBinding, getAnnotation, ScopedDecl, scopedNamesEqual, texprString } from "@adllang/adl-runtime";
 import { typeExprsEqual } from "@adllang/adl-runtime";
 
 import { getValidRegexAnnotation } from "./model/adl-annotations";
@@ -10,7 +10,8 @@ import { invalid, OVEditor, UpdateFn, valid } from "./model/veditor/type";
 import { RenderFn, RenderProps } from "./mui/veditor";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { snPassword, snStringML } from "@/adl-gen/common/strings";
-import { snDbKey } from "@/adl-gen/common/db";
+import { snDbKey, texprDbTable } from "@/adl-gen/common/db";
+import { RESOLVER } from "@/adl-gen/resolver";
 import { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
@@ -55,6 +56,16 @@ function regexpFields(ctx: CustomContext): FieldFns<unknown> | null {
 /// use a text field restricted to be a valid db key
 function dbKeyField(ctx: CustomContext): FieldFns<unknown> | null {
   if (ctx.typeExpr.typeRef.kind === "reference" && scopedNamesEqual(ctx.typeExpr.typeRef.value, snDbKey)) {
+    const underlyingTable = ctx.typeExpr.parameters[0];
+    if (underlyingTable.typeRef.kind === 'reference') {
+      const decl = RESOLVER(underlyingTable.typeRef.value);
+      if (decl) {
+        const {tableName,idPrefix} = getDbTableNameAndIdPrefix(decl);
+        if (tableName && idPrefix) {
+          return regexStringFieldFns(`^${idPrefix}[A-Za-z0-9]+$`, `a db key for ${tableName}`, 0);
+        }
+      }
+    }
     return regexStringFieldFns('^[A-Z]+-[A-Za-z0-9]+$', 'a db key', 0);
   }
   return null;
@@ -152,3 +163,25 @@ function passwordEditor(ctx: CustomContext): OVEditor<string, RenderFn> | null {
   }
   return null;
 }
+
+function getDbTableNameAndIdPrefix(scopedDecl: ScopedDecl): {tableName: string, idPrefix: string} {
+  const ann = getAnnotation(JB_DBTABLE, scopedDecl.decl.annotations);
+  let tableName = snakeCase(scopedDecl.decl.name);
+  if (tableName.endsWith("_table")) {
+    tableName = tableName.substring(0, tableName.length - 6);
+  }
+  let idPrefix = "";
+  if (ann && ann.table_name) {
+    tableName = ann.table_name;
+  }
+  if (ann && ann.id_prefix) {
+    idPrefix = ann.id_prefix;
+  }
+  return {tableName, idPrefix};
+}
+
+function snakeCase(s: string): string {
+  return s.replace(/(([a-z])(?=[A-Z][a-zA-Z])|([A-Z])(?=[A-Z][a-z]))/g,'$1_').toLowerCase();
+ }
+
+const JB_DBTABLE = createJsonBinding(RESOLVER, texprDbTable());

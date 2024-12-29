@@ -19,6 +19,9 @@ pub struct DbTable {
 
   #[serde(default="DbTable::def_label")]
   pub label: Vec<String>,
+
+  #[serde(default="DbTable::def_id_prefix")]
+  pub id_prefix: String,
 }
 
 impl DbTable {
@@ -29,6 +32,7 @@ impl DbTable {
       uniqueness_constraints: DbTable::def_uniqueness_constraints(),
       extra_sql: DbTable::def_extra_sql(),
       label: DbTable::def_label(),
+      id_prefix: DbTable::def_id_prefix(),
     }
   }
 
@@ -50,6 +54,10 @@ impl DbTable {
 
   pub fn def_label() -> Vec<String> {
     vec![]
+  }
+
+  pub fn def_id_prefix() -> String {
+    "".to_string()
   }
 }
 
