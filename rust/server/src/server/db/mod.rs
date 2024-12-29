@@ -104,7 +104,7 @@ pub async fn query_users(
     pool: &DbPool,
     offset: u64,
     limit: u64,
-) -> sqlx::Result<Vec<apis::ui::User>> {
+) -> sqlx::Result<Vec<apis::ui::UserWithId>> {
     type T = schema::AppUser;
     let (sql, values) = Query::select()
         .from(T::table())
@@ -116,11 +116,13 @@ pub async fn query_users(
         .limit(limit)
         .build_sqlx(PostgresQueryBuilder);
     let users = sqlx::query_with(&sql, values)
-        .map(|r| apis::ui::User {
+        .map(|r| apis::ui::UserWithId {
             id: T::id().from_row(&r),
-            fullname: T::fullname().from_row(&r),
-            email: T::fullname().from_row(&r),
-            is_admin: T::is_admin().from_row(&r),
+            value: apis::ui::User {
+                fullname: T::fullname().from_row(&r),
+                email: T::email().from_row(&r),
+                is_admin: T::is_admin().from_row(&r),
+            },
         })
         .fetch_all(pool)
         .await?;

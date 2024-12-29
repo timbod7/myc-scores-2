@@ -65,7 +65,7 @@ pub struct ApiRequests {
    * Gets info about the logged in user
    */
   #[serde(default="ApiRequests::def_who_am_i")]
-  pub who_am_i: HttpGet<User>,
+  pub who_am_i: HttpGet<UserWithId>,
 
   /**
    * Create a new user
@@ -83,7 +83,7 @@ pub struct ApiRequests {
    * Query users
    */
   #[serde(default="ApiRequests::def_query_users")]
-  pub query_users: HttpPost<QueryUsersReq, Paginated<User>>,
+  pub query_users: HttpPost<QueryUsersReq, Paginated<UserWithId>>,
 }
 
 impl ApiRequests {
@@ -131,8 +131,8 @@ impl ApiRequests {
     HttpPost::<RecentMessagesReq, Paginated<Message>>{path : "/messages/recent".to_string(), security : HttpSecurity::Token, rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_who_am_i() -> HttpGet<User> {
-    HttpGet::<User>{path : "/whoami".to_string(), security : HttpSecurity::Token, rate_limit : None, resp_type : std::marker::PhantomData}
+  pub fn def_who_am_i() -> HttpGet<UserWithId> {
+    HttpGet::<UserWithId>{path : "/whoami".to_string(), security : HttpSecurity::Token, rate_limit : None, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_create_user() -> HttpPost<UserDetails, AppUserId> {
@@ -143,8 +143,8 @@ impl ApiRequests {
     HttpPost::<WithId<AppUserId, UserDetails>, Unit>{path : "/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_query_users() -> HttpPost<QueryUsersReq, Paginated<User>> {
-    HttpPost::<QueryUsersReq, Paginated<User>>{path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  pub fn def_query_users() -> HttpPost<QueryUsersReq, Paginated<UserWithId>> {
+    HttpPost::<QueryUsersReq, Paginated<UserWithId>>{path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), rate_limit : None, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 }
 
@@ -341,8 +341,6 @@ impl QueryUsersReq {
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct User {
-  pub id: AppUserId,
-
   pub fullname: StringNE,
 
   pub email: EmailAddress,
@@ -351,15 +349,16 @@ pub struct User {
 }
 
 impl User {
-  pub fn new(id: AppUserId, fullname: StringNE, email: EmailAddress, is_admin: bool) -> User {
+  pub fn new(fullname: StringNE, email: EmailAddress, is_admin: bool) -> User {
     User {
-      id: id,
       fullname: fullname,
       email: email,
       is_admin: is_admin,
     }
   }
 }
+
+pub type UserWithId = WithId<AppUserId, User>;
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct UserDetails {

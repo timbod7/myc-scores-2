@@ -6,7 +6,7 @@ use crate::adl::custom::common::db::DbKey;
 use crate::adl::gen::common::http::Unit;
 use crate::adl::gen::protoapp::apis::ui::{
     ApiRequests, LoginReq, LoginResp, LoginTokens, Message, Paginated, QueryUsersReq,
-    RecentMessagesReq, RefreshReq, RefreshResp, User, UserDetails, WithId,
+    RecentMessagesReq, RefreshReq, RefreshResp, User, UserDetails, UserWithId, WithId,
 };
 use crate::adl::gen::protoapp::config::server::ServerConfig;
 use crate::adl::gen::protoapp::db::{AppUser, AppUserId};
@@ -93,15 +93,17 @@ pub async fn recent_messages(
     })
 }
 
-pub async fn who_am_i(ctx: ReqContext) -> HandlerResult<User> {
+pub async fn who_am_i(ctx: ReqContext) -> HandlerResult<UserWithId> {
     let user_id = user_from_claims(&ctx.claims)?;
     let user = db::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
     match user {
-        Some((user_id, user)) => Ok(User {
+        Some((user_id, user)) => Ok(UserWithId {
             id: user_id.clone(),
-            fullname: user.fullname,
-            email: user.email,
-            is_admin: user.is_admin,
+            value: User {
+                fullname: user.fullname,
+                email: user.email,
+                is_admin: user.is_admin,
+            },
         }),
         None => Err(forbidden()),
     }
@@ -134,7 +136,10 @@ pub async fn update_user(
     Ok(Unit {})
 }
 
-pub async fn query_users(ctx: ReqContext, i: QueryUsersReq) -> HandlerResult<Paginated<User>> {
+pub async fn query_users(
+    ctx: ReqContext,
+    i: QueryUsersReq,
+) -> HandlerResult<Paginated<UserWithId>> {
     let users = db::query_users(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
     let total_count = db::user_count(&ctx.state.db_pool).await?;
     let page = Paginated {

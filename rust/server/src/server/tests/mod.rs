@@ -111,9 +111,9 @@ async fn server_user_profile() {
     let u1_jwt = login_user(&u1).await;
 
     let resp = server_auth_get(apis::ui::ApiRequests::def_who_am_i(), &u1_jwt).await;
-    assert_eq!(resp.fullname, "Joe");
-    assert_eq!(resp.email, "joe@test.com");
-    assert_eq!(resp.is_admin, false);
+    assert_eq!(resp.value.fullname, "Joe");
+    assert_eq!(resp.value.email, "joe@test.com");
+    assert_eq!(resp.value.is_admin, false);
 
     oserver.shutdown().await.unwrap();
     db.cleanup().await;
