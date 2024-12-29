@@ -8,11 +8,13 @@ export interface Auth {
 export interface JwtClaims {
   sub: string,
   exp: number,
+  role: string,
 };
 
 export interface ApiWithToken {
   api: Service,
   jwt: string,
+  jwt_decoded: JwtClaims,
 }
 
 export function expiry_secs(claims: JwtClaims): number {

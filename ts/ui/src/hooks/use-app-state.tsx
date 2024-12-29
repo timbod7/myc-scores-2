@@ -142,5 +142,7 @@ export function useApiWithToken(): ApiWithToken {
   return {
     api: appState.api,
     jwt: appState.authState.auth.jwt,
+    jwt_decoded: appState.authState.auth.jwt_decoded,
+
   }
 }

@@ -8,7 +8,7 @@ import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
 import { Modal } from "@/components/forms/mui/modal";
 import { VEditor } from "@/components/forms/mui/veditor";
 import { createUiFactory } from "@/components/forms/factory";
-import { useApiWithToken } from "@/hooks/use-app-state";
+import { useApiWithToken, useAppState } from "@/hooks/use-app-state";
 import { AdlRequestError, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
@@ -49,9 +49,18 @@ type CompletedResponse<O>
   ;
 
 export function AdminDashboard() {
-  const { api, jwt } = useApiWithToken();
-  const endpoints = getEndpoints(RESOLVER, API.texprApiRequests());
+  const { api, jwt, jwt_decoded } = useApiWithToken();
 
+  const endpoints = useMemo( () => {
+    const allEndpoints = getEndpoints(RESOLVER, API.texprApiRequests());
+    // only show endpoints accessible to the logged in user
+    return allEndpoints.filter( ep =>
+       ep.security.kind === 'public' ||
+       ep.security.kind === 'token' || 
+       ep.security.kind === 'tokenWithRole' && ep.security.value === jwt_decoded.role
+   );
+  }, [jwt_decoded] );
+    
   const [currentRequest, setCurrentRequest] = useState<ExecutingRequest<unknown, unknown>>();
   const [prevRequests, setPrevRequests] = useState<CompletedRequest<unknown, unknown>[]>([]);
   const [modal, setModal] = useState<ModalState | undefined>();
