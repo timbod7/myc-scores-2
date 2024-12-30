@@ -51,10 +51,10 @@ type CompletedResponse<O>
 export function AdminDashboard() {
   const appState = useAppState();
   const {authState, api} = appState;
+  const jwt_decoded = authState.kind === 'auth' ? authState.auth.jwt_decoded : undefined;
 
   const endpoints = useMemo( () => {
     const allEndpoints = getEndpoints(RESOLVER, API.texprApiRequests());
-    const jwt_decoded = authState.kind === 'auth' ? authState.auth.jwt_decoded : undefined;
 
     // only show endpoints accessible for the current authstate
     return allEndpoints.filter( ep =>
@@ -115,11 +115,12 @@ export function AdminDashboard() {
         </Typography>
         {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
         {currentRequest && <ExecutingRequest value={currentRequest} />}
-        <div ref={newRequestButtonRef}>
-          <Button sx={{ marginBottom: "20px" }} disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
+        <Box ref={newRequestButtonRef} sx={{marginBottom: "20px", display:"flex",flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+          <Button disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
             NEW REQUEST
           </Button>
-        </div>
+          {jwt_decoded && <Box sx={{fontSize:"0.9rem"}}>sub: {jwt_decoded.sub} / role: {jwt_decoded.role}</Box>}
+        </Box>
       </Box>
       {renderModal()}
     </Container>
