@@ -20,7 +20,8 @@ export function Login() {
 
   async function onLogin() {
     if (formValid) {
-      const resp = await appState.login(email.value(), password.value());
+      const resp = await appState.api.login({email: email.value(), password: password.value()});
+      appState.setAuthStateFromLogin(resp);
       if (resp.kind === 'tokens') {
         navigate(messagesUrl());
       }

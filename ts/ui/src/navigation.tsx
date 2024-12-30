@@ -10,8 +10,7 @@ export const ROUTES = {
   '/login': () => <Login />,
   '/logout': () => <Logout/>,
   '/messages': () => <RequireLogin><Messages/></RequireLogin>,
-  '/admin': () =>
-    <RequireLogin><AdminDashboard/></RequireLogin>,
+  '/admin': () =><AdminDashboard/>,
 };
 
 

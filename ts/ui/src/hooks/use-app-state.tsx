@@ -15,10 +15,10 @@ const protoappApi = new Service(
 );
 
 
-interface AppState {
+export interface AppState {
   api: Service,
   authState: AuthState,
-  login(email: string, password: string): Promise<LoginResp>,
+  setAuthStateFromLogin(resp: LoginResp): void,
   logout(): Promise<void>,
 }
 
@@ -57,20 +57,10 @@ export function AppStateProvider(props: {
     }
   }
 
-  async function login(email: string, password: string): Promise<LoginResp> {
-    const resp = await protoappApi.login({ email, password });
-    if (resp.kind == 'tokens') {
-      console.log(`using new jwt from login`);
-    }
-    await setAuthStateFromLogin(resp);
-    return resp;
-  }
-
   async function logout() {
     await protoappApi.logout({});
     console.log(`logout`);
     setAuthState({ kind: 'noauth' });
-    navigate(logoutUrl());
   }
 
   async function refresh() {
@@ -115,7 +105,7 @@ export function AppStateProvider(props: {
   const apiManager = {
     api: protoappApi,
     authState,
-    login,
+    setAuthStateFromLogin,
     logout
   };
 

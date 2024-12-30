@@ -63,8 +63,8 @@ This will create the db schema and/or apply any necessary migrations
 (
 cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
-cargo run --bin protoapp-tools -- create-user joe@test.com Joe xyzzy
-cargo run --bin protoapp-tools -- create-user --is-admin sarah@test.com Sarah abcde
+cargo run --bin protoapp-tools -- create-user joe@test.com Joe xyzzy1
+cargo run --bin protoapp-tools -- create-user --is-admin sarah@test.com Sarah abcdef
 )
 ```
 

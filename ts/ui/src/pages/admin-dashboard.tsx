@@ -8,7 +8,7 @@ import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
 import { Modal } from "@/components/forms/mui/modal";
 import { VEditor } from "@/components/forms/mui/veditor";
 import { createUiFactory } from "@/components/forms/factory";
-import { useApiWithToken, useAppState } from "@/hooks/use-app-state";
+import { AppState, AuthState, useApiWithToken, useAppState } from "@/hooks/use-app-state";
 import { AdlRequestError, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
@@ -49,17 +49,20 @@ type CompletedResponse<O>
   ;
 
 export function AdminDashboard() {
-  const { api, jwt, jwt_decoded } = useApiWithToken();
+  const appState = useAppState();
+  const {authState, api} = appState;
 
   const endpoints = useMemo( () => {
     const allEndpoints = getEndpoints(RESOLVER, API.texprApiRequests());
-    // only show endpoints accessible to the logged in user
+    const jwt_decoded = authState.kind === 'auth' ? authState.auth.jwt_decoded : undefined;
+
+    // only show endpoints accessible for the current authstate
     return allEndpoints.filter( ep =>
        ep.security.kind === 'public' ||
-       ep.security.kind === 'token' || 
-       ep.security.kind === 'tokenWithRole' && ep.security.value === jwt_decoded.role
+       ep.security.kind === 'token' && authState.kind == 'auth' ||
+       ep.security.kind === 'tokenWithRole' && jwt_decoded && ep.security.value === jwt_decoded.role
    );
-  }, [jwt_decoded] );
+  }, [authState] );
     
   const [currentRequest, setCurrentRequest] = useState<ExecutingRequest<unknown, unknown>>();
   const [prevRequests, setPrevRequests] = useState<CompletedRequest<unknown, unknown>[]>([]);
@@ -70,7 +73,11 @@ export function AdminDashboard() {
     setModal(undefined);
     const startedAt = new Date();
     setCurrentRequest({ startedAt, endpoint, req });
+    const jwt = authState.kind == 'auth' ? authState.auth.jwt : undefined;
     const completed = await executeRequest(api, jwt, endpoint, req, startedAt);
+    if( completed.resp.success) {
+      updateAppState(appState, endpoint, req, completed.resp.value);
+    }
     setPrevRequests(pr => [...pr, completed]);
     setCurrentRequest(undefined);
     setTimeout(
@@ -257,7 +264,7 @@ function MyJsonView(props: {
   );
 }
 
-async function executeRequest<I, O>(service: ServiceBase, jwt: string, endpoint: HttpPostEndpoint<I, O>, req: I, startedAt: Date): Promise<CompletedRequest<I, O>> {
+async function executeRequest<I, O>(service: ServiceBase, jwt: string | undefined, endpoint: HttpPostEndpoint<I, O>, req: I, startedAt: Date): Promise<CompletedRequest<I, O>> {
 
   let resp: CompletedResponse<O>;
   try {
@@ -273,12 +280,23 @@ async function executeRequest<I, O>(service: ServiceBase, jwt: string, endpoint:
       resp = { success: false, httpStatus: 999, responseBody: 'unknown error' };
     }
   }
+
+
   return {
     startedAt,
     durationMs: new Date().getTime() - startedAt.getTime(),
     endpoint,
     req,
     resp,
+  }
+}
+
+function updateAppState<I, O>(appState: AppState, endpoint: HttpPostEndpoint<I, O>, req: I, resp: O) {
+  // All the endpoint handling is generic except for here, where we update the auth state when the
+  // login or logout endpoints are called.
+  switch (endpoint.name) {
+    case 'login': appState.setAuthStateFromLogin(resp as API.LoginResp); break;
+    case 'logout': appState.logout(); break;
   }
 }
 
