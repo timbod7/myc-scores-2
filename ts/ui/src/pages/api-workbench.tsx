@@ -48,7 +48,7 @@ type CompletedResponse<O>
   | { success: false, httpStatus: number, responseBody: string }
   ;
 
-export function AdminDashboard() {
+export function ApiWorkbench() {
   const appState = useAppState();
   const {authState, api} = appState;
   const jwt_decoded = authState.kind === 'auth' ? authState.auth.jwt_decoded : undefined;
@@ -111,7 +111,7 @@ export function AdminDashboard() {
     <Container fixed>
       <Box>
         <Typography variant="h4" component="h1" sx={{ mb: 2, marginTop: "20px" }}>
-          Admin Dashboard
+          API Workbench
         </Typography>
         {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
         {currentRequest && <ExecutingRequest value={currentRequest} />}
