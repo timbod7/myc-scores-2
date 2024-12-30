@@ -12,21 +12,24 @@ import { AppState, AuthState, useApiWithToken, useAppState } from "@/hooks/use-a
 import { AdlRequestError, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
-import { Box, Button, Card, CircularProgress, Container, Divider, Typography } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Container, Divider, IconButton, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { JSX, useMemo, useRef, useState } from "react";
 import JsonView from 'react18-json-view';
 import 'react18-json-view/src/style.css';
 
-type ModalState = ChooseEndpoint | CreateRequest;
+type ModalState = ChooseEndpoint | CreateRequest<unknown>;
 
 interface ChooseEndpoint {
   state: 'choose-endpoint';
   endpoints: Endpoint[],
 }
 
-interface CreateRequest {
+interface CreateRequest<I> {
   state: 'create-request';
   endpoint: Endpoint,
+  initial: I | undefined,
 }
 
 interface ExecutingRequest<I, O> {
@@ -86,13 +89,23 @@ export function ApiWorkbench() {
     );
   }
 
+  async function removeCompleted(ci: number) {
+    setPrevRequests(pr => {
+      return pr.filter((_e, i) => i != ci);
+    });
+  }
+
+  async function reexecuteCompleted<I, O>(completed: CompletedRequest<I, O>) {
+    setModal({state:'create-request', endpoint:completed.endpoint, initial: completed.req});
+  }
+
   function renderModal(): JSX.Element | undefined {
     if (modal) {
       switch (modal.state) {
         case 'choose-endpoint': return (
           <ModalChooseEndpoint
             cancel={() => setModal(undefined)}
-            choose={endpoint => setModal({ state: 'create-request', endpoint })}
+            choose={endpoint => setModal({ state: 'create-request', endpoint, initial: undefined })}
             endpoints={endpoints}
           />
         );
@@ -101,6 +114,7 @@ export function ApiWorkbench() {
             cancel={() => setModal(undefined)}
             endpoint={modal.endpoint}
             execute={execute}
+            initial={modal.initial}
           />
         );
       }
@@ -113,7 +127,7 @@ export function ApiWorkbench() {
         <Typography variant="h4" component="h1" sx={{ mb: 2, marginTop: "20px" }}>
           API Workbench
         </Typography>
-        {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} />)}
+        {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} reexecute={reexecuteCompleted} remove={() => removeCompleted(i)}/>)}
         {currentRequest && <ExecutingRequest value={currentRequest} />}
         <Box ref={newRequestButtonRef} sx={{marginBottom: "20px", display:"flex",flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
           <Button disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
@@ -153,11 +167,13 @@ function ModalChooseEndpoint(props: {
 function ModalCreateRequest<I, O>(props: {
   endpoint: HttpPostEndpoint<I, O>,
   cancel: () => void,
-  execute: (endpoint: HttpPostEndpoint<I, O>, req: I) => void
+  execute: (endpoint: HttpPostEndpoint<I, O>, req: I) => void,
+  initial: I | undefined,
 }) {
   const state = useAdlFormState({
     veditor: props.endpoint.veditorI,
     jsonBinding: props.endpoint.jsonBindingI,
+    value0: props.initial,
   });
 
   const value = state.veditor.valueFromState(state.veditorState);
@@ -211,7 +227,9 @@ function ExecutingRequest<I, O>(props: {
 
 
 function CompletedRequest<I, O>(props: {
-  value: CompletedRequest<I, O>,
+  value: CompletedRequest<I, O>;
+  reexecute(cr : CompletedRequest<I,O>): void;
+  remove(): void;
 }) {
   const { endpoint, req, resp } = props.value;
   const jsonI = useMemo(
@@ -229,8 +247,12 @@ function CompletedRequest<I, O>(props: {
   );
   return (
     <Card sx={{ marginTop: "10px", marginBottom: "10px" }}>
-      <Box sx={{ margin: "10px" }}>
+      <Box sx={{ margin: "10px", display: "flex", flexDirection:"row", justifyContent: "space-between", alignItems: "center" }}>
         <b>{endpoint.name}</b>
+        <Box>
+          <IconButton size="small" onClick={() => props.reexecute(props.value)} ><RefreshIcon fontSize="small"/></IconButton>
+          <IconButton size="small" onClick={() => props.remove()}><DeleteIcon fontSize="small"/></IconButton>
+        </Box>
       </Box>
       <Divider />
       <Box sx={{ margin: "10px" }}>
