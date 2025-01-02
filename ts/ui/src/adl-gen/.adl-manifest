@@ -6,7 +6,6 @@ common/time.ts
 common/ui.ts
 protoapp/apis/ui.ts
 protoapp/db.ts
-protoapp/ui.ts
 resolver.ts
 sys/adlast.ts
 sys/annotations.ts

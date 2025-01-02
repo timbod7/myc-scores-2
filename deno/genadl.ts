@@ -21,7 +21,6 @@ async function main() {
       ...commonFlags,
       adlModules: [
         "protoapp.apis.ui",
-        "protoapp.ui",
         "sys.adlast",
         "common.ui",
       ],
