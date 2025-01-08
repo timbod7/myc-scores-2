@@ -50,6 +50,6 @@ if [ ! -f "$localdir/bin/deno" ]; then
 fi
 
 # Now use a deno script to install all other local tooling
-deno run --quiet --unstable --allow-all $reporoot/deno/local-setup.ts $denoversion $localdir
+$localbin/deno run --quiet --unstable --allow-all $reporoot/deno/local-setup.ts $denoversion $localdir
 source $localdir/bin/local-env.sh
 
