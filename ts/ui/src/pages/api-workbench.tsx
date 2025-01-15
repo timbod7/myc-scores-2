@@ -127,8 +127,8 @@ export function ApiWorkbench() {
         <Typography variant="h4" component="h1" sx={{ mb: 2, marginTop: "20px" }}>
           API Workbench
         </Typography>
-        {prevRequests.map((value, i) => <CompletedRequest key={i} value={value} reexecute={reexecuteCompleted} remove={() => removeCompleted(i)}/>)}
-        {currentRequest && <ExecutingRequest value={currentRequest} />}
+        {prevRequests.map((value, i) => <CompletedRequestView key={i} value={value} reexecute={reexecuteCompleted} remove={() => removeCompleted(i)}/>)}
+        {currentRequest && <ExecutingRequestView value={currentRequest} />}
         <Box ref={newRequestButtonRef} sx={{marginBottom: "20px", display:"flex",flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
           <Button disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
             NEW REQUEST
@@ -201,7 +201,7 @@ function ModalCreateRequest<I, O>(props: {
   );
 }
 
-function ExecutingRequest<I, O>(props: {
+function ExecutingRequestView<I, O>(props: {
   value: ExecutingRequest<I, O>,
 }) {
   const { endpoint, req } = props.value;
@@ -226,7 +226,7 @@ function ExecutingRequest<I, O>(props: {
 }
 
 
-function CompletedRequest<I, O>(props: {
+function CompletedRequestView<I, O>(props: {
   value: CompletedRequest<I, O>;
   reexecute(cr : CompletedRequest<I,O>): void;
   remove(): void;
