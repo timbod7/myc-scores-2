@@ -53,20 +53,20 @@ type CompletedResponse<O>
 
 export function ApiWorkbench() {
   const appState = useAppState();
-  const {authState, api} = appState;
+  const { authState, api } = appState;
   const jwt_decoded = authState.kind === 'auth' ? authState.auth.jwt_decoded : undefined;
 
-  const endpoints = useMemo( () => {
+  const endpoints = useMemo(() => {
     const allEndpoints = getEndpoints(RESOLVER, API.texprApiRequests());
 
     // only show endpoints accessible for the current authstate
-    return allEndpoints.filter( ep =>
-       ep.security.kind === 'public' ||
-       ep.security.kind === 'token' && authState.kind == 'auth' ||
-       ep.security.kind === 'tokenWithRole' && jwt_decoded && ep.security.value === jwt_decoded.role
-   );
-  }, [authState] );
-    
+    return allEndpoints.filter(ep =>
+      ep.security.kind === 'public' ||
+      ep.security.kind === 'token' && authState.kind == 'auth' ||
+      ep.security.kind === 'tokenWithRole' && jwt_decoded && ep.security.value === jwt_decoded.role
+    );
+  }, [authState]);
+
   const [currentRequest, setCurrentRequest] = useState<ExecutingRequest<unknown, unknown>>();
   const [prevRequests, setPrevRequests] = useState<CompletedRequest<unknown, unknown>[]>([]);
   const [modal, setModal] = useState<ModalState | undefined>();
@@ -78,7 +78,7 @@ export function ApiWorkbench() {
     setCurrentRequest({ startedAt, endpoint, req });
     const jwt = authState.kind == 'auth' ? authState.auth.jwt : undefined;
     const completed = await executeRequest(api, jwt, endpoint, req, startedAt);
-    if( completed.resp.success) {
+    if (completed.resp.success) {
       updateAppState(appState, endpoint, req, completed.resp.value);
     }
     setPrevRequests(pr => [...pr, completed]);
@@ -96,7 +96,7 @@ export function ApiWorkbench() {
   }
 
   async function reexecuteCompleted<I, O>(completed: CompletedRequest<I, O>) {
-    setModal({state:'create-request', endpoint:completed.endpoint, initial: completed.req});
+    setModal({ state: 'create-request', endpoint: completed.endpoint, initial: completed.req });
   }
 
   function renderModal(): JSX.Element | undefined {
@@ -127,13 +127,13 @@ export function ApiWorkbench() {
         <Typography variant="h4" component="h1" sx={{ mb: 2, marginTop: "20px" }}>
           API Workbench
         </Typography>
-        {prevRequests.map((value, i) => <CompletedRequestView key={i} value={value} reexecute={reexecuteCompleted} remove={() => removeCompleted(i)}/>)}
+        {prevRequests.map((value, i) => <CompletedRequestView key={i} value={value} reexecute={reexecuteCompleted} remove={() => removeCompleted(i)} />)}
         {currentRequest && <ExecutingRequestView value={currentRequest} />}
-        <Box ref={newRequestButtonRef} sx={{marginBottom: "20px", display:"flex",flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+        <Box ref={newRequestButtonRef} sx={{ marginBottom: "20px", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <Button disabled={!!currentRequest} onClick={() => setModal({ 'state': 'choose-endpoint', endpoints })}>
             NEW REQUEST
           </Button>
-          {jwt_decoded && <Box sx={{fontSize:"0.9rem"}}>sub: {jwt_decoded.sub} / role: {jwt_decoded.role}</Box>}
+          {jwt_decoded && <Box sx={{ fontSize: "0.9rem" }}>sub: {jwt_decoded.sub} / role: {jwt_decoded.role}</Box>}
         </Box>
       </Box>
       {renderModal()}
@@ -211,12 +211,12 @@ function ExecutingRequestView<I, O>(props: {
     [endpoint, req]
   );
   return (
-    <Card sx={{ margin: "10px"}}>
+    <Card sx={{ margin: "10px" }}>
       <Box sx={{ margin: "10px" }}>
         <b>{endpoint.name}</b>
       </Box>
       <Divider />
-      <Box sx={{ margin: "10px"}}>
+      <Box sx={{ margin: "10px" }}>
         <MyJsonView data={jsonI} />
       </Box>
       <Divider />
@@ -228,7 +228,7 @@ function ExecutingRequestView<I, O>(props: {
 
 function CompletedRequestView<I, O>(props: {
   value: CompletedRequest<I, O>;
-  reexecute(cr : CompletedRequest<I,O>): void;
+  reexecute(cr: CompletedRequest<I, O>): void;
   remove(): void;
 }) {
   const { endpoint, req, resp } = props.value;
@@ -247,11 +247,11 @@ function CompletedRequestView<I, O>(props: {
   );
   return (
     <Card sx={{ marginTop: "10px", marginBottom: "10px" }}>
-      <Box sx={{ margin: "10px", display: "flex", flexDirection:"row", justifyContent: "space-between", alignItems: "center" }}>
+      <Box sx={{ margin: "10px", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <b>{endpoint.name}</b>
         <Box>
-          <IconButton size="small" onClick={() => props.reexecute(props.value)} ><RefreshIcon fontSize="small"/></IconButton>
-          <IconButton size="small" onClick={() => props.remove()}><DeleteIcon fontSize="small"/></IconButton>
+          <IconButton size="small" onClick={() => props.reexecute(props.value)} ><RefreshIcon fontSize="small" /></IconButton>
+          <IconButton size="small" onClick={() => props.remove()}><DeleteIcon fontSize="small" /></IconButton>
         </Box>
       </Box>
       <Divider />
@@ -259,11 +259,11 @@ function CompletedRequestView<I, O>(props: {
         <MyJsonView data={jsonI} />
       </Box>
       <Divider />
-      <Box sx={{ margin: "10px"}}>
+      <Box sx={{ margin: "10px" }}>
         {resp.success
           ? <MyJsonView data={jsonO} />
           : (
-            <Box sx={{color:"red"}}>
+            <Box sx={{ color: "red" }}>
               <Box>Http Status: {resp.httpStatus}</Box>
               {resp.responseBody && <Box>Body: {resp.responseBody}</Box>}
             </Box>
@@ -278,11 +278,11 @@ function MyJsonView(props: {
   data: Json
 }) {
   return (
-    <Box sx={{fontSize:"0.8rem"}} >
-     { props.data === null
-       ? <div>null</div>
-       : <JsonView src={props.data}/>
-     }
+    <Box sx={{ fontSize: "0.8rem" }} >
+      {props.data === null
+        ? <div>null</div>
+        : <JsonView src={props.data} />
+      }
     </Box>
   );
 }
