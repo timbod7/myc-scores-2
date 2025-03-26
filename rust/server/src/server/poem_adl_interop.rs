@@ -1,15 +1,15 @@
+use poem::error::ParseJsonError;
 use poem::http::StatusCode;
 use poem::web::Json;
 use poem::RequestBody;
 use poem::{Endpoint, FromRequest, IntoResponse, Request, Response, Route};
 use serde::de::DeserializeOwned;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::future::Future;
 use std::marker::PhantomData;
 use std::sync::Arc;
 
-use crate::adl::gen::common::http::HttpSecurity;
-use crate::adl::gen::common::http::{HttpGet, HttpPost};
+use crate::adl::gen::common::http::{HttpMethod, HttpReq, HttpSecurity};
 
 use super::jwt;
 
@@ -33,48 +33,25 @@ pub enum HandlerError {
 
 pub trait RouteExt {
     /**
-     * Add a handler for an ADL specified HttpPost endpoint
+     * Add a handler for an ADL specified HttpReq endpoint
      */
-    fn adl_post<S, I, O, FO>(self, req: HttpPost<I, O>, f: fn(AdlReqContext<S>, I) -> FO) -> Self
+    fn adl_req<S, I, O, FO>(self, req: HttpReq<I, O>, f: fn(AdlReqContext<S>, I) -> FO) -> Self
     where
         S: Send + Sync + Clone + 'static,
         I: Send + Sync + DeserializeOwned + 'static,
-        O: Send + Sync + Serialize + 'static,
-        FO: Future<Output = HandlerResult<O>> + Send + 'static;
-
-    /**
-     * Add a handler for an ADL specified HttpGet endpoint
-     */
-    fn adl_get<S, O, FO>(self, req: HttpGet<O>, f: fn(AdlReqContext<S>) -> FO) -> Self
-    where
-        S: Send + Sync + Clone + 'static,
         O: Send + Sync + Serialize + 'static,
         FO: Future<Output = HandlerResult<O>> + Send + 'static;
 }
 
 impl RouteExt for Route {
-    fn adl_post<S, I, O, FO>(self, req: HttpPost<I, O>, f: fn(AdlReqContext<S>, I) -> FO) -> Self
+    fn adl_req<S, I, O, FO>(self, req: HttpReq<I, O>, f: fn(AdlReqContext<S>, I) -> FO) -> Self
     where
         S: Send + Sync + Clone + 'static,
         I: Send + Sync + DeserializeOwned + 'static,
         O: Send + Sync + Serialize + 'static,
         FO: Future<Output = HandlerResult<O>> + Send + 'static,
     {
-        let endpoint = AdlPost {
-            req,
-            handler: f,
-            phantom: PhantomData,
-        };
-        self.at(endpoint.req.path.clone(), endpoint)
-    }
-
-    fn adl_get<S, O, FO>(self, req: HttpGet<O>, f: fn(AdlReqContext<S>) -> FO) -> Self
-    where
-        S: Send + Sync + Clone + 'static,
-        O: Send + Sync + Serialize + 'static,
-        FO: Future<Output = HandlerResult<O>> + Send + 'static,
-    {
-        let endpoint = AdlGet {
+        let endpoint = AdlReq {
             req,
             handler: f,
             phantom: PhantomData,
@@ -95,13 +72,48 @@ pub type DynJwtSecurityCheck = Arc<Box<dyn JwtSecurityCheck + Send + Sync>>;
 
 //---------------------------------------------------------------------------
 
-pub struct AdlPost<S, I, O, FO> {
-    req: HttpPost<I, O>,
+pub struct AdlReq<S, I, O, FO> {
+    req: HttpReq<I, O>,
     handler: fn(AdlReqContext<S>, I) -> FO,
     phantom: PhantomData<S>,
 }
 
-impl<S, I, O, FO> Endpoint for AdlPost<S, I, O, FO>
+impl<S, I, O, FO> AdlReq<S, I, O, FO>
+where
+    S: Send + Sync + Clone + 'static,
+    I: Send + Sync + DeserializeOwned + 'static,
+    O: Send + Sync + Serialize + 'static,
+    FO: Future<Output = HandlerResult<O>> + Send,
+{
+    // Here we implement the query string -> ADL value transform. The rules are
+    //    if I is Void, we allow no query string
+    //    otherwise we expect a query string of form
+    //
+    //      input=${encodeURIComponent(serde_json::to_string(i))}
+    //
+    fn decode_query_string(req: Request) -> poem::Result<I> {
+        let query_str = req.uri().query();
+        match query_str {
+            None => {
+                let i = serde_json::from_value(serde_json::Value::Null)
+                    .map_err(ParseJsonError::Parse)?;
+                Ok(i)
+            }
+            Some(_) => {
+                let params: Params = req.params()?;
+                let i = serde_json::from_str(&params.input).map_err(ParseJsonError::Parse)?;
+                Ok(i)
+            }
+        }
+    }
+}
+
+#[derive(Deserialize)]
+struct Params {
+    input: String,
+}
+
+impl<S, I, O, FO> Endpoint for AdlReq<S, I, O, FO>
 where
     S: Send + Sync + Clone + 'static,
     I: Send + Sync + DeserializeOwned + 'static,
@@ -112,30 +124,11 @@ where
     async fn call(&self, mut req: Request) -> poem::Result<Self::Output> {
         let mut body = RequestBody::new(req.take_body());
         let ctx = get_adl_request_context(&req, &self.req.security)?;
-        let i: Json<I> = Json::from_request(&req, &mut body).await?;
-        let o = (self.handler)(ctx, i.0).await?;
-        Ok(Json(o).into_response())
-    }
-}
-
-//---------------------------------------------------------------------------
-
-pub struct AdlGet<S, O, FO> {
-    req: HttpGet<O>,
-    handler: fn(AdlReqContext<S>) -> FO,
-    phantom: PhantomData<S>,
-}
-
-impl<S, O, FO> Endpoint for AdlGet<S, O, FO>
-where
-    S: Send + Sync + Clone + 'static,
-    O: Send + Sync + Serialize + 'static,
-    FO: Future<Output = HandlerResult<O>> + Send,
-{
-    type Output = Response;
-    async fn call(&self, req: Request) -> poem::Result<Self::Output> {
-        let ctx = get_adl_request_context(&req, &self.req.security)?;
-        let o = (self.handler)(ctx).await?;
+        let i: I = match self.req.method {
+            HttpMethod::Get => Self::decode_query_string(req)?,
+            HttpMethod::Post => Json::from_request(&req, &mut body).await?.0,
+        };
+        let o = (self.handler)(ctx, i).await?;
         Ok(Json(o).into_response())
     }
 }
