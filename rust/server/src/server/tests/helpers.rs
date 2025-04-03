@@ -5,10 +5,11 @@ use serde::Serialize;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::Executor;
 
-use crate::adl::gen::common::http::{HttpMethod, HttpReq};
-use crate::adl::gen::protoapp::apis;
-use crate::adl::gen::protoapp::apis::ui::LoginReq;
-use crate::adl::gen::protoapp::config::server::{DbConnectionConfig, ServerConfig};
+use adl::gen::common::http::{HttpMethod, HttpReq};
+use adl::gen::protoapp::apis;
+use adl::gen::protoapp::apis::ui::LoginReq;
+use adl::gen::protoapp::config::server::{DbConnectionConfig, ServerConfig};
+
 use crate::server::passwords::hash_password;
 
 pub struct DbTestEnv {

@@ -1,16 +1,16 @@
 // @generated from adl module protoapp.apis.ui
 
-use crate::adl::custom::common::time::Instant;
-use crate::adl::gen::common::http::HttpMethod;
-use crate::adl::gen::common::http::HttpReq;
-use crate::adl::gen::common::http::HttpSecurity;
-use crate::adl::gen::common::http::Unit;
-use crate::adl::gen::common::strings::EmailAddress;
-use crate::adl::gen::common::strings::Password;
-use crate::adl::gen::common::strings::StringML;
-use crate::adl::gen::common::strings::StringNE;
-use crate::adl::gen::protoapp::db::AppUserId;
-use crate::adl::gen::protoapp::db::MessageId;
+use crate::custom::common::time::Instant;
+use crate::gen::common::http::HttpMethod;
+use crate::gen::common::http::HttpReq;
+use crate::gen::common::http::HttpSecurity;
+use crate::gen::common::http::Unit;
+use crate::gen::common::strings::EmailAddress;
+use crate::gen::common::strings::Password;
+use crate::gen::common::strings::StringML;
+use crate::gen::common::strings::StringNE;
+use crate::gen::protoapp::db::AppUserId;
+use crate::gen::protoapp::db::MessageId;
 use serde::Deserialize;
 use serde::Serialize;
 

@@ -1,6 +1,6 @@
 // @generated from adl module common.time
 
-use crate::adl::gen::common::strings::StringNE;
+use crate::gen::common::strings::StringNE;
 use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
