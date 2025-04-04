@@ -1,0 +1,33 @@
+name: Deno CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    paths:
+      - "deno/**"
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno using local-setup script
+        run: |
+          source deno/local-setup.sh
+          # Make sure .local/bin is added to PATH for subsequent steps
+          echo "$PWD/.local/bin" >> $GITHUB_PATH
+          deno --version
+
+      - name: Check formatting
+        working-directory: ./deno
+        run: deno fmt --check
+
+      - name: Run linter
+        working-directory: ./deno
+        run: deno lint
+
+      - name: Check types
+        working-directory: ./deno
+        run: deno check local-setup.ts genadl.ts
