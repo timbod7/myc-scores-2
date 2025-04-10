@@ -1,6 +1,7 @@
 import * as path from "@std/path";
 import { genRust, genTypescript } from "@adllang/adlc-tools";
 
+import { genAdlTsPackage } from "./gen-adl-ts-package.ts";
 import { genCreateSqlSchema } from "./gen-sqlschema.ts";
 import { genRustSeaQuerySchema } from "./gen-rs-seaquery-schema.ts";
 
@@ -14,37 +15,39 @@ async function main() {
 
   {
     //----------------------------------------------------------------------
-    // Generate typescript for the protoapp ui
+    // Generate typescript for the adl package
 
-    const outputDir = repo + "/ts/ui/src/adl-gen";
+    const packageRoot = repo + "/ts/adl";
     await genTypescript({
       ...commonFlags,
-      adlModules: [
-        "protoapp.apis.ui",
-        "sys.adlast",
-        "common.ui",
-      ],
+      adlModules: ["protoapp.apis.ui", "sys.adlast", "common.ui"],
       tsStyle: "tsc",
-      outputDir: outputDir,
+      outputDir: packageRoot + "/src",
       includeResolver: true,
-      manifest: outputDir + "/.adl-manifest",
+      manifest: packageRoot + "/src/.adl-manifest",
       generateTransitive: true,
       excludeAstAnnotations: [],
+    });
+
+    await genAdlTsPackage({
+      ...commonFlags,
+      adlModules: ["protoapp.apis.ui", "sys.adlast", "common.ui"],
+      packageName: "@protoapp/adl",
+      packageRoot: repo + "/ts/adl",
+      buildOutputDir: "/dist",
+      typescriptVersion: "^5.6.3",
+      adlRuntimeVersion: "0.1.2",
     });
   }
 
   {
     //----------------------------------------------------------------------
-    // Generate rust for the protoapp server
+    // Generate rust for the server
 
     const outputDir = repo + "/rust/adl/src";
     await genRust({
       ...commonFlags,
-      adlModules: [
-        "protoapp.apis.ui",
-        "protoapp.db",
-        "protoapp.config.server",
-      ],
+      adlModules: ["protoapp.apis.ui", "protoapp.db", "protoapp.config.server"],
       outputDir: outputDir,
       module: "gen",
       runtimeModule: "rt",
@@ -55,9 +58,7 @@ async function main() {
 
     await genRustSeaQuerySchema({
       ...commonFlags,
-      adlModules: [
-        "protoapp.db",
-      ],
+      adlModules: ["protoapp.db"],
       outputFile: outputDir + "/db/schema.rs",
     });
   }
@@ -69,9 +70,7 @@ async function main() {
     await genCreateSqlSchema({
       ...commonFlags,
       mergeAdlExts: ["adl-pg"],
-      adlModules: [
-        "protoapp.db",
-      ],
+      adlModules: ["protoapp.db"],
       createFile: repo + "/sql/adl-gen/adl-tables.latest.sql",
       viewsFile: repo + "/sql/adl-gen/adl-views.latest.sql",
     });
@@ -95,7 +94,6 @@ export function getRepoRoot(): string {
   return path.dirname(path.dirname(modulepath));
 }
 
-main()
-  .catch((err) => {
-    console.error("error in main", err);
-  });
+main().catch((err) => {
+  console.error("error in main", err);
+});

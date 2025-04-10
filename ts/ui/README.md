@@ -1,39 +1,33 @@
-# Material UI - Vite.js in TypeScript example
+# UI (React App)
 
-## How to use
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+## Libraries
 
-<!-- #default-branch-switch -->
+The Protoapp UI does not specify any particular philosophy or libraries for building your applications. It provides a minimal technical demonstration of ADLs typesafe RPC capabilities by implementing a simple message board system.
+
+Notably, Protoapp UI does not choose solutions for:
+
+- Themeing and component libraries
+- State management
+- Data fetching and caching
+- Client-side routing
+
+The `src/service` implementation of data fetching is lightweight and can be easily replaced with a fetching library of your choice. It is recommended to generate an API service from the `ApiRequests` struct in the protoapp.apis.ui module by writing a custom code generator in the Deno directory.
+
+## Development
 
 ```bash
-curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/material-ui-vite-ts
-cd material-ui-vite-ts
+cd ts
+pnpm install
+cd ui
+pnpm run dev
 ```
 
-Install it and run:
+The application will be available at http://localhost:5173
+
+## Building for Production
 
 ```bash
-npm install
-npm run dev
+npm run build
 ```
-
-or:
-
-<!-- #default-branch-switch -->
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/material-ui-vite-ts)
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/github/mui/material-ui/tree/master/examples/material-ui-vite-ts)
-
-## The idea behind the example
-
-This example uses [Vite.js](https://github.com/vitejs/vite).
-It includes `@mui/material` and its peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v5.
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation and continue by browsing the [templates](https://mui.com/material-ui/getting-started/templates/) section.

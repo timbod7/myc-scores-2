@@ -1,41 +1,38 @@
 import { HttpFetch, HttpRequest } from "./http";
-import * as ADL from "@adllang/adl-runtime";
-import { HttpReq } from "@/adl-gen/common/http";
-import { createJsonBinding, Json, JsonBinding } from "@adllang/adl-runtime";
-import { QueryStats } from "@mui/icons-material";
 
+import * as ADL from "@adllang/adl-runtime";
+import { HttpReq } from "@protoapp/adl/common/http";
+import { createJsonBinding, Json, JsonBinding } from "@adllang/adl-runtime";
 
 export class ServiceBase {
-
   constructor(
     private readonly http: HttpFetch,
     private readonly baseUrl: string,
     private readonly resolver: ADL.DeclResolver,
-  ) {
-  }
+  ) {}
 
   mkReqFn<I, O>(rtype: HttpReq<I, O>): ReqFn<I, O> {
     const bb = createBiBinding<I, O>(this.resolver, rtype);
     return (req: I) => {
       const jsonArgs = bb.reqJB.toJson(req);
-      if (rtype.method === 'get') {
-          const queryString = encodeQueryString(jsonArgs);
-          return this.requestAdl('get', rtype.path, queryString, undefined , bb.respJB, undefined);
+      if (rtype.method === "get") {
+        const queryString = encodeQueryString(jsonArgs);
+        return this.requestAdl("get", rtype.path, queryString, undefined, bb.respJB, undefined);
       } else {
-        return this.requestAdl('post', rtype.path, undefined, jsonArgs, bb.respJB, undefined);
+        return this.requestAdl("post", rtype.path, undefined, jsonArgs, bb.respJB, undefined);
       }
     };
   }
 
   mkAuthReqFn<I, O>(rtype: HttpReq<I, O>): AuthReqFn<I, O> {
     const bb = createBiBinding<I, O>(this.resolver, rtype);
-    return (authToken:string, req: I) => {
+    return (authToken: string, req: I) => {
       const jsonArgs = bb.reqJB.toJson(req);
-      if (rtype.method === 'get') {
-          const queryString = encodeQueryString(jsonArgs);
-          return this.requestAdl('get', rtype.path, queryString, undefined , bb.respJB, authToken);
+      if (rtype.method === "get") {
+        const queryString = encodeQueryString(jsonArgs);
+        return this.requestAdl("get", rtype.path, queryString, undefined, bb.respJB, authToken);
       } else {
-        return this.requestAdl('post', rtype.path, undefined, jsonArgs, bb.respJB, authToken);
+        return this.requestAdl("post", rtype.path, undefined, jsonArgs, bb.respJB, authToken);
       }
     };
   }
@@ -58,7 +55,7 @@ export class ServiceBase {
       url: this.baseUrl + path + (queryString === undefined ? "" : "?" + queryString),
       headers,
       method,
-      body: jsonBody === undefined ? undefined: JSON.stringify(jsonBody)
+      body: jsonBody === undefined ? undefined : JSON.stringify(jsonBody),
     };
 
     // Make request
@@ -66,22 +63,24 @@ export class ServiceBase {
 
     // Check for errors
     if (!resp.ok) {
-      throw new AdlRequestError(
-        httpReq, resp.status, await resp.text()
-      );
+      throw new AdlRequestError(httpReq, resp.status, await resp.text());
     }
 
     // Parse and response
     const respJson = await resp.json();
-    return respJB.fromJsonE(respJson);
+    return respJB.fromJsonE(respJson as Json);
   }
 }
 
 export class AdlRequestError extends Error {
-  constructor(readonly httpReq: HttpRequest, readonly respStatus: number, readonly respBody: string) {
-    super(`Encountered server error attempting ${httpReq.method} request to ${httpReq.url} failed: ${respStatus}`)
+  constructor(
+    readonly httpReq: HttpRequest,
+    readonly respStatus: number,
+    readonly respBody: string,
+  ) {
+    super(`Encountered server error attempting ${httpReq.method} request to ${httpReq.url} failed: ${respStatus}`);
   }
-} 
+}
 
 export function encodeQueryString(reqJson: Json) {
   return reqJson === null ? undefined : `input=${encodeURIComponent(JSON.stringify(reqJson))}`;
@@ -103,6 +102,6 @@ interface BiBinding<I, O> {
 function createBiBinding<I, O>(resolver: ADL.DeclResolver, rtype: BiTypeExpr<I, O>): BiBinding<I, O> {
   return {
     reqJB: createJsonBinding(resolver, rtype.reqType),
-    respJB: createJsonBinding(resolver, rtype.respType)
+    respJB: createJsonBinding(resolver, rtype.respType),
   };
 }
