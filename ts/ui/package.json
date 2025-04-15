@@ -1,5 +1,5 @@
 {
-  "name": "@protoapp/ui",
+  "name": "@mycscores/ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,16 +12,16 @@
     "preview": "vite preview",
     "format:write": "prettier . --write"
   },
-  "prettier": "@protoapp/prettier-config",
+  "prettier": "@mycscores/prettier-config",
   "dependencies": {
     "@adllang/adl-runtime": "npm:@jsr/adllang__adl-runtime@0.1.2",
-    "@protoapp/adl": "workspace:*",
+    "@mycscores/adl": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@protoapp/prettier-config": "workspace:*",
+    "@mycscores/prettier-config": "workspace:*",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "catalog:",

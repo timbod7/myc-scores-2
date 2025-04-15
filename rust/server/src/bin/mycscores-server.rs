@@ -1,9 +1,9 @@
 use clap::Parser;
 use std::path::PathBuf;
 
-use adl::gen::protoapp::config::server::ServerConfig;
+use adl::gen::mycscores::config::server::ServerConfig;
 
-use protoapp::server;
+use mycscores::server;
 
 #[tokio::main]
 async fn main() {
@@ -59,7 +59,7 @@ fn inject_secret(secret: &mut String) -> anyhow::Result<()> {
 
 const ENV_SECRET_PREFIX: &str = "ENV_SECRET:";
 
-const CONFIG_VAR: &str = "PROTOAPP_SERVER_CONFIG";
+const CONFIG_VAR: &str = "MYCSCORES_SERVER_CONFIG";
 
 #[derive(Parser)]
 struct Cli {

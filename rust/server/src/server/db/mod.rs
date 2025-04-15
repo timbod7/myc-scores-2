@@ -9,7 +9,7 @@ use adl::{
         schema,
         types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
-    gen::protoapp::{
+    gen::mycscores::{
         apis,
         db::{AppUser, AppUserId, MessageId},
     },

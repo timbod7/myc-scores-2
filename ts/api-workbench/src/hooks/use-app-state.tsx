@@ -4,10 +4,10 @@ import { FetchHttp } from "../service/fetch-http";
 import { ApiWithToken, Auth, JwtClaims, expiry_secs } from "../auth";
 import { jwtDecode } from "jwt-decode";
 
-import { LoginResp, makeRefreshReq } from "@protoapp/adl/protoapp/apis/ui";
+import { LoginResp, makeRefreshReq } from "@mycscores/adl/mycscores/apis/ui";
 import { useNavigate } from "raviger";
 
-const protoappApi = new Service(new FetchHttp(), "/api");
+const mycscoresApi = new Service(new FetchHttp(), "/api");
 
 export interface AppState {
   api: Service;
@@ -46,14 +46,14 @@ export function AppStateProvider(props: { children?: React.ReactNode }) {
   }
 
   async function logout() {
-    await protoappApi.logout({});
+    await mycscoresApi.logout({});
     console.log(`logout`);
     setAuthState({ kind: "noauth" });
   }
 
   async function refresh() {
     console.log("Refreshing JWT");
-    const resp = await protoappApi.refresh(makeRefreshReq({}));
+    const resp = await mycscoresApi.refresh(makeRefreshReq({}));
     switch (resp.kind) {
       case "invalid_refresh_token":
         setAuthState({ kind: "noauth" });
@@ -89,7 +89,7 @@ export function AppStateProvider(props: { children?: React.ReactNode }) {
   }, [renewJwt]);
 
   const apiManager = {
-    api: protoappApi,
+    api: mycscoresApi,
     authState,
     setAuthStateFromLogin,
     logout,

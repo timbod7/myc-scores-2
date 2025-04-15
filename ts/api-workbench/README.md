@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The API Workbench provides a developer-focused interface for testing and debugging the Protoapp API endpoints. It allows:
+The API Workbench provides a developer-focused interface for testing and debugging the Mycscores API endpoints. It allows:
 
 - Testing various API endpoints
 - Viewing request/response payloads

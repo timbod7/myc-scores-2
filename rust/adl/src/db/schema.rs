@@ -23,7 +23,7 @@ impl AppUser {
         Alias::new(Self::table_str()).into_iden()
     }
 
-    pub fn id() -> ColumnSpec<DbKey<adlgen::protoapp::db::AppUserTable>> {
+    pub fn id() -> ColumnSpec<DbKey<adlgen::mycscores::db::AppUserTable>> {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
@@ -59,7 +59,7 @@ impl Message {
         Alias::new(Self::table_str()).into_iden()
     }
 
-    pub fn id() -> ColumnSpec<DbKey<adlgen::protoapp::db::MessageTable>> {
+    pub fn id() -> ColumnSpec<DbKey<adlgen::mycscores::db::MessageTable>> {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
@@ -67,7 +67,7 @@ impl Message {
         ColumnSpec::new(Self::table_str(), "posted_at")
     }
 
-    pub fn posted_by() -> ColumnSpec<adlgen::protoapp::db::AppUserId> {
+    pub fn posted_by() -> ColumnSpec<adlgen::mycscores::db::AppUserId> {
         ColumnSpec::new(Self::table_str(), "posted_by")
     }
 

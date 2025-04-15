@@ -1,10 +1,10 @@
 // Helper functions to extract various ADL annotations
 import { DeclResolver } from "@adllang/adl-runtime";
-import * as ui from "@protoapp/adl/common/ui";
+import * as ui from "@mycscores/adl/common/ui";
 import { createJsonBinding, JsonBinding } from "@adllang/adl-runtime";
 import { typeExprsEqual } from "@adllang/adl-runtime";
-import * as adlast from "@protoapp/adl/sys/adlast";
-import * as systypes from "@protoapp/adl/sys/types";
+import * as adlast from "@mycscores/adl/sys/adlast";
+import * as systypes from "@mycscores/adl/sys/types";
 
 type Json = {} | null;
 

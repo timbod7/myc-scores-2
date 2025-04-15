@@ -1,6 +1,6 @@
 import * as adlrt from "@adllang/adl-runtime";
-import * as adlast from "@protoapp/adl/sys/adlast";
-import * as systypes from "@protoapp/adl/sys/types";
+import * as adlast from "@mycscores/adl/sys/adlast";
+import * as systypes from "@mycscores/adl/sys/types";
 import * as adltree from "../adl-tree";
 import { createJsonBinding } from "@adllang/adl-runtime";
 

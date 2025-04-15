@@ -1,8 +1,8 @@
 import { boolFieldFns, intFieldFns, jsonFieldFns, numberFieldFns, stringFieldFns } from "./primitive";
 import { FieldFns } from "./type";
-import * as systypes from "@protoapp/adl/sys/types";
+import * as systypes from "@mycscores/adl/sys/types";
 import * as adlrt from "@adllang/adl-runtime";
-import * as adlast from "@protoapp/adl/sys/adlast";
+import * as adlast from "@mycscores/adl/sys/adlast";
 import { createJsonBinding, jsonParseException } from "@adllang/adl-runtime";
 
 const _primitiveFieldFns: Record<string, FieldFns<unknown>> = {

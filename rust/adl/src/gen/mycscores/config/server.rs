@@ -1,4 +1,4 @@
-// @generated from adl module protoapp.config.server
+// @generated from adl module mycscores.config.server
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -46,7 +46,7 @@ impl ServerConfig {
   }
 
   pub fn def_jwt_issuer() -> String {
-    "adl-protoapp.link".to_string()
+    "adl-mycscores.link".to_string()
   }
 
   pub fn def_jwt_access_expiry_secs() -> u32 {

@@ -20,7 +20,7 @@ async function main() {
     const packageRoot = repo + "/ts/adl";
     await genTypescript({
       ...commonFlags,
-      adlModules: ["protoapp.apis.ui", "sys.adlast", "common.ui"],
+      adlModules: ["mycscores.apis.ui", "sys.adlast", "common.ui"],
       tsStyle: "tsc",
       outputDir: packageRoot + "/src",
       includeResolver: true,
@@ -31,8 +31,8 @@ async function main() {
 
     await genAdlTsPackage({
       ...commonFlags,
-      adlModules: ["protoapp.apis.ui", "sys.adlast", "common.ui"],
-      packageName: "@protoapp/adl",
+      adlModules: ["mycscores.apis.ui", "sys.adlast", "common.ui"],
+      packageName: "@mycscores/adl",
       packageRoot: repo + "/ts/adl",
       buildOutputDir: "/dist",
       adlRuntimeVersion: "0.1.2",
@@ -46,7 +46,7 @@ async function main() {
     const outputDir = repo + "/rust/adl/src";
     await genRust({
       ...commonFlags,
-      adlModules: ["protoapp.apis.ui", "protoapp.db", "protoapp.config.server"],
+      adlModules: ["mycscores.apis.ui", "mycscores.db", "mycscores.config.server"],
       outputDir: outputDir,
       module: "gen",
       runtimeModule: "rt",
@@ -57,7 +57,7 @@ async function main() {
 
     await genRustSeaQuerySchema({
       ...commonFlags,
-      adlModules: ["protoapp.db"],
+      adlModules: ["mycscores.db"],
       outputFile: outputDir + "/db/schema.rs",
     });
   }
@@ -69,7 +69,7 @@ async function main() {
     await genCreateSqlSchema({
       ...commonFlags,
       mergeAdlExts: ["adl-pg"],
-      adlModules: ["protoapp.db"],
+      adlModules: ["mycscores.db"],
       createFile: repo + "/sql/adl-gen/adl-tables.latest.sql",
       viewsFile: repo + "/sql/adl-gen/adl-views.latest.sql",
     });

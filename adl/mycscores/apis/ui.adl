@@ -1,4 +1,4 @@
-module protoapp.apis.ui {
+module mycscores.apis.ui {
 
 import common.http.Unit;
 import common.http.HttpReq;
@@ -8,8 +8,8 @@ import common.strings.Password;
 import common.strings.StringNE;
 import common.strings.StringML;
 
-import protoapp.db.AppUserId;
-import protoapp.db.MessageId;
+import mycscores.db.AppUserId;
+import mycscores.db.MessageId;
 
 struct ApiRequests {
 

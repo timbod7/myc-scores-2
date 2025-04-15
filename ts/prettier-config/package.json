@@ -1,5 +1,5 @@
 {
-  "name": "@protoapp/prettier-config",
+  "name": "@mycscores/prettier-config",
   "version": "1.0.0",
   "description": "Common prettier config",
   "main": "index.json",

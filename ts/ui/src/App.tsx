@@ -2,7 +2,7 @@ import { Service } from "./service";
 import { AdlRequestError } from "./service/service-base";
 import { FetchHttp } from "./service/fetch-http";
 
-import * as API from "@protoapp/adl/protoapp/apis/ui";
+import * as API from "@mycscores/adl/mycscores/apis/ui";
 import React, { useState, useEffect, useCallback } from "react";
 
 const service = new Service(new FetchHttp(), "/api");
@@ -106,7 +106,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>ProtoApp</h1>
+      <h1>mycScores</h1>
 
       {accessToken === null ?
         <form onSubmit={handleLogin}>

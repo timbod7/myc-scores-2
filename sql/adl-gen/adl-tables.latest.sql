@@ -1,4 +1,4 @@
--- Schema auto-generated from adl modules: protoapp.db
+-- Schema auto-generated from adl modules: mycscores.db
 --
 -- column comments show original ADL types
 

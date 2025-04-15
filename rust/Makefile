@@ -1,6 +1,6 @@
 dev-server: check dev-db
 	cd server &&                                                  \
-	PROTOAPP_SERVER_CONFIG='{                                     \
+	MYCSCORES_SERVER_CONFIG='{                                     \
 		"http_bind_addr": "0.0.0.0:8081",                         \
 		"db": {                                                   \
 			"host": "localhost",                                  \
@@ -13,7 +13,7 @@ dev-server: check dev-db
 		"jwt_refresh_secret": "nottomentionthisone"               \
 	}'                                                            \
 	RUST_LOG=info                                                 \
-	cargo run --bin protoapp-server
+	cargo run --bin mycscores-server
 
 build: install-toolchain
 	cargo build --workspace

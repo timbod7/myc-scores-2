@@ -4,8 +4,8 @@ common/http.ts
 common/strings.ts
 common/time.ts
 common/ui.ts
-protoapp/apis/ui.ts
-protoapp/db.ts
+mycscores/apis/ui.ts
+mycscores/db.ts
 resolver.ts
 sys/adlast.ts
 sys/annotations.ts

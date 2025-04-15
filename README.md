@@ -22,16 +22,16 @@ The technology stack consists of:
 
 [ADL] is a framework for building cross language data models. In this repo we use ADL to define
 
-* the relational [database schema](./adl/protoapp/db.adl)
-* the client/server [http based API](./adl/protoapp/apis/ui.adl)
-* the server [config file format](./adl/protoapp/config/server.adl)
+* the relational [database schema](./adl/mycscores/db.adl)
+* the client/server [http based API](./adl/mycscores/apis/ui.adl)
+* the server [config file format](./adl/mycscores/config/server.adl)
 
 From these, we generate:
 
 * the [postgres SQL](./sql/adl-gen/adl-tables.latest.sql) for the db schema
 * the rust [db schema binding](./rust/server/src/adl/db/schema.rs)
-* the rust [api binding](./rust/server/src/adl/gen/protoapp/apis/ui.rs) (used [here](,/rust/server/src/server/routing.rs))
-* the typescript [api binding](./ts/ui/src/adl-gen/protoapp/apis/ui.ts) (used [here](./ts/ui/src/service/index.ts))
+* the rust [api binding](./rust/server/src/adl/gen/mycscores/apis/ui.rs) (used [here](,/rust/server/src/server/routing.rs))
+* the typescript [api binding](./ts/ui/src/adl-gen/mycscores/apis/ui.ts) (used [here](./ts/ui/src/service/index.ts))
 
 Having strong types end to end in the system provides many benefits. Some of these are described below.
 
@@ -43,8 +43,8 @@ it as a postgresql `jsonb` value. The rust db binding will automatically map bet
 rust type whenever reading/writing the field.
 
 Additionally, in our ADL db model, we distinguished between db keys of different types. eg db keys for the user
-table ([AppUserId](./adl/protoapp/db.adl#L18)), vs db keys for the message
-table([MessageId](./adl/protoapp/db.adl#L32)). For these we generate distinct key types
+table ([AppUserId](./adl/mycscores/db.adl#L18)), vs db keys for the message
+table([MessageId](./adl/mycscores/db.adl#L32)). For these we generate distinct key types
 in the rust server code, eliminating at compile time the possibility of mixing up key types.
 
 
@@ -138,7 +138,7 @@ cargo test -- --test-threads=1
 ```bash
 (
 cd rust/server
-export PROTOAPP_SERVER_CONFIG='{
+export MYCSCORES_SERVER_CONFIG='{
   "http_bind_addr": "0.0.0.0:8081",
   "db": {
     "host": "localhost",
@@ -151,7 +151,7 @@ export PROTOAPP_SERVER_CONFIG='{
   "jwt_refresh_secret": "nottomentionthisone"
  }'
 export RUST_LOG=info
-cargo run --bin protoapp-server
+cargo run --bin mycscores-server
 )
 ```
 
@@ -163,8 +163,8 @@ This will create the db schema and/or apply any necessary migrations
 (
 cd rust/server
 export DB_CONNECTION_URL=postgresql://postgres:xyzzy@localhost:5432/appdb
-cargo run --bin protoapp-tools -- create-user joe@test.com Joe xyzzy1
-cargo run --bin protoapp-tools -- create-user --is-admin sarah@test.com Sarah abcdef
+cargo run --bin mycscores-tools -- create-user joe@test.com Joe xyzzy1
+cargo run --bin mycscores-tools -- create-user --is-admin sarah@test.com Sarah abcdef
 )
 ```
 

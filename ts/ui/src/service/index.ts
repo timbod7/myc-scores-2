@@ -1,8 +1,8 @@
 import { HttpFetch } from "./http";
 import { ServiceBase } from "./service-base";
 
-import * as API from "@protoapp/adl/protoapp/apis/ui";
-import { RESOLVER } from "@protoapp/adl/resolver";
+import * as API from "@mycscores/adl/mycscores/apis/ui";
+import { RESOLVER } from "@mycscores/adl/resolver";
 
 const api = API.makeApiRequests({});
 

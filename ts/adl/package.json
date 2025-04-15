@@ -1,5 +1,5 @@
 {
-  "name": "@protoapp/adl",
+  "name": "@mycscores/adl",
   "description": "Auto-generated TypeScript package containing ADL code",
   "private": true,
   "version": "1.0.0",
@@ -23,8 +23,8 @@
     "./common/strings": "./dist/common/strings.js",
     "./common/time": "./dist/common/time.js",
     "./common/ui": "./dist/common/ui.js",
-    "./protoapp/apis/ui": "./dist/protoapp/apis/ui.js",
-    "./protoapp/db": "./dist/protoapp/db.js",
+    "./mycscores/apis/ui": "./dist/mycscores/apis/ui.js",
+    "./mycscores/db": "./dist/mycscores/db.js",
     "./sys/adlast": "./dist/sys/adlast.js",
     "./sys/annotations": "./dist/sys/annotations.js",
     "./sys/types": "./dist/sys/types.js"

@@ -48,7 +48,7 @@ importers:
       '@mui/material':
         specifier: ^6.4.10
         version: 6.4.10(@emotion/react@11.14.0(@types/react@18.3.20)(react@18.3.1))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react@18.3.1))(@types/react@18.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@protoapp/adl':
+      '@mycscores/adl':
         specifier: workspace:*
         version: link:../adl
       jwt-decode:
@@ -67,7 +67,7 @@ importers:
         specifier: 0.2.9
         version: 0.2.9(react@18.3.1)
     devDependencies:
-      '@protoapp/prettier-config':
+      '@mycscores/prettier-config':
         specifier: workspace:*
         version: link:../prettier-config
       '@types/react':
@@ -96,7 +96,7 @@ importers:
       '@adllang/adl-runtime':
         specifier: npm:@jsr/adllang__adl-runtime@0.1.2
         version: '@jsr/adllang__adl-runtime@0.1.2'
-      '@protoapp/adl':
+      '@mycscores/adl':
         specifier: workspace:*
         version: link:../adl
       react:
@@ -109,7 +109,7 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.24.0
-      '@protoapp/prettier-config':
+      '@mycscores/prettier-config':
         specifier: workspace:*
         version: link:../prettier-config
       '@types/react':

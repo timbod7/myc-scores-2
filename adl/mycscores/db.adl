@@ -1,4 +1,4 @@
-module protoapp.db {
+module mycscores.db {
 
 import common.time.Instant;
 import common.db.DbTable;

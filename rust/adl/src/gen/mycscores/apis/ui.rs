@@ -1,4 +1,4 @@
-// @generated from adl module protoapp.apis.ui
+// @generated from adl module mycscores.apis.ui
 
 use crate::custom::common::time::Instant;
 use crate::gen::common::http::HttpMethod;
@@ -9,8 +9,8 @@ use crate::gen::common::strings::EmailAddress;
 use crate::gen::common::strings::Password;
 use crate::gen::common::strings::StringML;
 use crate::gen::common::strings::StringNE;
-use crate::gen::protoapp::db::AppUserId;
-use crate::gen::protoapp::db::MessageId;
+use crate::gen::mycscores::db::AppUserId;
+use crate::gen::mycscores::db::MessageId;
 use serde::Deserialize;
 use serde::Serialize;
 

@@ -4,13 +4,13 @@ use poem::web::Json;
 
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
-use adl::gen::protoapp::apis::ui::{
+use adl::gen::mycscores::apis::ui::{
     ApiRequests, LoginReq, LoginResp, LoginTokens, Message, Paginated, QueryUsersReq,
     RecentMessagesReq, RefreshReq, RefreshResp, User, UserDetails, UserWithId, WithId,
 };
-use adl::gen::protoapp::config::server::ServerConfig;
-use adl::gen::protoapp::db::{AppUser, AppUserId};
-use adl::gen::protoapp::{apis::ui::NewMessageReq, db::MessageId};
+use adl::gen::mycscores::config::server::ServerConfig;
+use adl::gen::mycscores::db::{AppUser, AppUserId};
+use adl::gen::mycscores::{apis::ui::NewMessageReq, db::MessageId};
 
 use crate::server::jwt::AccessClaims;
 use crate::server::passwords::{hash_password, verify_password};

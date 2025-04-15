@@ -1,7 +1,7 @@
 
 services:
   db:
-    container_name: protoapp-db
+    container_name: mycscores-db
     image: postgres:14
     ports:
       - "5432:5432"

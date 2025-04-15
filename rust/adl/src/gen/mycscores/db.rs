@@ -1,4 +1,4 @@
-// @generated from adl module protoapp.db
+// @generated from adl module mycscores.db
 
 use crate::custom::common::db::DbKey;
 use crate::custom::common::time::Instant;

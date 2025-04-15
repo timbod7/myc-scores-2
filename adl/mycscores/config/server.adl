@@ -1,10 +1,10 @@
-module protoapp.config.server {
+module mycscores.config.server {
 
 struct ServerConfig {
     DbConnectionConfig db;
     Word32 db_connection_pool_size = 20;
 
-    String jwt_issuer = "adl-protoapp.link";
+    String jwt_issuer = "adl-mycscores.link";
 
     String jwt_access_secret;
     Word32 jwt_access_expiry_secs = 300;

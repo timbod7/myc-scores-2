@@ -6,9 +6,9 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::Executor;
 
 use adl::gen::common::http::{HttpMethod, HttpReq};
-use adl::gen::protoapp::apis;
-use adl::gen::protoapp::apis::ui::LoginReq;
-use adl::gen::protoapp::config::server::{DbConnectionConfig, ServerConfig};
+use adl::gen::mycscores::apis;
+use adl::gen::mycscores::apis::ui::LoginReq;
+use adl::gen::mycscores::config::server::{DbConnectionConfig, ServerConfig};
 
 use crate::server::passwords::hash_password;
 
@@ -155,7 +155,7 @@ pub fn test_server_config() -> ServerConfig {
             password: "xyzzy".to_owned(),
         },
         db_connection_pool_size: ServerConfig::def_db_connection_pool_size(),
-        jwt_issuer: "adl-protoapp.link".to_owned(),
+        jwt_issuer: "adl-mycscores.link".to_owned(),
         jwt_access_secret: "treyweyetry".to_owned(),
         jwt_access_expiry_secs: 300,
         jwt_refresh_secret: "treyweyetryxx".to_owned(),
