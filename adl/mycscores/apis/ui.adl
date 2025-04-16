@@ -3,12 +3,27 @@ module mycscores.apis.ui {
 import common.http.Unit;
 import common.http.HttpReq;
 import common.time.Instant;
+import common.time.LocalDate;
+import common.time.LocalTime;
 import common.strings.EmailAddress;
 import common.strings.Password;
 import common.strings.StringNE;
 import common.strings.StringML;
 
 import mycscores.db.AppUserId;
+import mycscores.db.CalendarEntry;
+import mycscores.db.Entrant;
+import mycscores.db.EntrantId;
+import mycscores.db.Event;
+import mycscores.db.EventId;
+import mycscores.db.EventResult;
+import mycscores.db.RaceId;
+import mycscores.db.RaceType;
+import mycscores.db.Result;
+import mycscores.db.Season;
+import mycscores.db.SeasonId;
+import mycscores.db.Series;
+import mycscores.db.SeriesId;
 
 struct ApiRequests {
 
@@ -48,6 +63,53 @@ struct ApiRequests {
     "method": "get",
     "path": "/whoami",
     "security" : "token"
+  };
+
+  HttpReq<Void,Vector<SeasonDetails>> seasons = {
+    "path": "/seasons",
+    "security" : "public"
+  };
+
+  HttpReq<SeasonId, RaceScheduleResp> raceSchedule = {
+    "path": "/race-schedule",
+    "security" : "public"
+  };
+
+  /// Fetch the entrants for a race
+  HttpReq<RaceId, Vector<RaceEntrant>> getRaceEntrants = {
+    "path": "/raceentrants-get",
+    "security" : "public"
+  };
+
+  /// Fetch the results for a race
+  HttpReq<RaceId, GetRaceResultsResp> getRaceResults = {
+    "path": "/results/race",
+    "security" : "public"
+  };
+
+  /// Set/update the results for a race
+  HttpReq<UpdateRaceResultsReq, Unit> updateRaceResults = {
+    "path": "/results/race/update",
+    "security" : "token"
+  };
+
+  /// Fetch results for an event
+  HttpReq<EventId, GetEventResultsResp> getEventResults = {
+    "path": "/results/event",
+    "security" : "public"
+  };
+
+  /// Fetch results for all events in a season
+  HttpReq<SeasonId, Vector<EventResults>> getSeasonEventResults = {
+    "path": "/results/season-events",
+    "security" : "public"
+  };
+
+
+  /// Fetch results for a series
+  HttpReq<SeriesId, GetSeriesResultsResp> getSeriesResults = {
+    "path": "/results/series",
+    "security" : "public"
   };
 
   /// Create a new user
@@ -92,6 +154,85 @@ union RefreshResp {
 struct LoginTokens {
   StringNE access_jwt;
   StringNE refresh_jwt;
+};
+
+struct SeasonDetails {
+  WithId<SeasonId,Season> season;
+  Vector<WithId<SeriesId,Series>> series;
+};
+
+struct RaceScheduleEntry {
+  RaceId raceId;
+  LocalDate date;
+  Word8 raceNumber;
+  Vector<WithId<EventId, Event>> events;
+  String dutyOfficer;
+};
+
+struct RaceEntrant {
+  WithId<EntrantId, Entrant> entrant;
+  Double handicap;
+  Double handicapSecs;
+};
+
+struct RaceScheduleResp {
+  Season season;
+  Vector<RaceScheduleEntry> races;
+  Vector<CalendarEntry> calendarEntries;
+};
+
+struct EntrantRaceResult {
+  EntrantId entrantId;
+  Result<LocalTime> result;
+
+};
+
+struct RaceStartDetails {
+  LocalDate date;
+  LocalTime startTime;
+  StringML conditions;
+  StringML notes;
+  Bool abandoned;
+};
+
+struct GetRaceResultsResp {
+  LocalDate scheduledDate;
+  Vector<WithId<EventId,Event>> events;
+  Nullable<RaceStartDetails> startDetails;
+  Vector<EntrantRaceResult> results;
+};
+
+struct EventResults {
+  LocalDate date;
+  LocalTime startTime;
+  StringNE abbreviation;
+  StringML conditions;
+  Bool isHandicap;
+  Bool abandoned;
+  RaceType raceType;
+  Vector<EventResult> results;
+};
+
+type GetEventResultsResp = Nullable<EventResults>;
+
+struct EntrantSeriesResult {
+  EntrantId entrantId;
+  EventId eventId;
+  Word16 score;
+};
+
+struct GetSeriesResultsResp {
+  WithId<SeasonId, Season> season;
+  WithId<SeriesId, Series> series;
+  Vector<WithId<EventId, Event>> events;
+  Vector<WithId<EntrantId, Entrant>> entrants;
+  Vector<EntrantSeriesResult> results;
+};
+
+struct UpdateRaceResultsReq {
+  RaceId raceId;
+  RaceStartDetails startDetails;
+  Vector<EntrantRaceResult> results;
 };
 
 struct PageReq {
