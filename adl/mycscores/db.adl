@@ -1,6 +1,8 @@
 module mycscores.db {
 
 import common.time.Instant;
+import common.time.LocalDate;
+import common.time.LocalTime;
 import common.db.DbTable;
 import common.db.DbKey;
 import common.db.WithId;
@@ -23,17 +25,202 @@ annotation AppUserTable DbTable {
   "id_prefix": "U-"
 };
 
-struct Message {
-  Instant posted_at;
-  AppUserId posted_by;
-  StringML message;
+/// Each season is a collection of series
+struct Season {
+  StringNE name;
 };
-newtype MessageTable = WithId<Message>;
-type MessageId = DbKey<MessageTable>;
 
-annotation MessageTable DbTable {
-  "indexes" : [["posted_at"]],
-  "id_prefix": "M-"
+newtype SeasonTable = WithId<Season>;
+type SeasonId = DbKey<SeasonTable>;
+
+annotation SeasonTable DbTable {
+  "uniquenessConstraints": [["name"]],
+  "label": ["name"],
+  "id_prefix": "S-"
 };
+
+/// Each series is a collection of races
+struct Series {
+  SeasonId seasonId;
+  StringNE name;
+  StringNE abbreviation;
+  Bool isHandicap;
+  Nullable<HandicapSystem> handicapSystem;
+  Word8 numDrops;
+};
+
+union HandicapSystem {
+  Void v1;
+  Void v2;
+};
+
+newtype SeriesTable = WithId<Series>;
+type SeriesId = DbKey<SeriesTable>;
+
+annotation SeriesTable DbTable {
+  "uniquenessConstraints": [["seasonId", "name"],["seasonId", "abbreviation"]],
+  "label": ["abbreviation"],
+  "id_prefix": "S-"
+};
+
+/// A Race 
+struct Race {
+  LocalDate scheduledDate;
+  Word8 raceNumber;
+  String dutyOfficer = "";
+};
+
+newtype RaceTable = WithId<Race>;
+type RaceId = DbKey<RaceTable>;
+
+annotation RaceTable DbTable {
+  "withIdPrimaryKey" : true,
+  "label": ["scheduledDate","raceNumber"],
+  "id_prefix": "R-"
+};
+
+/// A Calendar entry, shown in the schedule
+/// but otherwise has no effect
+struct CalendarEntry {
+  SeasonId seasonId;
+  LocalDate date;
+  StringNE description;
+};
+
+newtype CalendarEntryTable = WithId<CalendarEntry>;
+type CalendarEntryId = DbKey<CalendarEntryTable>;
+
+annotation CalendarEntryTable DbTable {
+  "label": ["description"],
+  "id_prefix": "CE-"
+};
+
+// Details for a race, know once it's been run
+struct RaceStart {
+  RaceId raceId;
+  LocalDate date;
+  Bool abandoned;
+  LocalTime startTime;
+  StringML conditions;
+  StringML notes;
+};
+
+newtype RaceStartTable = WithId<RaceStart>;
+type RaceStartId = DbKey<RaceStartTable>;
+
+annotation RaceStartTable DbTable {
+  "uniquenessConstraints": [["raceId"]],
+  "id_prefix": "RS-"
+};
+
+/// A race in a series
+struct Event {
+  StringNE abbreviation;
+  SeriesId seriesId;
+  RaceId raceId;
+  RaceType raceType;
+};
+
+newtype EventTable = WithId<Event>;
+type EventId = DbKey<EventTable>;
+
+annotation EventTable DbTable {
+  "uniquenessConstraints": [["seriesId", "raceId"]],
+  "label": ["abbreviation"],
+  "id_prefix": "E-"
+};
+
+union RaceType {
+  Void scratch;
+  Void pursuit;
+};
+
+/// Personal and boat details for an entrant
+struct Entrant {
+  SeasonId seasonId;
+  StringNE entrantName;
+  StringNE boatName;
+  StringNE sailNumber;
+  Double yardstick;
+  Double initialHandicap;
+};
+
+newtype EntrantTable = WithId<Entrant>;
+type EntrantId = DbKey<EntrantTable>;
+
+annotation EntrantTable DbTable {
+  "uniquenessConstraints": [["entrantName"]],
+  "label": ["entrantName"],
+  "id_prefix": "E-"
+};
+
+/// An entrants results in a single race
+struct RaceResult {
+  RaceId raceId;
+  EntrantId entrantId;
+  Result<LocalTime> result;
+};
+
+newtype RaceResultTable = WithId<RaceResult>;
+type RaceResultId = DbKey<RaceResultTable>;
+
+annotation RaceResultTable DbTable {
+  "uniquenessConstraints": [["raceId","entrantId"]],
+  "id_prefix": "RR-"
+};
+
+/// An entrants result in a single event
+struct EventResult {
+  EntrantId entrantId;
+  EventId eventId;
+  StringNE entrantName;
+  StringNE boatName;
+  StringNE sailNumber;
+  Double yardstick;
+  Double handicap;
+  Double handicapSecs;
+  Result<LocalTime> finishTime;
+  Result<Duration> elapsedTime;
+  Result<Duration> elapsedTimeYardstick;
+  Result<Duration> elapsedTimeHandicap;
+  Word16 score;
+  Double handicapChange;
+  Double handicapNew;
+};
+
+newtype EventResultTable = WithId<EventResult>;
+type EventResultId = DbKey<EventResultTable>;
+
+annotation EventResultTable DbTable {
+  "uniquenessConstraints": [["eventId","entrantId"]],
+  "id_prefix": "ER-"
+};
+
+/// Overide a handicap before a specifed race
+struct HandicapOverride {
+  RaceId raceId;
+  EntrantId entrantId;
+  Double handicapNew;
+};
+
+newtype HandicapOverrideTable = WithId<HandicapOverride>;
+type HandicapOverrideId = DbKey<HandicapOverrideTable>;
+
+annotation HandicapOverrideTable DbTable {
+  "uniquenessConstraints": [["raceId","entrantId"]],
+  "id_prefix": "HO-"
+};
+
+union Result<T> {
+  T finished;
+  Void dnc;
+  Void dns;
+  Void dnf;
+  Void dsq;
+  Void avg;
+};
+
+/// Time duration in seconds
+type Duration = Double;
 
 };

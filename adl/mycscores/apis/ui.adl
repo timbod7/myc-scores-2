@@ -9,7 +9,6 @@ import common.strings.StringNE;
 import common.strings.StringML;
 
 import mycscores.db.AppUserId;
-import mycscores.db.MessageId;
 
 struct ApiRequests {
 
@@ -41,19 +40,6 @@ struct ApiRequests {
   HttpReq<Unit, Unit> logout = {
     "path": "/logout",
     "security" : "public"
-  };
-
-  /// Post a message to the noticeboard
-  HttpReq<NewMessageReq, MessageId> new_message = {
-    "path": "/messages/new",
-    "security" : "token"
-  };
-
-  /// Get recent noticeboard messages
-  HttpReq<RecentMessagesReq, Paginated<Message> > recent_messages = {
-    "method": "get",
-    "path": "/messages/recent",
-    "security" : "token"
   };
 
   /// Gets info about the logged in user
@@ -108,14 +94,6 @@ struct LoginTokens {
   StringNE refresh_jwt;
 };
 
-struct NewMessageReq {
-  StringML message;
-};
-
-struct RecentMessagesReq {
-  PageReq page;
-};
-
 struct PageReq {
   // Pagination offset
   Word64 offset = 0;
@@ -135,13 +113,6 @@ struct Paginated<T> {
 
   /// The size of the entire date set
   Word64 total_count;
-};
-
-struct Message {
-  MessageId id;
-  Instant posted_at;
-  String user_fullname;
-  StringML message;
 };
 
 struct QueryUsersReq {

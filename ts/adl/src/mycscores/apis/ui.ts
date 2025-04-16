@@ -3,7 +3,6 @@
 import * as ADL from '@adllang/adl-runtime';
 import * as common_http from './../../common/http';
 import * as common_strings from './../../common/strings';
-import * as common_time from './../../common/time';
 import * as mycscores_db from './../db';
 
 export interface ApiRequests {
@@ -26,14 +25,6 @@ export interface ApiRequests {
    * Clear the `refreshToken` cookie.
    */
   logout: common_http.HttpReq<common_http.Unit, common_http.Unit>;
-  /**
-   * Post a message to the noticeboard
-   */
-  new_message: common_http.HttpReq<NewMessageReq, mycscores_db.MessageId>;
-  /**
-   * Get recent noticeboard messages
-   */
-  recent_messages: common_http.HttpReq<RecentMessagesReq, Paginated<Message>>;
   /**
    * Gets info about the logged in user
    */
@@ -58,8 +49,6 @@ export function makeApiRequests(
     login?: common_http.HttpReq<LoginReq, LoginResp>,
     refresh?: common_http.HttpReq<RefreshReq, RefreshResp>,
     logout?: common_http.HttpReq<common_http.Unit, common_http.Unit>,
-    new_message?: common_http.HttpReq<NewMessageReq, mycscores_db.MessageId>,
-    recent_messages?: common_http.HttpReq<RecentMessagesReq, Paginated<Message>>,
     who_am_i?: common_http.HttpReq<null, UserWithId>,
     create_user?: common_http.HttpReq<UserDetails, mycscores_db.AppUserId>,
     update_user?: common_http.HttpReq<WithId<mycscores_db.AppUserId, UserDetails>, common_http.Unit>,
@@ -71,8 +60,6 @@ export function makeApiRequests(
     login: input.login === undefined ? {method : "post", path : "/login", security : {kind : "public"}, reqType : texprLoginReq(), respType : texprLoginResp()} : input.login,
     refresh: input.refresh === undefined ? {method : "post", path : "/refresh", security : {kind : "public"}, reqType : texprRefreshReq(), respType : texprRefreshResp()} : input.refresh,
     logout: input.logout === undefined ? {method : "post", path : "/logout", security : {kind : "public"}, reqType : common_http.texprUnit(), respType : common_http.texprUnit()} : input.logout,
-    new_message: input.new_message === undefined ? {method : "post", path : "/messages/new", security : {kind : "token"}, reqType : texprNewMessageReq(), respType : mycscores_db.texprMessageId()} : input.new_message,
-    recent_messages: input.recent_messages === undefined ? {method : "get", path : "/messages/recent", security : {kind : "token"}, reqType : texprRecentMessagesReq(), respType : texprPaginated(texprMessage())} : input.recent_messages,
     who_am_i: input.who_am_i === undefined ? {method : "get", path : "/whoami", security : {kind : "token"}, reqType : ADL.texprVoid(), respType : texprUserWithId()} : input.who_am_i,
     create_user: input.create_user === undefined ? {method : "post", path : "/users/create", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprUserDetails(), respType : mycscores_db.texprAppUserId()} : input.create_user,
     update_user: input.update_user === undefined ? {method : "post", path : "/users/update", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprWithId(mycscores_db.texprAppUserId(), texprUserDetails()), respType : common_http.texprUnit()} : input.update_user,
@@ -81,7 +68,7 @@ export function makeApiRequests(
 }
 
 const ApiRequests_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"method":"get","path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Post a message to the noticeboard\n"}],"default":{"kind":"just","value":{"path":"/messages/new","security":"token"}},"name":"new_message","serializedName":"new_message","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"NewMessageReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"MessageId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get recent noticeboard messages\n"}],"default":{"kind":"just","value":{"method":"get","path":"/messages/recent","security":"token"}},"name":"recent_messages","serializedName":"recent_messages","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RecentMessagesReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"Message"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets info about the logged in user\n"}],"default":{"kind":"just","value":{"method":"get","path":"/whoami","security":"token"}},"name":"who_am_i","serializedName":"who_am_i","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new user\n"}],"default":{"kind":"just","value":{"path":"/users/create","security":{"tokenWithRole":"admin"}}},"name":"create_user","serializedName":"create_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a user\n"}],"default":{"kind":"just","value":{"path":"/users/update","security":{"tokenWithRole":"admin"}}},"name":"update_user","serializedName":"update_user","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query users\n"}],"default":{"kind":"just","value":{"method":"get","path":"/users/query","security":{"tokenWithRole":"admin"}}},"name":"query_users","serializedName":"query_users","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"QueryUsersReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"method":"get","path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets info about the logged in user\n"}],"default":{"kind":"just","value":{"method":"get","path":"/whoami","security":"token"}},"name":"who_am_i","serializedName":"who_am_i","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new user\n"}],"default":{"kind":"just","value":{"path":"/users/create","security":{"tokenWithRole":"admin"}}},"name":"create_user","serializedName":"create_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a user\n"}],"default":{"kind":"just","value":{"path":"/users/update","security":{"tokenWithRole":"admin"}}},"name":"update_user","serializedName":"update_user","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query users\n"}],"default":{"kind":"just","value":{"method":"get","path":"/users/query","security":{"tokenWithRole":"admin"}}},"name":"query_users","serializedName":"query_users","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"QueryUsersReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snApiRequests: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"ApiRequests"};
 
@@ -216,52 +203,6 @@ export function texprLoginTokens(): ADL.ATypeExpr<LoginTokens> {
   return {value : {typeRef : {kind: "reference", value : snLoginTokens}, parameters : []}};
 }
 
-export interface NewMessageReq {
-  message: common_strings.StringML;
-}
-
-export function makeNewMessageReq(
-  input: {
-    message: common_strings.StringML,
-  }
-): NewMessageReq {
-  return {
-    message: input.message,
-  };
-}
-
-const NewMessageReq_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"NewMessageReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"message","serializedName":"message","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
-
-export const snNewMessageReq: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"NewMessageReq"};
-
-export function texprNewMessageReq(): ADL.ATypeExpr<NewMessageReq> {
-  return {value : {typeRef : {kind: "reference", value : snNewMessageReq}, parameters : []}};
-}
-
-export interface RecentMessagesReq {
-  page: PageReq;
-}
-
-export function makeRecentMessagesReq(
-  input: {
-    page: PageReq,
-  }
-): RecentMessagesReq {
-  return {
-    page: input.page,
-  };
-}
-
-const RecentMessagesReq_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"RecentMessagesReq","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"page","serializedName":"page","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"PageReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
-
-export const snRecentMessagesReq: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"RecentMessagesReq"};
-
-export function texprRecentMessagesReq(): ADL.ATypeExpr<RecentMessagesReq> {
-  return {value : {typeRef : {kind: "reference", value : snRecentMessagesReq}, parameters : []}};
-}
-
 export interface PageReq {
   offset: number;
   limit: number;
@@ -327,38 +268,6 @@ export const snPaginated: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name
 
 export function texprPaginated<T>(texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<Paginated<T>> {
   return {value : {typeRef : {kind: "reference", value : {moduleName : "mycscores.apis.ui",name : "Paginated"}}, parameters : [texprT.value]}};
-}
-
-export interface Message {
-  id: mycscores_db.MessageId;
-  posted_at: common_time.Instant;
-  user_fullname: string;
-  message: common_strings.StringML;
-}
-
-export function makeMessage(
-  input: {
-    id: mycscores_db.MessageId,
-    posted_at: common_time.Instant,
-    user_fullname: string,
-    message: common_strings.StringML,
-  }
-): Message {
-  return {
-    id: input.id,
-    posted_at: input.posted_at,
-    user_fullname: input.user_fullname,
-    message: input.message,
-  };
-}
-
-const Message_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"Message","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"MessageId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"posted_at","serializedName":"posted_at","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"Instant"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"user_fullname","serializedName":"user_fullname","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"message","serializedName":"message","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
-
-export const snMessage: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"Message"};
-
-export function texprMessage(): ADL.ATypeExpr<Message> {
-  return {value : {typeRef : {kind: "reference", value : snMessage}, parameters : []}};
 }
 
 export interface QueryUsersReq {
@@ -489,11 +398,8 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "mycscores.apis.ui.RefreshReq" : RefreshReq_AST,
   "mycscores.apis.ui.RefreshResp" : RefreshResp_AST,
   "mycscores.apis.ui.LoginTokens" : LoginTokens_AST,
-  "mycscores.apis.ui.NewMessageReq" : NewMessageReq_AST,
-  "mycscores.apis.ui.RecentMessagesReq" : RecentMessagesReq_AST,
   "mycscores.apis.ui.PageReq" : PageReq_AST,
   "mycscores.apis.ui.Paginated" : Paginated_AST,
-  "mycscores.apis.ui.Message" : Message_AST,
   "mycscores.apis.ui.QueryUsersReq" : QueryUsersReq_AST,
   "mycscores.apis.ui.User" : User_AST,
   "mycscores.apis.ui.UserWithId" : UserWithId_AST,

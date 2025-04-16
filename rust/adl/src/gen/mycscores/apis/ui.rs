@@ -1,16 +1,13 @@
 // @generated from adl module mycscores.apis.ui
 
-use crate::custom::common::time::Instant;
 use crate::gen::common::http::HttpMethod;
 use crate::gen::common::http::HttpReq;
 use crate::gen::common::http::HttpSecurity;
 use crate::gen::common::http::Unit;
 use crate::gen::common::strings::EmailAddress;
 use crate::gen::common::strings::Password;
-use crate::gen::common::strings::StringML;
 use crate::gen::common::strings::StringNE;
 use crate::gen::mycscores::db::AppUserId;
-use crate::gen::mycscores::db::MessageId;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -44,18 +41,6 @@ pub struct ApiRequests {
   pub logout: HttpReq<Unit, Unit>,
 
   /**
-   * Post a message to the noticeboard
-   */
-  #[serde(default="ApiRequests::def_new_message")]
-  pub new_message: HttpReq<NewMessageReq, MessageId>,
-
-  /**
-   * Get recent noticeboard messages
-   */
-  #[serde(default="ApiRequests::def_recent_messages")]
-  pub recent_messages: HttpReq<RecentMessagesReq, Paginated<Message>>,
-
-  /**
    * Gets info about the logged in user
    */
   #[serde(default="ApiRequests::def_who_am_i")]
@@ -87,8 +72,6 @@ impl ApiRequests {
       login: ApiRequests::def_login(),
       refresh: ApiRequests::def_refresh(),
       logout: ApiRequests::def_logout(),
-      new_message: ApiRequests::def_new_message(),
-      recent_messages: ApiRequests::def_recent_messages(),
       who_am_i: ApiRequests::def_who_am_i(),
       create_user: ApiRequests::def_create_user(),
       update_user: ApiRequests::def_update_user(),
@@ -110,14 +93,6 @@ impl ApiRequests {
 
   pub fn def_logout() -> HttpReq<Unit, Unit> {
     HttpReq::<Unit, Unit>{method : HttpMethod::Post, path : "/logout".to_string(), security : HttpSecurity::Public, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
-  }
-
-  pub fn def_new_message() -> HttpReq<NewMessageReq, MessageId> {
-    HttpReq::<NewMessageReq, MessageId>{method : HttpMethod::Post, path : "/messages/new".to_string(), security : HttpSecurity::Token, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
-  }
-
-  pub fn def_recent_messages() -> HttpReq<RecentMessagesReq, Paginated<Message>> {
-    HttpReq::<RecentMessagesReq, Paginated<Message>>{method : HttpMethod::Get, path : "/messages/recent".to_string(), security : HttpSecurity::Token, req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_who_am_i() -> HttpReq<(), UserWithId> {
@@ -206,32 +181,6 @@ impl LoginTokens {
 }
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct NewMessageReq {
-  pub message: StringML,
-}
-
-impl NewMessageReq {
-  pub fn new(message: StringML) -> NewMessageReq {
-    NewMessageReq {
-      message: message,
-    }
-  }
-}
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct RecentMessagesReq {
-  pub page: PageReq,
-}
-
-impl RecentMessagesReq {
-  pub fn new(page: PageReq) -> RecentMessagesReq {
-    RecentMessagesReq {
-      page: page,
-    }
-  }
-}
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct PageReq {
   #[serde(default="PageReq::def_offset")]
   pub offset: u64,
@@ -284,28 +233,6 @@ impl<T> Paginated<T> {
       items: items,
       current_offset: current_offset,
       total_count: total_count,
-    }
-  }
-}
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct Message {
-  pub id: MessageId,
-
-  pub posted_at: Instant,
-
-  pub user_fullname: String,
-
-  pub message: StringML,
-}
-
-impl Message {
-  pub fn new(id: MessageId, posted_at: Instant, user_fullname: String, message: StringML) -> Message {
-    Message {
-      id: id,
-      posted_at: posted_at,
-      user_fullname: user_fullname,
-      message: message,
     }
   }
 }
