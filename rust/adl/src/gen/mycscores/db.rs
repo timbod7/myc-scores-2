@@ -1,11 +1,11 @@
 // @generated from adl module mycscores.db
 
 use crate::custom::common::db::DbKey;
+use crate::custom::common::time::LocalDate;
+use crate::custom::common::time::LocalTime;
 use crate::gen::common::db::WithId;
 use crate::gen::common::strings::StringML;
 use crate::gen::common::strings::StringNE;
-use crate::gen::common::time::LocalDate;
-use crate::gen::common::time::LocalTime;
 use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;

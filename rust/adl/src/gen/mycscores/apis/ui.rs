@@ -1,5 +1,7 @@
 // @generated from adl module mycscores.apis.ui
 
+use crate::custom::common::time::LocalDate;
+use crate::custom::common::time::LocalTime;
 use crate::gen::common::http::HttpMethod;
 use crate::gen::common::http::HttpReq;
 use crate::gen::common::http::HttpSecurity;
@@ -8,8 +10,6 @@ use crate::gen::common::strings::EmailAddress;
 use crate::gen::common::strings::Password;
 use crate::gen::common::strings::StringML;
 use crate::gen::common::strings::StringNE;
-use crate::gen::common::time::LocalDate;
-use crate::gen::common::time::LocalTime;
 use crate::gen::mycscores::db::AppUserId;
 use crate::gen::mycscores::db::CalendarEntry;
 use crate::gen::mycscores::db::Entrant;

@@ -67,7 +67,7 @@ impl CalendarEntry {
         ColumnSpec::new(Self::table_str(), "season_id")
     }
 
-    pub fn date() -> ColumnSpec<adlgen::common::time::LocalDate> {
+    pub fn date() -> ColumnSpec<crate::custom::common::time::LocalDate> {
         ColumnSpec::new(Self::table_str(), "date")
     }
 
@@ -207,7 +207,7 @@ impl EventResult {
         ColumnSpec::new(Self::table_str(), "handicap_secs")
     }
 
-    pub fn finishTime() -> ColumnSpec<adlgen::mycscores::db::Result<adlgen::common::time::LocalTime>> {
+    pub fn finishTime() -> ColumnSpec<adlgen::mycscores::db::Result<crate::custom::common::time::LocalTime>> {
         ColumnSpec::new(Self::table_str(), "finish_time")
     }
 
@@ -287,7 +287,7 @@ impl Race {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn scheduledDate() -> ColumnSpec<adlgen::common::time::LocalDate> {
+    pub fn scheduledDate() -> ColumnSpec<crate::custom::common::time::LocalDate> {
         ColumnSpec::new(Self::table_str(), "scheduled_date")
     }
 
@@ -327,7 +327,7 @@ impl RaceResult {
         ColumnSpec::new(Self::table_str(), "entrant_id")
     }
 
-    pub fn result() -> ColumnSpec<adlgen::mycscores::db::Result<adlgen::common::time::LocalTime>> {
+    pub fn result() -> ColumnSpec<adlgen::mycscores::db::Result<crate::custom::common::time::LocalTime>> {
         ColumnSpec::new(Self::table_str(), "result")
     }
 }
@@ -355,7 +355,7 @@ impl RaceStart {
         ColumnSpec::new(Self::table_str(), "race_id")
     }
 
-    pub fn date() -> ColumnSpec<adlgen::common::time::LocalDate> {
+    pub fn date() -> ColumnSpec<crate::custom::common::time::LocalDate> {
         ColumnSpec::new(Self::table_str(), "date")
     }
 
@@ -363,7 +363,7 @@ impl RaceStart {
         ColumnSpec::new(Self::table_str(), "abandoned")
     }
 
-    pub fn startTime() -> ColumnSpec<adlgen::common::time::LocalTime> {
+    pub fn startTime() -> ColumnSpec<crate::custom::common::time::LocalTime> {
         ColumnSpec::new(Self::table_str(), "start_time")
     }
 
