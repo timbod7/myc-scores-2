@@ -474,11 +474,11 @@ pub struct RaceResult {
   #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
-  pub result: Result<LocalTime>,
+  pub result: RResult<LocalTime>,
 }
 
 impl RaceResult {
-  pub fn new(race_id: RaceId, entrant_id: EntrantId, result: Result<LocalTime>) -> RaceResult {
+  pub fn new(race_id: RaceId, entrant_id: EntrantId, result: RResult<LocalTime>) -> RaceResult {
     RaceResult {
       race_id: race_id,
       entrant_id: entrant_id,
@@ -541,16 +541,16 @@ pub struct EventResult {
   pub handicap_secs: f64,
 
   #[serde(rename="finishTime")]
-  pub finish_time: Result<LocalTime>,
+  pub finish_time: RResult<LocalTime>,
 
   #[serde(rename="elapsedTime")]
-  pub elapsed_time: Result<Duration>,
+  pub elapsed_time: RResult<Duration>,
 
   #[serde(rename="elapsedTimeYardstick")]
-  pub elapsed_time_yardstick: Result<Duration>,
+  pub elapsed_time_yardstick: RResult<Duration>,
 
   #[serde(rename="elapsedTimeHandicap")]
-  pub elapsed_time_handicap: Result<Duration>,
+  pub elapsed_time_handicap: RResult<Duration>,
 
   pub score: u16,
 
@@ -562,7 +562,7 @@ pub struct EventResult {
 }
 
 impl EventResult {
-  pub fn new(entrant_id: EntrantId, event_id: EventId, entrant_name: StringNE, boat_name: StringNE, sail_number: StringNE, yardstick: f64, handicap: f64, handicap_secs: f64, finish_time: Result<LocalTime>, elapsed_time: Result<Duration>, elapsed_time_yardstick: Result<Duration>, elapsed_time_handicap: Result<Duration>, score: u16, handicap_change: f64, handicap_new: f64) -> EventResult {
+  pub fn new(entrant_id: EntrantId, event_id: EventId, entrant_name: StringNE, boat_name: StringNE, sail_number: StringNE, yardstick: f64, handicap: f64, handicap_secs: f64, finish_time: RResult<LocalTime>, elapsed_time: RResult<Duration>, elapsed_time_yardstick: RResult<Duration>, elapsed_time_handicap: RResult<Duration>, score: u16, handicap_change: f64, handicap_new: f64) -> EventResult {
     EventResult {
       entrant_id: entrant_id,
       event_id: event_id,
@@ -661,7 +661,7 @@ impl<'de> Deserialize<'de> for HandicapOverrideTable
 pub type HandicapOverrideId = DbKey<HandicapOverrideTable>;
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub enum Result<T> {
+pub enum RResult<T> {
   #[serde(rename="finished")]
   Finished(T),
 

@@ -158,7 +158,7 @@ annotation EntrantTable DbTable {
 struct RaceResult {
   RaceId raceId;
   EntrantId entrantId;
-  Result<LocalTime> result;
+  RResult<LocalTime> result;
 };
 
 newtype RaceResultTable = WithId<RaceResult>;
@@ -179,10 +179,10 @@ struct EventResult {
   Double yardstick;
   Double handicap;
   Double handicapSecs;
-  Result<LocalTime> finishTime;
-  Result<Duration> elapsedTime;
-  Result<Duration> elapsedTimeYardstick;
-  Result<Duration> elapsedTimeHandicap;
+  RResult<LocalTime> finishTime;
+  RResult<Duration> elapsedTime;
+  RResult<Duration> elapsedTimeYardstick;
+  RResult<Duration> elapsedTimeHandicap;
   Word16 score;
   Double handicapChange;
   Double handicapNew;
@@ -211,7 +211,7 @@ annotation HandicapOverrideTable DbTable {
   "id_prefix": "HO-"
 };
 
-union Result<T> {
+union RResult<T> {
   T finished;
   Void dnc;
   Void dns;

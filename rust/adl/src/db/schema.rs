@@ -207,19 +207,19 @@ impl EventResult {
         ColumnSpec::new(Self::table_str(), "handicap_secs")
     }
 
-    pub fn finishTime() -> ColumnSpec<adlgen::mycscores::db::Result<crate::custom::common::time::LocalTime>> {
+    pub fn finishTime() -> ColumnSpec<adlgen::mycscores::db::RResult<crate::custom::common::time::LocalTime>> {
         ColumnSpec::new(Self::table_str(), "finish_time")
     }
 
-    pub fn elapsedTime() -> ColumnSpec<adlgen::mycscores::db::Result<adlgen::mycscores::db::Duration>> {
+    pub fn elapsedTime() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time")
     }
 
-    pub fn elapsedTimeYardstick() -> ColumnSpec<adlgen::mycscores::db::Result<adlgen::mycscores::db::Duration>> {
+    pub fn elapsedTimeYardstick() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time_yardstick")
     }
 
-    pub fn elapsedTimeHandicap() -> ColumnSpec<adlgen::mycscores::db::Result<adlgen::mycscores::db::Duration>> {
+    pub fn elapsedTimeHandicap() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time_handicap")
     }
 
@@ -327,7 +327,7 @@ impl RaceResult {
         ColumnSpec::new(Self::table_str(), "entrant_id")
     }
 
-    pub fn result() -> ColumnSpec<adlgen::mycscores::db::Result<crate::custom::common::time::LocalTime>> {
+    pub fn result() -> ColumnSpec<adlgen::mycscores::db::RResult<crate::custom::common::time::LocalTime>> {
         ColumnSpec::new(Self::table_str(), "result")
     }
 }
@@ -445,5 +445,5 @@ impl Series {
 }
 
 
+derive_db_conversions_adl!(adlgen::mycscores::db::RResult);
 derive_db_conversions_adl_enum!(adlgen::mycscores::db::RaceType);
-derive_db_conversions_adl!(adlgen::mycscores::db::Result);

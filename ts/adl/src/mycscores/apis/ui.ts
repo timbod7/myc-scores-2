@@ -367,13 +367,13 @@ export function texprRaceScheduleResp(): ADL.ATypeExpr<RaceScheduleResp> {
 
 export interface EntrantRaceResult {
   entrantId: mycscores_db.EntrantId;
-  result: mycscores_db.Result<common_time.LocalTime>;
+  result: mycscores_db.RResult<common_time.LocalTime>;
 }
 
 export function makeEntrantRaceResult(
   input: {
     entrantId: mycscores_db.EntrantId,
-    result: mycscores_db.Result<common_time.LocalTime>,
+    result: mycscores_db.RResult<common_time.LocalTime>,
   }
 ): EntrantRaceResult {
   return {
@@ -383,7 +383,7 @@ export function makeEntrantRaceResult(
 }
 
 const EntrantRaceResult_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"EntrantRaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"EntrantRaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snEntrantRaceResult: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"EntrantRaceResult"};
 

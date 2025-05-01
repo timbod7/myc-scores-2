@@ -17,9 +17,9 @@ use crate::gen::mycscores::db::EntrantId;
 use crate::gen::mycscores::db::Event;
 use crate::gen::mycscores::db::EventId;
 use crate::gen::mycscores::db::EventResult;
+use crate::gen::mycscores::db::RResult;
 use crate::gen::mycscores::db::RaceId;
 use crate::gen::mycscores::db::RaceType;
-use crate::gen::mycscores::db::Result;
 use crate::gen::mycscores::db::Season;
 use crate::gen::mycscores::db::SeasonId;
 use crate::gen::mycscores::db::Series;
@@ -374,11 +374,11 @@ pub struct EntrantRaceResult {
   #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
-  pub result: Result<LocalTime>,
+  pub result: RResult<LocalTime>,
 }
 
 impl EntrantRaceResult {
-  pub fn new(entrant_id: EntrantId, result: Result<LocalTime>) -> EntrantRaceResult {
+  pub fn new(entrant_id: EntrantId, result: RResult<LocalTime>) -> EntrantRaceResult {
     EntrantRaceResult {
       entrant_id: entrant_id,
       result: result,

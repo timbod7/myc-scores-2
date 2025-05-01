@@ -19,7 +19,7 @@ import mycscores.db.EventId;
 import mycscores.db.EventResult;
 import mycscores.db.RaceId;
 import mycscores.db.RaceType;
-import mycscores.db.Result;
+import mycscores.db.RResult;
 import mycscores.db.Season;
 import mycscores.db.SeasonId;
 import mycscores.db.Series;
@@ -183,7 +183,7 @@ struct RaceScheduleResp {
 
 struct EntrantRaceResult {
   EntrantId entrantId;
-  Result<LocalTime> result;
+  RResult<LocalTime> result;
 
 };
 

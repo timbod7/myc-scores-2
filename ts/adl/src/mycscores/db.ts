@@ -489,14 +489,14 @@ export function texprEntrantId(): ADL.ATypeExpr<EntrantId> {
 export interface RaceResult {
   raceId: RaceId;
   entrantId: EntrantId;
-  result: Result<common_time.LocalTime>;
+  result: RResult<common_time.LocalTime>;
 }
 
 export function makeRaceResult(
   input: {
     raceId: RaceId,
     entrantId: EntrantId,
-    result: Result<common_time.LocalTime>,
+    result: RResult<common_time.LocalTime>,
   }
 ): RaceResult {
   return {
@@ -507,7 +507,7 @@ export function makeRaceResult(
 }
 
 const RaceResult_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants results in a single race\n"}],"name":"RaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants results in a single race\n"}],"name":"RaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snRaceResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"RaceResult"};
 
@@ -549,10 +549,10 @@ export interface EventResult {
   yardstick: number;
   handicap: number;
   handicapSecs: number;
-  finishTime: Result<common_time.LocalTime>;
-  elapsedTime: Result<Duration>;
-  elapsedTimeYardstick: Result<Duration>;
-  elapsedTimeHandicap: Result<Duration>;
+  finishTime: RResult<common_time.LocalTime>;
+  elapsedTime: RResult<Duration>;
+  elapsedTimeYardstick: RResult<Duration>;
+  elapsedTimeHandicap: RResult<Duration>;
   score: number;
   handicapChange: number;
   handicapNew: number;
@@ -568,10 +568,10 @@ export function makeEventResult(
     yardstick: number,
     handicap: number,
     handicapSecs: number,
-    finishTime: Result<common_time.LocalTime>,
-    elapsedTime: Result<Duration>,
-    elapsedTimeYardstick: Result<Duration>,
-    elapsedTimeHandicap: Result<Duration>,
+    finishTime: RResult<common_time.LocalTime>,
+    elapsedTime: RResult<Duration>,
+    elapsedTimeYardstick: RResult<Duration>,
+    elapsedTimeHandicap: RResult<Duration>,
     score: number,
     handicapChange: number,
     handicapNew: number,
@@ -597,7 +597,7 @@ export function makeEventResult(
 }
 
 const EventResult_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants result in a single event\n"}],"name":"EventResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"eventId","serializedName":"eventId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantName","serializedName":"entrantName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boatName","serializedName":"boatName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sailNumber","serializedName":"sailNumber","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapSecs","serializedName":"handicapSecs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"finishTime","serializedName":"finishTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTime","serializedName":"elapsedTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeYardstick","serializedName":"elapsedTimeYardstick","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeHandicap","serializedName":"elapsedTimeHandicap","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Result"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"score","serializedName":"score","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word16"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapChange","serializedName":"handicapChange","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapNew","serializedName":"handicapNew","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants result in a single event\n"}],"name":"EventResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"eventId","serializedName":"eventId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantName","serializedName":"entrantName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boatName","serializedName":"boatName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sailNumber","serializedName":"sailNumber","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapSecs","serializedName":"handicapSecs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"finishTime","serializedName":"finishTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTime","serializedName":"elapsedTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeYardstick","serializedName":"elapsedTimeYardstick","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeHandicap","serializedName":"elapsedTimeHandicap","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"score","serializedName":"score","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word16"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapChange","serializedName":"handicapChange","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapNew","serializedName":"handicapNew","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snEventResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"EventResult"};
 
@@ -681,29 +681,29 @@ export function texprHandicapOverrideId(): ADL.ATypeExpr<HandicapOverrideId> {
   return {value : {typeRef : {kind: "reference", value : snHandicapOverrideId}, parameters : []}};
 }
 
-export interface Result_Finished<T> {
+export interface RResult_Finished<T> {
   kind: 'finished';
   value: T;
 }
-export interface Result_Dnc<_T> {
+export interface RResult_Dnc<_T> {
   kind: 'dnc';
 }
-export interface Result_Dns<_T> {
+export interface RResult_Dns<_T> {
   kind: 'dns';
 }
-export interface Result_Dnf<_T> {
+export interface RResult_Dnf<_T> {
   kind: 'dnf';
 }
-export interface Result_Dsq<_T> {
+export interface RResult_Dsq<_T> {
   kind: 'dsq';
 }
-export interface Result_Avg<_T> {
+export interface RResult_Avg<_T> {
   kind: 'avg';
 }
 
-export type Result<T> = Result_Finished<T> | Result_Dnc<T> | Result_Dns<T> | Result_Dnf<T> | Result_Dsq<T> | Result_Avg<T>;
+export type RResult<T> = RResult_Finished<T> | RResult_Dnc<T> | RResult_Dns<T> | RResult_Dnf<T> | RResult_Dsq<T> | RResult_Avg<T>;
 
-export interface ResultOpts<T> {
+export interface RResultOpts<T> {
   finished: T;
   dnc: null;
   dns: null;
@@ -712,15 +712,15 @@ export interface ResultOpts<T> {
   avg: null;
 }
 
-export function makeResult<T, K extends keyof ResultOpts<T>>(kind: K, value: ResultOpts<T>[K]) { return {kind, value}; }
+export function makeRResult<T, K extends keyof RResultOpts<T>>(kind: K, value: RResultOpts<T>[K]) { return {kind, value}; }
 
-const Result_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"Result","type_":{"kind":"union_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"finished","serializedName":"finished","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dnc","serializedName":"dnc","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dns","serializedName":"dns","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dnf","serializedName":"dnf","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dsq","serializedName":"dsq","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"avg","serializedName":"avg","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}}],"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+const RResult_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"RResult","type_":{"kind":"union_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"finished","serializedName":"finished","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dnc","serializedName":"dnc","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dns","serializedName":"dns","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dnf","serializedName":"dnf","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"dsq","serializedName":"dsq","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"avg","serializedName":"avg","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}}],"typeParams":["T"]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
-export const snResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"Result"};
+export const snRResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"RResult"};
 
-export function texprResult<T>(texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<Result<T>> {
-  return {value : {typeRef : {kind: "reference", value : {moduleName : "mycscores.db",name : "Result"}}, parameters : [texprT.value]}};
+export function texprRResult<T>(texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<RResult<T>> {
+  return {value : {typeRef : {kind: "reference", value : {moduleName : "mycscores.db",name : "RResult"}}, parameters : [texprT.value]}};
 }
 
 /**
@@ -773,6 +773,6 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "mycscores.db.HandicapOverride" : HandicapOverride_AST,
   "mycscores.db.HandicapOverrideTable" : HandicapOverrideTable_AST,
   "mycscores.db.HandicapOverrideId" : HandicapOverrideId_AST,
-  "mycscores.db.Result" : Result_AST,
+  "mycscores.db.RResult" : RResult_AST,
   "mycscores.db.Duration" : Duration_AST
 };

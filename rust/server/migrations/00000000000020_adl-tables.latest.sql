@@ -49,10 +49,10 @@ create table event_result(
   yardstick double precision not null, -- Double
   handicap double precision not null,  -- Double
   handicap_secs double precision not null, -- Double
-  finish_time jsonb not null,          -- Result<LocalTime>
-  elapsed_time jsonb not null,         -- Result<Duration>
-  elapsed_time_yardstick jsonb not null, -- Result<Duration>
-  elapsed_time_handicap jsonb not null, -- Result<Duration>
+  finish_time jsonb not null,          -- RResult<LocalTime>
+  elapsed_time jsonb not null,         -- RResult<Duration>
+  elapsed_time_yardstick jsonb not null, -- RResult<Duration>
+  elapsed_time_handicap jsonb not null, -- RResult<Duration>
   score smallint not null,             -- Word16
   handicap_change double precision not null, -- Double
   handicap_new double precision not null, -- Double
@@ -79,7 +79,7 @@ create table race_result(
   id text not null,                    -- String
   race_id text not null,               -- RaceId
   entrant_id text not null,            -- EntrantId
-  result jsonb not null,               -- Result<LocalTime>
+  result jsonb not null,               -- RResult<LocalTime>
   primary key(id)
 );
 
