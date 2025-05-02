@@ -113,7 +113,9 @@ function declToDerive(
   loadedAdl: LoadedAdl,
   dte: DecodedTypeExpr,
 ): DeclToDerive | undefined {
-  if (dte.kind === "Reference") {
+  if (dte.kind === "Nullable") {
+    return declToDerive(loadedAdl, dte.elemType);
+  } else if (dte.kind === "Reference") {
     const sn = dte.refScopedName;
     const decl = loadedAdl.allAdlDecls[sn.moduleName + "." + sn.name].decl;
     if (decl.type_.kind === "type_" || decl.type_.kind === "newtype_") {
