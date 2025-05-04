@@ -41,12 +41,12 @@ annotation SeasonTable DbTable {
 
 /// Each series is a collection of races
 struct Series {
-  SeasonId seasonId;
+  SeasonId season_id;
   StringNE name;
   StringNE abbreviation;
-  Bool isHandicap;
-  Nullable<HandicapSystem> handicapSystem;
-  Word8 numDrops;
+  Bool is_handicap;
+  Nullable<HandicapSystem> handicap_system;
+  Word8 num_drops;
 };
 
 union HandicapSystem {
@@ -65,9 +65,9 @@ annotation SeriesTable DbTable {
 
 /// A Race 
 struct Race {
-  LocalDate scheduledDate;
-  Word8 raceNumber;
-  String dutyOfficer = "";
+  LocalDate scheduled_date;
+  Word8 race_number;
+  String duty_officer = "";
 };
 
 newtype RaceTable = WithId<Race>;
@@ -82,7 +82,7 @@ annotation RaceTable DbTable {
 /// A Calendar entry, shown in the schedule
 /// but otherwise has no effect
 struct CalendarEntry {
-  SeasonId seasonId;
+  SeasonId season_id;
   LocalDate date;
   StringNE description;
 };
@@ -97,10 +97,10 @@ annotation CalendarEntryTable DbTable {
 
 // Details for a race, know once it's been run
 struct RaceStart {
-  RaceId raceId;
+  RaceId race_id;
   LocalDate date;
   Bool abandoned;
-  LocalTime startTime;
+  LocalTime start_time;
   StringML conditions;
   StringML notes;
 };
@@ -116,9 +116,9 @@ annotation RaceStartTable DbTable {
 /// A race in a series
 struct Event {
   StringNE abbreviation;
-  SeriesId seriesId;
-  RaceId raceId;
-  RaceType raceType;
+  SeriesId series_id;
+  RaceId race_id;
+  RaceType race_type;
 };
 
 newtype EventTable = WithId<Event>;
@@ -137,12 +137,12 @@ union RaceType {
 
 /// Personal and boat details for an entrant
 struct Entrant {
-  SeasonId seasonId;
-  StringNE entrantName;
-  StringNE boatName;
-  StringNE sailNumber;
+  SeasonId season_id;
+  StringNE entrant_name;
+  StringNE boat_name;
+  StringNE sail_number;
   Double yardstick;
-  Double initialHandicap;
+  Double initial_handicap;
 };
 
 newtype EntrantTable = WithId<Entrant>;
@@ -156,8 +156,8 @@ annotation EntrantTable DbTable {
 
 /// An entrants results in a single race
 struct RaceResult {
-  RaceId raceId;
-  EntrantId entrantId;
+  RaceId race_id;
+  EntrantId entrant_id;
   RResult<LocalTime> result;
 };
 
@@ -171,21 +171,21 @@ annotation RaceResultTable DbTable {
 
 /// An entrants result in a single event
 struct EventResult {
-  EntrantId entrantId;
-  EventId eventId;
-  StringNE entrantName;
-  StringNE boatName;
-  StringNE sailNumber;
+  EntrantId entrant_id;
+  EventId event_id;
+  StringNE entrant_name;
+  StringNE boat_name;
+  StringNE sail_number;
   Double yardstick;
   Double handicap;
-  Double handicapSecs;
-  RResult<LocalTime> finishTime;
-  RResult<Duration> elapsedTime;
-  RResult<Duration> elapsedTimeYardstick;
-  RResult<Duration> elapsedTimeHandicap;
+  Double handicap_secs;
+  RResult<LocalTime> finish_time;
+  RResult<Duration> elapsed_time;
+  RResult<Duration> elapsed_time_yardstick;
+  RResult<Duration> elapsed_time_handicap;
   Word16 score;
-  Double handicapChange;
-  Double handicapNew;
+  Double handicap_change;
+  Double handicap_new;
 };
 
 newtype EventResultTable = WithId<EventResult>;
@@ -198,9 +198,9 @@ annotation EventResultTable DbTable {
 
 /// Overide a handicap before a specifed race
 struct HandicapOverride {
-  RaceId raceId;
-  EntrantId entrantId;
-  Double handicapNew;
+  RaceId race_id;
+  EntrantId entrant_id;
+  Double handicap_new;
 };
 
 newtype HandicapOverrideTable = WithId<HandicapOverride>;

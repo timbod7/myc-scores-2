@@ -162,62 +162,62 @@ struct SeasonDetails {
 };
 
 struct RaceScheduleEntry {
-  RaceId raceId;
+  RaceId race_id;
   LocalDate date;
-  Word8 raceNumber;
+  Word8 race_number;
   Vector<WithId<EventId, Event>> events;
-  String dutyOfficer;
+  String duty_officer;
 };
 
 struct RaceEntrant {
   WithId<EntrantId, Entrant> entrant;
   Double handicap;
-  Double handicapSecs;
+  Double handicap_secs;
 };
 
 struct RaceScheduleResp {
   Season season;
   Vector<RaceScheduleEntry> races;
-  Vector<CalendarEntry> calendarEntries;
+  Vector<CalendarEntry> calendar_entries;
 };
 
 struct EntrantRaceResult {
-  EntrantId entrantId;
+  EntrantId entrant_id;
   RResult<LocalTime> result;
 
 };
 
 struct RaceStartDetails {
   LocalDate date;
-  LocalTime startTime;
+  LocalTime start_time;
   StringML conditions;
   StringML notes;
   Bool abandoned;
 };
 
 struct GetRaceResultsResp {
-  LocalDate scheduledDate;
+  LocalDate scheduled_date;
   Vector<WithId<EventId,Event>> events;
-  Nullable<RaceStartDetails> startDetails;
+  Nullable<RaceStartDetails> start_details;
   Vector<EntrantRaceResult> results;
 };
 
 struct EventResults {
   LocalDate date;
-  LocalTime startTime;
+  LocalTime start_time;
   StringNE abbreviation;
   StringML conditions;
-  Bool isHandicap;
+  Bool is_handicap;
   Bool abandoned;
-  RaceType raceType;
+  RaceType race_type;
   Vector<EventResult> results;
 };
 
 type GetEventResultsResp = Nullable<EventResults>;
 
 struct EntrantSeriesResult {
-  EntrantId entrantId;
-  EventId eventId;
+  EntrantId entrant_id;
+  EventId event_id;
   Word16 score;
 };
 
@@ -230,8 +230,8 @@ struct GetSeriesResultsResp {
 };
 
 struct UpdateRaceResultsReq {
-  RaceId raceId;
-  RaceStartDetails startDetails;
+  RaceId race_id;
+  RaceStartDetails start_details;
   Vector<EntrantRaceResult> results;
 };
 

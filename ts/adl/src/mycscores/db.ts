@@ -111,36 +111,36 @@ export function texprSeasonId(): ADL.ATypeExpr<SeasonId> {
  * Each series is a collection of races
  */
 export interface Series {
-  seasonId: SeasonId;
+  season_id: SeasonId;
   name: common_strings.StringNE;
   abbreviation: common_strings.StringNE;
-  isHandicap: boolean;
-  handicapSystem: (HandicapSystem|null);
-  numDrops: number;
+  is_handicap: boolean;
+  handicap_system: (HandicapSystem|null);
+  num_drops: number;
 }
 
 export function makeSeries(
   input: {
-    seasonId: SeasonId,
+    season_id: SeasonId,
     name: common_strings.StringNE,
     abbreviation: common_strings.StringNE,
-    isHandicap: boolean,
-    handicapSystem: (HandicapSystem|null),
-    numDrops: number,
+    is_handicap: boolean,
+    handicap_system: (HandicapSystem|null),
+    num_drops: number,
   }
 ): Series {
   return {
-    seasonId: input.seasonId,
+    season_id: input.season_id,
     name: input.name,
     abbreviation: input.abbreviation,
-    isHandicap: input.isHandicap,
-    handicapSystem: input.handicapSystem,
-    numDrops: input.numDrops,
+    is_handicap: input.is_handicap,
+    handicap_system: input.handicap_system,
+    num_drops: input.num_drops,
   };
 }
 
 const Series_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Each series is a collection of races\n"}],"name":"Series","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"seasonId","serializedName":"seasonId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"name","serializedName":"name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"abbreviation","serializedName":"abbreviation","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"isHandicap","serializedName":"isHandicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapSystem","serializedName":"handicapSystem","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"HandicapSystem"}}}],"typeRef":{"kind":"primitive","value":"Nullable"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"numDrops","serializedName":"numDrops","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Each series is a collection of races\n"}],"name":"Series","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season_id","serializedName":"season_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"name","serializedName":"name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"abbreviation","serializedName":"abbreviation","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"is_handicap","serializedName":"is_handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_system","serializedName":"handicap_system","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"HandicapSystem"}}}],"typeRef":{"kind":"primitive","value":"Nullable"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"num_drops","serializedName":"num_drops","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snSeries: ADL.ScopedName = {moduleName:"mycscores.db", name:"Series"};
 
@@ -186,27 +186,27 @@ export function texprSeriesId(): ADL.ATypeExpr<SeriesId> {
  * A Race 
  */
 export interface Race {
-  scheduledDate: common_time.LocalDate;
-  raceNumber: number;
-  dutyOfficer: string;
+  scheduled_date: common_time.LocalDate;
+  race_number: number;
+  duty_officer: string;
 }
 
 export function makeRace(
   input: {
-    scheduledDate: common_time.LocalDate,
-    raceNumber: number,
-    dutyOfficer?: string,
+    scheduled_date: common_time.LocalDate,
+    race_number: number,
+    duty_officer?: string,
   }
 ): Race {
   return {
-    scheduledDate: input.scheduledDate,
-    raceNumber: input.raceNumber,
-    dutyOfficer: input.dutyOfficer === undefined ? "" : input.dutyOfficer,
+    scheduled_date: input.scheduled_date,
+    race_number: input.race_number,
+    duty_officer: input.duty_officer === undefined ? "" : input.duty_officer,
   };
 }
 
 const Race_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A Race \n"}],"name":"Race","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"scheduledDate","serializedName":"scheduledDate","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"raceNumber","serializedName":"raceNumber","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}},{"annotations":[],"default":{"kind":"just","value":""},"name":"dutyOfficer","serializedName":"dutyOfficer","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A Race \n"}],"name":"Race","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"scheduled_date","serializedName":"scheduled_date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"race_number","serializedName":"race_number","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}},{"annotations":[],"default":{"kind":"just","value":""},"name":"duty_officer","serializedName":"duty_officer","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snRace: ADL.ScopedName = {moduleName:"mycscores.db", name:"Race"};
 
@@ -241,27 +241,27 @@ export function texprRaceId(): ADL.ATypeExpr<RaceId> {
  * but otherwise has no effect
  */
 export interface CalendarEntry {
-  seasonId: SeasonId;
+  season_id: SeasonId;
   date: common_time.LocalDate;
   description: common_strings.StringNE;
 }
 
 export function makeCalendarEntry(
   input: {
-    seasonId: SeasonId,
+    season_id: SeasonId,
     date: common_time.LocalDate,
     description: common_strings.StringNE,
   }
 ): CalendarEntry {
   return {
-    seasonId: input.seasonId,
+    season_id: input.season_id,
     date: input.date,
     description: input.description,
   };
 }
 
 const CalendarEntry_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A Calendar entry, shown in the schedule\nbut otherwise has no effect\n"}],"name":"CalendarEntry","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"seasonId","serializedName":"seasonId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"description","serializedName":"description","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A Calendar entry, shown in the schedule\nbut otherwise has no effect\n"}],"name":"CalendarEntry","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season_id","serializedName":"season_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"description","serializedName":"description","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snCalendarEntry: ADL.ScopedName = {moduleName:"mycscores.db", name:"CalendarEntry"};
 
@@ -292,36 +292,36 @@ export function texprCalendarEntryId(): ADL.ATypeExpr<CalendarEntryId> {
 }
 
 export interface RaceStart {
-  raceId: RaceId;
+  race_id: RaceId;
   date: common_time.LocalDate;
   abandoned: boolean;
-  startTime: common_time.LocalTime;
+  start_time: common_time.LocalTime;
   conditions: common_strings.StringML;
   notes: common_strings.StringML;
 }
 
 export function makeRaceStart(
   input: {
-    raceId: RaceId,
+    race_id: RaceId,
     date: common_time.LocalDate,
     abandoned: boolean,
-    startTime: common_time.LocalTime,
+    start_time: common_time.LocalTime,
     conditions: common_strings.StringML,
     notes: common_strings.StringML,
   }
 ): RaceStart {
   return {
-    raceId: input.raceId,
+    race_id: input.race_id,
     date: input.date,
     abandoned: input.abandoned,
-    startTime: input.startTime,
+    start_time: input.start_time,
     conditions: input.conditions,
     notes: input.notes,
   };
 }
 
 const RaceStart_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"RaceStart","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"abandoned","serializedName":"abandoned","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"startTime","serializedName":"startTime","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"conditions","serializedName":"conditions","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"notes","serializedName":"notes","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[],"name":"RaceStart","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"abandoned","serializedName":"abandoned","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Bool"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"start_time","serializedName":"start_time","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"conditions","serializedName":"conditions","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"notes","serializedName":"notes","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringML"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snRaceStart: ADL.ScopedName = {moduleName:"mycscores.db", name:"RaceStart"};
 
@@ -356,29 +356,29 @@ export function texprRaceStartId(): ADL.ATypeExpr<RaceStartId> {
  */
 export interface Event {
   abbreviation: common_strings.StringNE;
-  seriesId: SeriesId;
-  raceId: RaceId;
-  raceType: RaceType;
+  series_id: SeriesId;
+  race_id: RaceId;
+  race_type: RaceType;
 }
 
 export function makeEvent(
   input: {
     abbreviation: common_strings.StringNE,
-    seriesId: SeriesId,
-    raceId: RaceId,
-    raceType: RaceType,
+    series_id: SeriesId,
+    race_id: RaceId,
+    race_type: RaceType,
   }
 ): Event {
   return {
     abbreviation: input.abbreviation,
-    seriesId: input.seriesId,
-    raceId: input.raceId,
-    raceType: input.raceType,
+    series_id: input.series_id,
+    race_id: input.race_id,
+    race_type: input.race_type,
   };
 }
 
 const Event_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A race in a series\n"}],"name":"Event","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"abbreviation","serializedName":"abbreviation","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"seriesId","serializedName":"seriesId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"raceType","serializedName":"raceType","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceType"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"A race in a series\n"}],"name":"Event","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"abbreviation","serializedName":"abbreviation","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"series_id","serializedName":"series_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"race_type","serializedName":"race_type","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceType"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snEvent: ADL.ScopedName = {moduleName:"mycscores.db", name:"Event"};
 
@@ -424,36 +424,36 @@ export function texprRaceType(): ADL.ATypeExpr<RaceType> {
  * Personal and boat details for an entrant
  */
 export interface Entrant {
-  seasonId: SeasonId;
-  entrantName: common_strings.StringNE;
-  boatName: common_strings.StringNE;
-  sailNumber: common_strings.StringNE;
+  season_id: SeasonId;
+  entrant_name: common_strings.StringNE;
+  boat_name: common_strings.StringNE;
+  sail_number: common_strings.StringNE;
   yardstick: number;
-  initialHandicap: number;
+  initial_handicap: number;
 }
 
 export function makeEntrant(
   input: {
-    seasonId: SeasonId,
-    entrantName: common_strings.StringNE,
-    boatName: common_strings.StringNE,
-    sailNumber: common_strings.StringNE,
+    season_id: SeasonId,
+    entrant_name: common_strings.StringNE,
+    boat_name: common_strings.StringNE,
+    sail_number: common_strings.StringNE,
     yardstick: number,
-    initialHandicap: number,
+    initial_handicap: number,
   }
 ): Entrant {
   return {
-    seasonId: input.seasonId,
-    entrantName: input.entrantName,
-    boatName: input.boatName,
-    sailNumber: input.sailNumber,
+    season_id: input.season_id,
+    entrant_name: input.entrant_name,
+    boat_name: input.boat_name,
+    sail_number: input.sail_number,
     yardstick: input.yardstick,
-    initialHandicap: input.initialHandicap,
+    initial_handicap: input.initial_handicap,
   };
 }
 
 const Entrant_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Personal and boat details for an entrant\n"}],"name":"Entrant","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"seasonId","serializedName":"seasonId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantName","serializedName":"entrantName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boatName","serializedName":"boatName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sailNumber","serializedName":"sailNumber","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"initialHandicap","serializedName":"initialHandicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Personal and boat details for an entrant\n"}],"name":"Entrant","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season_id","serializedName":"season_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrant_name","serializedName":"entrant_name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boat_name","serializedName":"boat_name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sail_number","serializedName":"sail_number","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"initial_handicap","serializedName":"initial_handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snEntrant: ADL.ScopedName = {moduleName:"mycscores.db", name:"Entrant"};
 
@@ -487,27 +487,27 @@ export function texprEntrantId(): ADL.ATypeExpr<EntrantId> {
  * An entrants results in a single race
  */
 export interface RaceResult {
-  raceId: RaceId;
-  entrantId: EntrantId;
+  race_id: RaceId;
+  entrant_id: EntrantId;
   result: RResult<common_time.LocalTime>;
 }
 
 export function makeRaceResult(
   input: {
-    raceId: RaceId,
-    entrantId: EntrantId,
+    race_id: RaceId,
+    entrant_id: EntrantId,
     result: RResult<common_time.LocalTime>,
   }
 ): RaceResult {
   return {
-    raceId: input.raceId,
-    entrantId: input.entrantId,
+    race_id: input.race_id,
+    entrant_id: input.entrant_id,
     result: input.result,
   };
 }
 
 const RaceResult_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants results in a single race\n"}],"name":"RaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants results in a single race\n"}],"name":"RaceResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrant_id","serializedName":"entrant_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"result","serializedName":"result","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snRaceResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"RaceResult"};
 
@@ -541,63 +541,63 @@ export function texprRaceResultId(): ADL.ATypeExpr<RaceResultId> {
  * An entrants result in a single event
  */
 export interface EventResult {
-  entrantId: EntrantId;
-  eventId: EventId;
-  entrantName: common_strings.StringNE;
-  boatName: common_strings.StringNE;
-  sailNumber: common_strings.StringNE;
+  entrant_id: EntrantId;
+  event_id: EventId;
+  entrant_name: common_strings.StringNE;
+  boat_name: common_strings.StringNE;
+  sail_number: common_strings.StringNE;
   yardstick: number;
   handicap: number;
-  handicapSecs: number;
-  finishTime: RResult<common_time.LocalTime>;
-  elapsedTime: RResult<Duration>;
-  elapsedTimeYardstick: RResult<Duration>;
-  elapsedTimeHandicap: RResult<Duration>;
+  handicap_secs: number;
+  finish_time: RResult<common_time.LocalTime>;
+  elapsed_time: RResult<Duration>;
+  elapsed_time_yardstick: RResult<Duration>;
+  elapsed_time_handicap: RResult<Duration>;
   score: number;
-  handicapChange: number;
-  handicapNew: number;
+  handicap_change: number;
+  handicap_new: number;
 }
 
 export function makeEventResult(
   input: {
-    entrantId: EntrantId,
-    eventId: EventId,
-    entrantName: common_strings.StringNE,
-    boatName: common_strings.StringNE,
-    sailNumber: common_strings.StringNE,
+    entrant_id: EntrantId,
+    event_id: EventId,
+    entrant_name: common_strings.StringNE,
+    boat_name: common_strings.StringNE,
+    sail_number: common_strings.StringNE,
     yardstick: number,
     handicap: number,
-    handicapSecs: number,
-    finishTime: RResult<common_time.LocalTime>,
-    elapsedTime: RResult<Duration>,
-    elapsedTimeYardstick: RResult<Duration>,
-    elapsedTimeHandicap: RResult<Duration>,
+    handicap_secs: number,
+    finish_time: RResult<common_time.LocalTime>,
+    elapsed_time: RResult<Duration>,
+    elapsed_time_yardstick: RResult<Duration>,
+    elapsed_time_handicap: RResult<Duration>,
     score: number,
-    handicapChange: number,
-    handicapNew: number,
+    handicap_change: number,
+    handicap_new: number,
   }
 ): EventResult {
   return {
-    entrantId: input.entrantId,
-    eventId: input.eventId,
-    entrantName: input.entrantName,
-    boatName: input.boatName,
-    sailNumber: input.sailNumber,
+    entrant_id: input.entrant_id,
+    event_id: input.event_id,
+    entrant_name: input.entrant_name,
+    boat_name: input.boat_name,
+    sail_number: input.sail_number,
     yardstick: input.yardstick,
     handicap: input.handicap,
-    handicapSecs: input.handicapSecs,
-    finishTime: input.finishTime,
-    elapsedTime: input.elapsedTime,
-    elapsedTimeYardstick: input.elapsedTimeYardstick,
-    elapsedTimeHandicap: input.elapsedTimeHandicap,
+    handicap_secs: input.handicap_secs,
+    finish_time: input.finish_time,
+    elapsed_time: input.elapsed_time,
+    elapsed_time_yardstick: input.elapsed_time_yardstick,
+    elapsed_time_handicap: input.elapsed_time_handicap,
     score: input.score,
-    handicapChange: input.handicapChange,
-    handicapNew: input.handicapNew,
+    handicap_change: input.handicap_change,
+    handicap_new: input.handicap_new,
   };
 }
 
 const EventResult_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants result in a single event\n"}],"name":"EventResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"eventId","serializedName":"eventId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantName","serializedName":"entrantName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boatName","serializedName":"boatName","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sailNumber","serializedName":"sailNumber","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapSecs","serializedName":"handicapSecs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"finishTime","serializedName":"finishTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTime","serializedName":"elapsedTime","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeYardstick","serializedName":"elapsedTimeYardstick","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsedTimeHandicap","serializedName":"elapsedTimeHandicap","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"score","serializedName":"score","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word16"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapChange","serializedName":"handicapChange","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapNew","serializedName":"handicapNew","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"An entrants result in a single event\n"}],"name":"EventResult","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrant_id","serializedName":"entrant_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"event_id","serializedName":"event_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrant_name","serializedName":"entrant_name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"boat_name","serializedName":"boat_name","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"sail_number","serializedName":"sail_number","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.strings","name":"StringNE"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"yardstick","serializedName":"yardstick","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_secs","serializedName":"handicap_secs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"finish_time","serializedName":"finish_time","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalTime"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsed_time","serializedName":"elapsed_time","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsed_time_yardstick","serializedName":"elapsed_time_yardstick","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"elapsed_time_handicap","serializedName":"elapsed_time_handicap","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Duration"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RResult"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"score","serializedName":"score","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word16"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_change","serializedName":"handicap_change","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_new","serializedName":"handicap_new","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snEventResult: ADL.ScopedName = {moduleName:"mycscores.db", name:"EventResult"};
 
@@ -631,27 +631,27 @@ export function texprEventResultId(): ADL.ATypeExpr<EventResultId> {
  * Overide a handicap before a specifed race
  */
 export interface HandicapOverride {
-  raceId: RaceId;
-  entrantId: EntrantId;
-  handicapNew: number;
+  race_id: RaceId;
+  entrant_id: EntrantId;
+  handicap_new: number;
 }
 
 export function makeHandicapOverride(
   input: {
-    raceId: RaceId,
-    entrantId: EntrantId,
-    handicapNew: number,
+    race_id: RaceId,
+    entrant_id: EntrantId,
+    handicap_new: number,
   }
 ): HandicapOverride {
   return {
-    raceId: input.raceId,
-    entrantId: input.entrantId,
-    handicapNew: input.handicapNew,
+    race_id: input.race_id,
+    entrant_id: input.entrant_id,
+    handicap_new: input.handicap_new,
   };
 }
 
 const HandicapOverride_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Overide a handicap before a specifed race\n"}],"name":"HandicapOverride","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"raceId","serializedName":"raceId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrantId","serializedName":"entrantId","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicapNew","serializedName":"handicapNew","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
+  {"decl":{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Overide a handicap before a specifed race\n"}],"name":"HandicapOverride","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrant_id","serializedName":"entrant_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_new","serializedName":"handicap_new","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.db"};
 
 export const snHandicapOverride: ADL.ScopedName = {moduleName:"mycscores.db", name:"HandicapOverride"};
 

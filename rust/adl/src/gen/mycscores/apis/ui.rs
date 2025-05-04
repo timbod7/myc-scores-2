@@ -303,17 +303,14 @@ impl SeasonDetails {
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct RaceScheduleEntry {
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
   pub date: LocalDate,
 
-  #[serde(rename="raceNumber")]
   pub race_number: u8,
 
   pub events: Vec<WithId<EventId, Event>>,
 
-  #[serde(rename="dutyOfficer")]
   pub duty_officer: String,
 }
 
@@ -335,7 +332,6 @@ pub struct RaceEntrant {
 
   pub handicap: f64,
 
-  #[serde(rename="handicapSecs")]
   pub handicap_secs: f64,
 }
 
@@ -355,7 +351,6 @@ pub struct RaceScheduleResp {
 
   pub races: Vec<RaceScheduleEntry>,
 
-  #[serde(rename="calendarEntries")]
   pub calendar_entries: Vec<CalendarEntry>,
 }
 
@@ -371,7 +366,6 @@ impl RaceScheduleResp {
 
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct EntrantRaceResult {
-  #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
   pub result: RResult<LocalTime>,
@@ -390,7 +384,6 @@ impl EntrantRaceResult {
 pub struct RaceStartDetails {
   pub date: LocalDate,
 
-  #[serde(rename="startTime")]
   pub start_time: LocalTime,
 
   pub conditions: StringML,
@@ -414,12 +407,10 @@ impl RaceStartDetails {
 
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct GetRaceResultsResp {
-  #[serde(rename="scheduledDate")]
   pub scheduled_date: LocalDate,
 
   pub events: Vec<WithId<EventId, Event>>,
 
-  #[serde(rename="startDetails")]
   pub start_details: Option<RaceStartDetails>,
 
   pub results: Vec<EntrantRaceResult>,
@@ -440,19 +431,16 @@ impl GetRaceResultsResp {
 pub struct EventResults {
   pub date: LocalDate,
 
-  #[serde(rename="startTime")]
   pub start_time: LocalTime,
 
   pub abbreviation: StringNE,
 
   pub conditions: StringML,
 
-  #[serde(rename="isHandicap")]
   pub is_handicap: bool,
 
   pub abandoned: bool,
 
-  #[serde(rename="raceType")]
   pub race_type: RaceType,
 
   pub results: Vec<EventResult>,
@@ -477,10 +465,8 @@ pub type GetEventResultsResp = Option<EventResults>;
 
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct EntrantSeriesResult {
-  #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
-  #[serde(rename="eventId")]
   pub event_id: EventId,
 
   pub score: u16,
@@ -523,10 +509,8 @@ impl GetSeriesResultsResp {
 
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct UpdateRaceResultsReq {
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
-  #[serde(rename="startDetails")]
   pub start_details: RaceStartDetails,
 
   pub results: Vec<EntrantRaceResult>,

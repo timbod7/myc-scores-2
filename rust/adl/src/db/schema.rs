@@ -63,7 +63,7 @@ impl CalendarEntry {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn seasonId() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
+    pub fn season_id() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
         ColumnSpec::new(Self::table_str(), "season_id")
     }
 
@@ -95,19 +95,19 @@ impl Entrant {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn seasonId() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
+    pub fn season_id() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
         ColumnSpec::new(Self::table_str(), "season_id")
     }
 
-    pub fn entrantName() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn entrant_name() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "entrant_name")
     }
 
-    pub fn boatName() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn boat_name() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "boat_name")
     }
 
-    pub fn sailNumber() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn sail_number() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "sail_number")
     }
 
@@ -115,7 +115,7 @@ impl Entrant {
         ColumnSpec::new(Self::table_str(), "yardstick")
     }
 
-    pub fn initialHandicap() -> ColumnSpec<f64> {
+    pub fn initial_handicap() -> ColumnSpec<f64> {
         ColumnSpec::new(Self::table_str(), "initial_handicap")
     }
 }
@@ -143,15 +143,15 @@ impl Event {
         ColumnSpec::new(Self::table_str(), "abbreviation")
     }
 
-    pub fn seriesId() -> ColumnSpec<adlgen::mycscores::db::SeriesId> {
+    pub fn series_id() -> ColumnSpec<adlgen::mycscores::db::SeriesId> {
         ColumnSpec::new(Self::table_str(), "series_id")
     }
 
-    pub fn raceId() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
+    pub fn race_id() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
         ColumnSpec::new(Self::table_str(), "race_id")
     }
 
-    pub fn raceType() -> ColumnSpec<adlgen::mycscores::db::RaceType> {
+    pub fn race_type() -> ColumnSpec<adlgen::mycscores::db::RaceType> {
         ColumnSpec::new(Self::table_str(), "race_type")
     }
 }
@@ -175,23 +175,23 @@ impl EventResult {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn entrantId() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
+    pub fn entrant_id() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
         ColumnSpec::new(Self::table_str(), "entrant_id")
     }
 
-    pub fn eventId() -> ColumnSpec<adlgen::mycscores::db::EventId> {
+    pub fn event_id() -> ColumnSpec<adlgen::mycscores::db::EventId> {
         ColumnSpec::new(Self::table_str(), "event_id")
     }
 
-    pub fn entrantName() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn entrant_name() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "entrant_name")
     }
 
-    pub fn boatName() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn boat_name() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "boat_name")
     }
 
-    pub fn sailNumber() -> ColumnSpec<adlgen::common::strings::StringNE> {
+    pub fn sail_number() -> ColumnSpec<adlgen::common::strings::StringNE> {
         ColumnSpec::new(Self::table_str(), "sail_number")
     }
 
@@ -203,23 +203,23 @@ impl EventResult {
         ColumnSpec::new(Self::table_str(), "handicap")
     }
 
-    pub fn handicapSecs() -> ColumnSpec<f64> {
+    pub fn handicap_secs() -> ColumnSpec<f64> {
         ColumnSpec::new(Self::table_str(), "handicap_secs")
     }
 
-    pub fn finishTime() -> ColumnSpec<adlgen::mycscores::db::RResult<crate::custom::common::time::LocalTime>> {
+    pub fn finish_time() -> ColumnSpec<adlgen::mycscores::db::RResult<crate::custom::common::time::LocalTime>> {
         ColumnSpec::new(Self::table_str(), "finish_time")
     }
 
-    pub fn elapsedTime() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
+    pub fn elapsed_time() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time")
     }
 
-    pub fn elapsedTimeYardstick() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
+    pub fn elapsed_time_yardstick() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time_yardstick")
     }
 
-    pub fn elapsedTimeHandicap() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
+    pub fn elapsed_time_handicap() -> ColumnSpec<adlgen::mycscores::db::RResult<adlgen::mycscores::db::Duration>> {
         ColumnSpec::new(Self::table_str(), "elapsed_time_handicap")
     }
 
@@ -227,11 +227,11 @@ impl EventResult {
         ColumnSpec::new(Self::table_str(), "score")
     }
 
-    pub fn handicapChange() -> ColumnSpec<f64> {
+    pub fn handicap_change() -> ColumnSpec<f64> {
         ColumnSpec::new(Self::table_str(), "handicap_change")
     }
 
-    pub fn handicapNew() -> ColumnSpec<f64> {
+    pub fn handicap_new() -> ColumnSpec<f64> {
         ColumnSpec::new(Self::table_str(), "handicap_new")
     }
 }
@@ -255,15 +255,15 @@ impl HandicapOverride {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn raceId() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
+    pub fn race_id() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
         ColumnSpec::new(Self::table_str(), "race_id")
     }
 
-    pub fn entrantId() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
+    pub fn entrant_id() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
         ColumnSpec::new(Self::table_str(), "entrant_id")
     }
 
-    pub fn handicapNew() -> ColumnSpec<f64> {
+    pub fn handicap_new() -> ColumnSpec<f64> {
         ColumnSpec::new(Self::table_str(), "handicap_new")
     }
 }
@@ -287,15 +287,15 @@ impl Race {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn scheduledDate() -> ColumnSpec<crate::custom::common::time::LocalDate> {
+    pub fn scheduled_date() -> ColumnSpec<crate::custom::common::time::LocalDate> {
         ColumnSpec::new(Self::table_str(), "scheduled_date")
     }
 
-    pub fn raceNumber() -> ColumnSpec<u8> {
+    pub fn race_number() -> ColumnSpec<u8> {
         ColumnSpec::new(Self::table_str(), "race_number")
     }
 
-    pub fn dutyOfficer() -> ColumnSpec<String> {
+    pub fn duty_officer() -> ColumnSpec<String> {
         ColumnSpec::new(Self::table_str(), "duty_officer")
     }
 }
@@ -319,11 +319,11 @@ impl RaceResult {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn raceId() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
+    pub fn race_id() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
         ColumnSpec::new(Self::table_str(), "race_id")
     }
 
-    pub fn entrantId() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
+    pub fn entrant_id() -> ColumnSpec<adlgen::mycscores::db::EntrantId> {
         ColumnSpec::new(Self::table_str(), "entrant_id")
     }
 
@@ -351,7 +351,7 @@ impl RaceStart {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn raceId() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
+    pub fn race_id() -> ColumnSpec<adlgen::mycscores::db::RaceId> {
         ColumnSpec::new(Self::table_str(), "race_id")
     }
 
@@ -363,7 +363,7 @@ impl RaceStart {
         ColumnSpec::new(Self::table_str(), "abandoned")
     }
 
-    pub fn startTime() -> ColumnSpec<crate::custom::common::time::LocalTime> {
+    pub fn start_time() -> ColumnSpec<crate::custom::common::time::LocalTime> {
         ColumnSpec::new(Self::table_str(), "start_time")
     }
 
@@ -419,7 +419,7 @@ impl Series {
         ColumnSpec::new(Self::table_str(), "id")
     }
 
-    pub fn seasonId() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
+    pub fn season_id() -> ColumnSpec<adlgen::mycscores::db::SeasonId> {
         ColumnSpec::new(Self::table_str(), "season_id")
     }
 
@@ -431,15 +431,15 @@ impl Series {
         ColumnSpec::new(Self::table_str(), "abbreviation")
     }
 
-    pub fn isHandicap() -> ColumnSpec<bool> {
+    pub fn is_handicap() -> ColumnSpec<bool> {
         ColumnSpec::new(Self::table_str(), "is_handicap")
     }
 
-    pub fn handicapSystem() -> ColumnSpec<std::option::Option<adlgen::mycscores::db::HandicapSystem>> {
+    pub fn handicap_system() -> ColumnSpec<std::option::Option<adlgen::mycscores::db::HandicapSystem>> {
         ColumnSpec::new(Self::table_str(), "handicap_system")
     }
 
-    pub fn numDrops() -> ColumnSpec<u8> {
+    pub fn num_drops() -> ColumnSpec<u8> {
         ColumnSpec::new(Self::table_str(), "num_drops")
     }
 }

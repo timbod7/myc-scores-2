@@ -111,20 +111,16 @@ pub type SeasonId = DbKey<SeasonTable>;
  */
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct Series {
-  #[serde(rename="seasonId")]
   pub season_id: SeasonId,
 
   pub name: StringNE,
 
   pub abbreviation: StringNE,
 
-  #[serde(rename="isHandicap")]
   pub is_handicap: bool,
 
-  #[serde(rename="handicapSystem")]
   pub handicap_system: Option<HandicapSystem>,
 
-  #[serde(rename="numDrops")]
   pub num_drops: u8,
 }
 
@@ -181,14 +177,11 @@ pub type SeriesId = DbKey<SeriesTable>;
  */
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct Race {
-  #[serde(rename="scheduledDate")]
   pub scheduled_date: LocalDate,
 
-  #[serde(rename="raceNumber")]
   pub race_number: u8,
 
   #[serde(default="Race::def_duty_officer")]
-  #[serde(rename="dutyOfficer")]
   pub duty_officer: String,
 }
 
@@ -238,7 +231,6 @@ pub type RaceId = DbKey<RaceTable>;
  */
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct CalendarEntry {
-  #[serde(rename="seasonId")]
   pub season_id: SeasonId,
 
   pub date: LocalDate,
@@ -284,14 +276,12 @@ pub type CalendarEntryId = DbKey<CalendarEntryTable>;
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct RaceStart {
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
   pub date: LocalDate,
 
   pub abandoned: bool,
 
-  #[serde(rename="startTime")]
   pub start_time: LocalTime,
 
   pub conditions: StringML,
@@ -345,13 +335,10 @@ pub type RaceStartId = DbKey<RaceStartTable>;
 pub struct Event {
   pub abbreviation: StringNE,
 
-  #[serde(rename="seriesId")]
   pub series_id: SeriesId,
 
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
-  #[serde(rename="raceType")]
   pub race_type: RaceType,
 }
 
@@ -406,21 +393,16 @@ pub enum RaceType {
  */
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct Entrant {
-  #[serde(rename="seasonId")]
   pub season_id: SeasonId,
 
-  #[serde(rename="entrantName")]
   pub entrant_name: StringNE,
 
-  #[serde(rename="boatName")]
   pub boat_name: StringNE,
 
-  #[serde(rename="sailNumber")]
   pub sail_number: StringNE,
 
   pub yardstick: f64,
 
-  #[serde(rename="initialHandicap")]
   pub initial_handicap: f64,
 }
 
@@ -468,10 +450,8 @@ pub type EntrantId = DbKey<EntrantTable>;
  */
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct RaceResult {
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
-  #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
   pub result: RResult<LocalTime>,
@@ -518,46 +498,34 @@ pub type RaceResultId = DbKey<RaceResultTable>;
  */
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct EventResult {
-  #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
-  #[serde(rename="eventId")]
   pub event_id: EventId,
 
-  #[serde(rename="entrantName")]
   pub entrant_name: StringNE,
 
-  #[serde(rename="boatName")]
   pub boat_name: StringNE,
 
-  #[serde(rename="sailNumber")]
   pub sail_number: StringNE,
 
   pub yardstick: f64,
 
   pub handicap: f64,
 
-  #[serde(rename="handicapSecs")]
   pub handicap_secs: f64,
 
-  #[serde(rename="finishTime")]
   pub finish_time: RResult<LocalTime>,
 
-  #[serde(rename="elapsedTime")]
   pub elapsed_time: RResult<Duration>,
 
-  #[serde(rename="elapsedTimeYardstick")]
   pub elapsed_time_yardstick: RResult<Duration>,
 
-  #[serde(rename="elapsedTimeHandicap")]
   pub elapsed_time_handicap: RResult<Duration>,
 
   pub score: u16,
 
-  #[serde(rename="handicapChange")]
   pub handicap_change: f64,
 
-  #[serde(rename="handicapNew")]
   pub handicap_new: f64,
 }
 
@@ -614,13 +582,10 @@ pub type EventResultId = DbKey<EventResultTable>;
  */
 #[derive(Clone,Deserialize,PartialEq,Serialize)]
 pub struct HandicapOverride {
-  #[serde(rename="raceId")]
   pub race_id: RaceId,
 
-  #[serde(rename="entrantId")]
   pub entrant_id: EntrantId,
 
-  #[serde(rename="handicapNew")]
   pub handicap_new: f64,
 }
 
