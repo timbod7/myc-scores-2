@@ -446,5 +446,5 @@ impl Series {
 
 
 derive_db_conversions_adl_enum!(adlgen::mycscores::db::HandicapSystem);
-derive_db_conversions_adl!(adlgen::mycscores::db::RResult);
+derive_db_conversions_adl_1!(adlgen::mycscores::db::RResult);
 derive_db_conversions_adl_enum!(adlgen::mycscores::db::RaceType);

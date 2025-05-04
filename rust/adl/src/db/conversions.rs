@@ -1,4 +1,3 @@
-use sqlx::types::time::OffsetDateTime;
 use std::{
     marker::PhantomData,
     time::{Duration, UNIX_EPOCH},
@@ -216,8 +215,42 @@ where
 
 #[macro_export]
 macro_rules! derive_db_conversions_adl {
-    ($name:ty) => {
-        impl crate::db::types::DbConversions for $name {
+    ($decl:path) => {
+        impl crate::db::types::DbConversions for $decl {
+            type DbType = serde_json::Value;
+            fn to_db(&self) -> Self::DbType {
+                serde_json::to_value(self).expect("should be able to serialize an adl value")
+            }
+            fn from_db(dbv: Self::DbType) -> Self {
+                serde_json::from_value(dbv).expect("db adl value should be valid")
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! derive_db_conversions_adl_1 {
+    ($($decl:ident)::+) => {
+        impl<P1: serde::Serialize + serde::de::DeserializeOwned> crate::db::types::DbConversions
+            for $($decl)::+<P1>
+        {
+            type DbType = serde_json::Value;
+            fn to_db(&self) -> Self::DbType {
+                serde_json::to_value(self).expect("should be able to serialize an adl value")
+            }
+            fn from_db(dbv: Self::DbType) -> Self {
+                serde_json::from_value(dbv).expect("db adl value should be valid")
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! derive_db_conversions_adl_2 {
+    ($($decl:ident)::+) => {
+        impl<P1: serde::Serialize + serde::de::DeserializeOwned,P2: serde::Serialize + serde::de::DeserializeOwned> crate::db::types::DbConversions
+            for $($decl)::+<P1,P2>
+        {
             type DbType = serde_json::Value;
             fn to_db(&self) -> Self::DbType {
                 serde_json::to_value(self).expect("should be able to serialize an adl value")

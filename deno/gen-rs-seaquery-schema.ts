@@ -94,8 +94,9 @@ export async function genRustSeaQuerySchema(
           `derive_db_conversions_adl_enum!(${rustScopedName(dtd.sn)});\n`,
         );
       } else {
+        const macro_suffix = dtd.nTypeParams > 0 ? `_${dtd.nTypeParams}` : '';
         writer.write(
-          `derive_db_conversions_adl!(${rustScopedName(dtd.sn)});\n`,
+          `derive_db_conversions_adl${macro_suffix}!(${rustScopedName(dtd.sn)});\n`,
         );
       }
     }
@@ -107,6 +108,7 @@ export async function genRustSeaQuerySchema(
 interface DeclToDerive {
   sn: adlast.ScopedName;
   isEnum: boolean;
+  nTypeParams: number;
 }
 
 function declToDerive(
@@ -123,10 +125,8 @@ function declToDerive(
     }
     const customAnnotation = getRustCustomTypeAnnotation(loadedAdl, sn);
     if (!customAnnotation) {
-      if (decl.type_.kind === "union_") {
-        return { sn, isEnum: isEnum(decl.type_.value) };
-      }
-      return { sn, isEnum: false };
+      const ie = decl.type_.kind === "union_" && isEnum(decl.type_.value);
+      return { sn, isEnum: ie, nTypeParams: dte.parameters.length };
     }
   }
   return undefined;
