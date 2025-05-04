@@ -5,23 +5,62 @@ use std::{
 };
 
 use crate::{
-    custom::common::db::DbKey, custom::common::time::Instant, rt::custom::sys::types::maybe::Maybe,
+    custom::common::{
+        db::DbKey,
+        time::{Instant, LocalDate, LocalDateTime, LocalTime},
+    },
+    rt::custom::sys::types::maybe::Maybe,
 };
 
 use super::types::DbConversions;
 
 impl DbConversions for Instant {
-    type DbType = OffsetDateTime;
+    type DbType = sqlx::types::time::OffsetDateTime;
 
-    fn to_db(&self) -> OffsetDateTime {
+    fn to_db(&self) -> Self::DbType {
         let nanos = self.0.duration_since(UNIX_EPOCH).unwrap().as_nanos();
-        OffsetDateTime::from_unix_timestamp_nanos(nanos as i128)
-            .expect("instant should be in range")
+        Self::DbType::from_unix_timestamp_nanos(nanos as i128).expect("instant should be in range")
     }
 
-    fn from_db(dbv: OffsetDateTime) -> Self {
+    fn from_db(dbv: Self::DbType) -> Self {
         let t = UNIX_EPOCH + Duration::from_nanos(dbv.unix_timestamp_nanos() as u64);
         Instant(t)
+    }
+}
+
+impl DbConversions for LocalTime {
+    type DbType = time::Time;
+
+    fn to_db(&self) -> Self::DbType {
+        self.0
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        LocalTime(dbv)
+    }
+}
+
+impl DbConversions for LocalDate {
+    type DbType = time::Date;
+
+    fn to_db(&self) -> Self::DbType {
+        self.0
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        LocalDate(dbv)
+    }
+}
+
+impl DbConversions for LocalDateTime {
+    type DbType = time::PrimitiveDateTime;
+
+    fn to_db(&self) -> Self::DbType {
+        self.0
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        LocalDateTime(dbv)
     }
 }
 
@@ -61,8 +100,32 @@ impl DbConversions for serde_json::Value {
     }
 }
 
+impl DbConversions for u8 {
+    type DbType = i16;
+
+    fn to_db(&self) -> Self::DbType {
+        *self as Self::DbType
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        dbv as Self
+    }
+}
+
+impl DbConversions for u16 {
+    type DbType = i16;
+
+    fn to_db(&self) -> Self::DbType {
+        *self as Self::DbType
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        dbv as Self
+    }
+}
+
 impl DbConversions for u32 {
-    type DbType = i64;
+    type DbType = u32;
 
     fn to_db(&self) -> Self::DbType {
         *self as Self::DbType
@@ -74,6 +137,18 @@ impl DbConversions for u32 {
 }
 
 impl DbConversions for u64 {
+    type DbType = i64;
+
+    fn to_db(&self) -> Self::DbType {
+        *self as Self::DbType
+    }
+
+    fn from_db(dbv: Self::DbType) -> Self {
+        dbv as Self
+    }
+}
+
+impl DbConversions for f64 {
     type DbType = i64;
 
     fn to_db(&self) -> Self::DbType {
