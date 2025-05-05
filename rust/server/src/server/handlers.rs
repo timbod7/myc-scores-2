@@ -5,12 +5,11 @@ use poem::web::Json;
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, Message, Paginated, QueryUsersReq,
-    RecentMessagesReq, RefreshReq, RefreshResp, User, UserDetails, UserWithId, WithId,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, Paginated, QueryUsersReq, RefreshReq,
+    RefreshResp, User, UserDetails, UserWithId, WithId,
 };
 use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};
-use adl::gen::mycscores::{apis::ui::NewMessageReq, db::MessageId};
 
 use crate::server::jwt::AccessClaims;
 use crate::server::passwords::{hash_password, verify_password};
@@ -69,25 +68,6 @@ pub async fn refresh(ctx: ReqContext, i: RefreshReq) -> HandlerResult<RefreshRes
 
 pub async fn logout(_ctx: ReqContext, _i: Unit) -> HandlerResult<Unit> {
     Ok(Unit {})
-}
-
-pub async fn new_message(ctx: ReqContext, i: NewMessageReq) -> HandlerResult<MessageId> {
-    let user_id = user_from_claims(&ctx.claims)?;
-    let message_id = db::new_message(&ctx.state.db_pool, &user_id, &i.message).await?;
-    Ok(message_id)
-}
-
-pub async fn recent_messages(
-    ctx: ReqContext,
-    i: RecentMessagesReq,
-) -> HandlerResult<Paginated<Message>> {
-    let messages = db::recent_messages(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
-    let total_count = db::message_count(&ctx.state.db_pool).await?;
-    Ok(Paginated {
-        items: messages,
-        current_offset: i.page.offset,
-        total_count,
-    })
 }
 
 pub async fn who_am_i(ctx: ReqContext, _i: ()) -> HandlerResult<UserWithId> {

@@ -17,11 +17,6 @@ pub fn build_routes(state: AppState) -> Box<dyn DynEndpoint<Output = poem::Respo
     let routes = routes
         .adl_req(ApiRequests::def_healthy(), handlers::healthy)
         .adl_req(ApiRequests::def_who_am_i(), handlers::who_am_i)
-        .adl_req(ApiRequests::def_new_message(), handlers::new_message)
-        .adl_req(
-            ApiRequests::def_recent_messages(),
-            handlers::recent_messages,
-        )
         .adl_req(ApiRequests::def_create_user(), handlers::create_user)
         .adl_req(ApiRequests::def_update_user(), handlers::update_user)
         .adl_req(ApiRequests::def_query_users(), handlers::query_users);

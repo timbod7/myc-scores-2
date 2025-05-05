@@ -1,19 +1,17 @@
-use sea_query::{Expr, Func, Order, PostgresQueryBuilder, Query};
-use sea_query_binder::SqlxBinder;
-use sqlx::Row;
-use std::time::SystemTime;
-
 use adl::{
-    custom::common::{db::DbKey, time::Instant},
+    custom::common::db::DbKey,
     db::{
         schema,
         types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
     gen::mycscores::{
         apis,
-        db::{AppUser, AppUserId, MessageId},
+        db::{AppUser, AppUserId},
     },
 };
+use sea_query::{Expr, Func, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
+use sqlx::Row;
 
 type DbPool = sqlx::PgPool;
 
@@ -141,80 +139,4 @@ pub async fn user_count(pool: &DbPool) -> sqlx::Result<u64> {
         .fetch_one(pool)
         .await?;
     Ok(count as u64)
-}
-
-pub async fn new_message(
-    pool: &DbPool,
-    user_id: &AppUserId,
-    message: &String,
-) -> sqlx::Result<MessageId> {
-    type T = schema::Message;
-
-    let id: MessageId = DbKey::new(T::id_prefix());
-    let posted_at = instant_now();
-
-    let (icolumns, ivalues) = InsertRow::new()
-        .field(T::id(), &id)
-        .field(T::posted_at(), &posted_at)
-        .field(T::posted_by(), user_id)
-        .field(T::message(), message)
-        .build();
-
-    let (sql, values) = Query::insert()
-        .into_table(schema::Message::table())
-        .columns(icolumns)
-        .values_panic(ivalues)
-        .build_sqlx(PostgresQueryBuilder);
-    sqlx::query_with(&sql, values).execute(pool).await?;
-    Ok(id)
-}
-
-pub async fn recent_messages(
-    pool: &DbPool,
-    offset: u64,
-    limit: u64,
-) -> sqlx::Result<Vec<apis::ui::Message>> {
-    type U = schema::AppUser;
-    type M = schema::Message;
-    let (sql, values) = Query::select()
-        .scolumn(M::id())
-        .scolumn(M::posted_at())
-        .scolumn(M::message())
-        .scolumn(U::fullname())
-        .from(M::table())
-        .inner_join(U::table(), U::id().expr().eq(M::posted_by().expr()))
-        .order_by(schema::Message::posted_at().iden(), Order::Desc)
-        .offset(offset)
-        .limit(limit)
-        .build_sqlx(PostgresQueryBuilder);
-
-    let messages = sqlx::query_with(&sql, values.clone())
-        .map(|r| apis::ui::Message {
-            id: M::id().from_row(&r),
-            posted_at: M::posted_at().from_row(&r),
-            message: M::message().from_row(&r),
-            user_fullname: U::fullname().from_row(&r),
-        })
-        .fetch_all(pool)
-        .await?;
-    Ok(messages)
-}
-
-pub async fn message_count(pool: &DbPool) -> sqlx::Result<u64> {
-    type M = schema::Message;
-
-    let (sql, values) = Query::select()
-        .from(M::table())
-        .expr(Func::count(Expr::asterisk()))
-        .build_sqlx(PostgresQueryBuilder);
-
-    let count: i64 = sqlx::query_with(&sql, values)
-        .map(|r| r.get(0))
-        .fetch_one(pool)
-        .await?;
-    Ok(count as u64)
-}
-
-fn instant_now() -> Instant {
-    Instant(SystemTime::now())
 }

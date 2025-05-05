@@ -1,8 +1,6 @@
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis;
-use adl::gen::mycscores::apis::ui::{
-    LoginReq, LoginTokens, Message, PageReq, Paginated, RefreshReq,
-};
+use adl::gen::mycscores::apis::ui::{LoginReq, LoginTokens, PageReq, RefreshReq};
 
 use crate::server::tests::helpers::{
     create_test_user, login_user, server_auth_req, server_public_req, server_req,
@@ -109,41 +107,6 @@ async fn server_user_profile() {
 }
 
 #[tokio::test]
-async fn server_messages() {
-    let mut db = DbTestEnv::new().await;
-    let oserver = OServer::spawn(AppState::new(test_server_config(), db.pool.clone()));
-
-    let u1 = create_test_user_joe(&mut db).await;
-    let u2 = create_test_user_sarah(&mut db).await;
-
-    let u1_jwt = login_user(&u1).await;
-    let u2_jwt = login_user(&u2).await;
-
-    send_message(&u1_jwt, "A first message").await;
-    send_message(&u1_jwt, "Another message").await;
-    send_message(&u1_jwt, "Still going").await;
-
-    // Check page 1
-    let m = recent_messages(&u2_jwt, 0, 2).await;
-    assert_eq!(m.current_offset, 0);
-    assert_eq!(m.total_count, 3);
-    assert_eq!(m.items.len(), 2);
-    assert_eq!(m.items.first().unwrap().message, "Still going");
-    assert_eq!(m.items.first().unwrap().user_fullname, "Joe");
-    assert_eq!(m.items.get(1).unwrap().message, "Another message");
-
-    // Check page 2
-    let m = recent_messages(&u2_jwt, 2, 2).await;
-    assert_eq!(m.current_offset, 2);
-    assert_eq!(m.total_count, 3);
-    assert_eq!(m.items.len(), 1);
-    assert_eq!(m.items.first().unwrap().message, "A first message");
-
-    oserver.shutdown().await.unwrap();
-    db.cleanup().await;
-}
-
-#[tokio::test]
 async fn server_user_crud() {
     let mut db = DbTestEnv::new().await;
     let oserver = OServer::spawn(AppState::new(test_server_config(), db.pool.clone()));
@@ -208,28 +171,6 @@ async fn server_user_crud() {
 
     oserver.shutdown().await.unwrap();
     db.cleanup().await;
-}
-
-async fn send_message(jwt: &str, message: &str) {
-    let _ = server_auth_req(
-        apis::ui::ApiRequests::def_new_message(),
-        jwt,
-        &apis::ui::NewMessageReq {
-            message: message.to_owned(),
-        },
-    )
-    .await;
-}
-
-async fn recent_messages(jwt: &str, offset: u64, limit: u64) -> Paginated<Message> {
-    server_auth_req(
-        apis::ui::ApiRequests::def_recent_messages(),
-        jwt,
-        &apis::ui::RecentMessagesReq {
-            page: PageReq { offset, limit },
-        },
-    )
-    .await
 }
 
 fn is_valid_login(resp: &apis::ui::LoginResp) -> bool {
