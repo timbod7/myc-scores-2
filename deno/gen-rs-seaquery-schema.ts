@@ -94,9 +94,11 @@ export async function genRustSeaQuerySchema(
           `derive_db_conversions_adl_enum!(${rustScopedName(dtd.sn)});\n`,
         );
       } else {
-        const macro_suffix = dtd.nTypeParams > 0 ? `_${dtd.nTypeParams}` : '';
+        const macro_suffix = dtd.nTypeParams > 0 ? `_${dtd.nTypeParams}` : "";
         writer.write(
-          `derive_db_conversions_adl${macro_suffix}!(${rustScopedName(dtd.sn)});\n`,
+          `derive_db_conversions_adl${macro_suffix}!(${
+            rustScopedName(dtd.sn)
+          });\n`,
         );
       }
     }

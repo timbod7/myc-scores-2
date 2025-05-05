@@ -46,7 +46,11 @@ async function main() {
     const outputDir = repo + "/rust/adl/src";
     await genRust({
       ...commonFlags,
-      adlModules: ["mycscores.apis.ui", "mycscores.db", "mycscores.config.server"],
+      adlModules: [
+        "mycscores.apis.ui",
+        "mycscores.db",
+        "mycscores.config.server",
+      ],
       outputDir: outputDir,
       module: "gen",
       runtimeModule: "rt",
