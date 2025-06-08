@@ -307,7 +307,7 @@ function CompletedRequestView<I, O>(props: {
       <Box sx={{ margin: "10px" }}>
         {resp.success ?
           <MyJsonView data={jsonO} />
-        : <Box sx={{ color: "red" }}>
+          : <Box sx={{ color: "red" }}>
             <Box>Http Status: {resp.httpStatus}</Box>
             {resp.responseBody && <Box>Body: {resp.responseBody}</Box>}
           </Box>
@@ -322,7 +322,7 @@ function MyJsonView(props: { data: Json }) {
     <Box sx={{ fontSize: "0.8rem" }}>
       {props.data === null ?
         <div>null</div>
-      : <JsonView src={props.data} />}
+        : <JsonView src={props.data} />}
     </Box>
   );
 }
@@ -416,8 +416,10 @@ function getEndpoints<API>(resolver: ADL.DeclResolver, texpr: ADL.ATypeExpr<API>
 
   const endpoints: Endpoint[] = [];
   for (const f of struct.fields) {
-    if (f.typeExpr.typeRef.kind === "reference" && scopedNamesEqual(f.typeExpr.typeRef.value, snHttpReq)) {
-      endpoints.push(getHttpEndpoint(resolver, f));
+    if (f.typeExpr.typeRef.kind === "reference") {
+      if (scopedNamesEqual(f.typeExpr.typeRef.value, snHttpReq)) {
+        endpoints.push(getHttpEndpoint(resolver, f));
+      }
     }
   }
   return endpoints;

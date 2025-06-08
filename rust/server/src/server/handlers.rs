@@ -6,8 +6,8 @@ use poem::web::Json;
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, QueryUsersReq, RefreshReq, RefreshResp, User,
-    UserDetails, UserWithId, WithId,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, RefreshReq, RefreshResp, User, UserDetails,
+    UserQueryReq, UserWithId, WithId,
 };
 use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};
@@ -114,11 +114,8 @@ pub async fn update_user(
     Ok(Unit {})
 }
 
-pub async fn query_users(
-    ctx: ReqContext,
-    i: QueryUsersReq,
-) -> HandlerResult<Paginated<UserWithId>> {
-    let users = db::query_users(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
+pub async fn query_users(ctx: ReqContext, i: UserQueryReq) -> HandlerResult<Paginated<UserWithId>> {
+    let users = db::query_users(&ctx.state.db_pool, &i).await?;
     let total_count = db::user_count(&ctx.state.db_pool).await?;
     let page = Paginated {
         items: users,

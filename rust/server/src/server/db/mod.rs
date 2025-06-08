@@ -5,13 +5,19 @@ use adl::{
         types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
     gen::mycscores::{
-        apis,
+        apis::{
+            self,
+            ui::{UserFilter, UserQueryReq, UserSorting, UserWithId},
+        },
         db::{AppUser, AppUserId},
     },
 };
-use sea_query::{Func, PostgresQueryBuilder, Query};
+use sea_query::{ColumnRef, Func, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::Row;
+use utils::DbTabular;
+
+mod utils;
 
 type DbPool = sqlx::PgPool;
 
@@ -99,19 +105,24 @@ pub async fn update_user(pool: &DbPool, user_id: &AppUserId, user: &AppUser) -> 
 
 pub async fn query_users(
     pool: &DbPool,
-    offset: u64,
-    limit: u64,
+    req: &UserQueryReq,
 ) -> sqlx::Result<Vec<apis::ui::UserWithId>> {
     type T = schema::AppUser;
-    let (sql, values) = Query::select()
+    let mut query = Query::select();
+
+    let query = query
         .from(T::table())
         .scolumn(T::id())
         .scolumn(T::fullname())
         .scolumn(T::email())
         .scolumn(T::is_admin())
-        .offset(offset)
-        .limit(limit)
-        .build_sqlx(PostgresQueryBuilder);
+        .and_where(UserQuery::filter(&req.filter))
+        .order_by_columns(UserQuery::sort_cols(&req.sorting))
+        .offset(req.page.offset)
+        .limit(req.page.limit);
+
+    let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+
     let users = sqlx::query_with(&sql, values)
         .map(|r| apis::ui::UserWithId {
             id: T::id().from_row(&r),
@@ -124,6 +135,29 @@ pub async fn query_users(
         .fetch_all(pool)
         .await?;
     Ok(users)
+}
+
+struct UserQuery {}
+
+impl DbTabular for UserQuery {
+    type S = UserSorting;
+    type F = UserFilter;
+    type R = UserWithId;
+
+    fn cref_from_sorting(s: &Self::S) -> ColumnRef {
+        match s {
+            UserSorting::Fullname => schema::AppUser::fullname().cref(),
+            UserSorting::Email => schema::AppUser::email().cref(),
+        }
+    }
+
+    fn filter_prim(f: &Self::F) -> sea_query::SimpleExpr {
+        match f {
+            UserFilter::FullnameMatches(s) => {
+                schema::AppUser::fullname().expr().like(format!("%{}%", s))
+            }
+        }
+    }
 }
 
 pub async fn user_count(pool: &DbPool) -> sqlx::Result<u64> {

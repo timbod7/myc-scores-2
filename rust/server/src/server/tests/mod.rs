@@ -1,7 +1,7 @@
 use adl::gen::common::db_api::PageReq;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis;
-use adl::gen::mycscores::apis::ui::{LoginReq, LoginTokens, RefreshReq};
+use adl::gen::mycscores::apis::ui::{LoginReq, LoginTokens, RefreshReq, UserQueryReq};
 
 use crate::server::tests::helpers::{
     create_test_user, login_user, server_auth_req, server_public_req, server_req,
@@ -156,17 +156,12 @@ async fn server_user_crud() {
 
     // and can query existing users
     {
-        let resp = server_auth_req(
-            apis::ui::ApiRequests::def_query_users(),
-            &u2_jwt,
-            &apis::ui::QueryUsersReq {
-                page: PageReq {
-                    offset: 0,
-                    limit: 100,
-                },
-            },
-        )
-        .await;
+        let mut req = UserQueryReq::new();
+        req.page = PageReq {
+            offset: 0,
+            limit: 100,
+        };
+        let resp = server_auth_req(apis::ui::ApiRequests::def_query_users(), &u2_jwt, &req).await;
         assert_eq!(resp.items.len(), 3);
     }
 

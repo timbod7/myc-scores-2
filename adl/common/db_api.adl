@@ -1,25 +1,56 @@
 /// Adl definitions helpful proving api access to db values
 module common.db_api {
 
-  struct PageReq {
-    // Pagination offset
-    Word64 offset = 0;
-  
-    // Max number of items to return
-    Word64 limit = 20;
-  };
+import common.http.HttpReq;
 
-  /// A holder for paginated results
-  struct Paginated<T> {
+type TabularQuery<S,F,T> = HttpReq<TabularQueryReq<S, F>, Paginated<T>>;
   
-    /// The paginated items
-    Vector<T> items;
-  
-    /// The offset used for this query
-    Word64 current_offset;
-  
-    /// The size of the entire date set
-    Word64 total_count;
-  };
+struct TabularQueryReq<S,F> {
+  BoolExpr<F> filter = {"const": true};
+  QuerySorting<S> sorting = [];
+  PageReq page = {}; 
+};
+
+type QuerySorting<C> = Vector<SortColumn<C>>;
+
+struct SortColumn<C> {
+  C column;
+  SortOrder order;
+};
+
+union SortOrder {
+  Void asc;
+  Void desc;
+};
+
+union BoolExpr<P> {
+  Bool const;
+  P prim;
+  BoolExpr<P> not;
+  Vector<BoolExpr<P>> and;
+  Vector<BoolExpr<P>> or;
+};
+
+// A request for a page of results
+struct PageReq {
+  // Pagination offset
+  Word64 offset = 0;
+
+  // Max number of items to return
+  Word64 limit = 20;
+};
+
+/// A holder for a page of results
+struct Paginated<T> {
+
+  /// The paginated items
+  Vector<T> items;
+
+  /// The offset used for this query
+  Word64 current_offset;
+
+  /// The size of the entire date set
+  Word64 total_count;
+};
 
 };

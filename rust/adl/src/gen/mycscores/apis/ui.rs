@@ -2,8 +2,8 @@
 
 use crate::custom::common::time::LocalDate;
 use crate::custom::common::time::LocalTime;
-use crate::gen::common::db_api::PageReq;
 use crate::gen::common::db_api::Paginated;
+use crate::gen::common::db_api::TabularQueryReq;
 use crate::gen::common::http::HttpMethod;
 use crate::gen::common::http::HttpReq;
 use crate::gen::common::http::HttpSecurity;
@@ -129,7 +129,7 @@ pub struct ApiRequests {
    * Query users
    */
   #[serde(default="ApiRequests::def_query_users")]
-  pub query_users: HttpReq<QueryUsersReq, Paginated<UserWithId>>,
+  pub query_users: HttpReq<UserQueryReq, Paginated<UserWithId>>,
 }
 
 impl ApiRequests {
@@ -214,8 +214,8 @@ impl ApiRequests {
     HttpReq::<WithId<AppUserId, UserDetails>, Unit>{method : HttpMethod::Post, path : "/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_query_users() -> HttpReq<QueryUsersReq, Paginated<UserWithId>> {
-    HttpReq::<QueryUsersReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  pub fn def_query_users() -> HttpReq<UserQueryReq, Paginated<UserWithId>> {
+    HttpReq::<UserQueryReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 }
 
@@ -529,24 +529,6 @@ impl UpdateRaceResultsReq {
 }
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct QueryUsersReq {
-  #[serde(default="QueryUsersReq::def_page")]
-  pub page: PageReq,
-}
-
-impl QueryUsersReq {
-  pub fn new() -> QueryUsersReq {
-    QueryUsersReq {
-      page: QueryUsersReq::def_page(),
-    }
-  }
-
-  pub fn def_page() -> PageReq {
-    PageReq{offset : 0_u64, limit : 20_u64}
-  }
-}
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct User {
   pub fullname: StringNE,
 
@@ -566,6 +548,23 @@ impl User {
 }
 
 pub type UserWithId = WithId<AppUserId, User>;
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum UserSorting {
+  #[serde(rename="fullname")]
+  Fullname,
+
+  #[serde(rename="email")]
+  Email,
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum UserFilter {
+  #[serde(rename="fullname_matches")]
+  FullnameMatches(String),
+}
+
+pub type UserQueryReq = TabularQueryReq<UserSorting, UserFilter>;
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct UserDetails {

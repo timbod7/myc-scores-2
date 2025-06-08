@@ -1,7 +1,89 @@
 // @generated from adl module common.db_api
 
+use crate::gen::common::http::HttpReq;
 use serde::Deserialize;
 use serde::Serialize;
+
+pub type TabularQuery<F, S, T> = HttpReq<TabularQueryReq<S, F>, Paginated<T>>;
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct TabularQueryReq<S, F> {
+  #[serde(default="TabularQueryReq::<S, F>::def_filter")]
+  pub filter: BoolExpr<F>,
+
+  #[serde(default="TabularQueryReq::<S, F>::def_sorting")]
+  pub sorting: QuerySorting<S>,
+
+  #[serde(default="TabularQueryReq::<S, F>::def_page")]
+  pub page: PageReq,
+}
+
+impl<S, F> TabularQueryReq<S, F> {
+  pub fn new() -> TabularQueryReq<S, F> {
+    TabularQueryReq {
+      filter: TabularQueryReq::<S, F>::def_filter(),
+      sorting: TabularQueryReq::<S, F>::def_sorting(),
+      page: TabularQueryReq::<S, F>::def_page(),
+    }
+  }
+
+  pub fn def_filter() -> BoolExpr<F> {
+    BoolExpr::Const(true)
+  }
+
+  pub fn def_sorting() -> QuerySorting<S> {
+    vec![]
+  }
+
+  pub fn def_page() -> PageReq {
+    PageReq{offset : 0_u64, limit : 20_u64}
+  }
+}
+
+pub type QuerySorting<C> = Vec<SortColumn<C>>;
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct SortColumn<C> {
+  pub column: C,
+
+  pub order: SortOrder,
+}
+
+impl<C> SortColumn<C> {
+  pub fn new(column: C, order: SortOrder) -> SortColumn<C> {
+    SortColumn {
+      column: column,
+      order: order,
+    }
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum SortOrder {
+  #[serde(rename="asc")]
+  Asc,
+
+  #[serde(rename="desc")]
+  Desc,
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum BoolExpr<P> {
+  #[serde(rename="const")]
+  Const(bool),
+
+  #[serde(rename="prim")]
+  Prim(P),
+
+  #[serde(rename="not")]
+  Not(Box<BoolExpr<P>>),
+
+  #[serde(rename="and")]
+  And(Vec<BoolExpr<P>>),
+
+  #[serde(rename="or")]
+  Or(Vec<BoolExpr<P>>),
+}
 
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct PageReq {
@@ -30,7 +112,7 @@ impl PageReq {
 }
 
 /**
- * A holder for paginated results
+ * A holder for a page of results
  */
 #[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
 pub struct Paginated<T> {
