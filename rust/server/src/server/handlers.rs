@@ -1,4 +1,4 @@
-use adl::gen::common::db_api::Paginated;
+use adl::gen::common::db_api::{Paginated, TabularQueryReq};
 use poem::handler;
 use poem::web::cookie::{Cookie, CookieJar};
 use poem::web::Json;
@@ -6,8 +6,8 @@ use poem::web::Json;
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, QueryUsersReq, RefreshReq, RefreshResp, User,
-    UserDetails, UserWithId, WithId,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, RefreshReq, RefreshResp, User, UserDetails,
+    UserWithId, WithId,
 };
 use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};
@@ -116,9 +116,10 @@ pub async fn update_user(
 
 pub async fn query_users(
     ctx: ReqContext,
-    i: QueryUsersReq,
+    i: TabularQueryReq<UserWithId>,
 ) -> HandlerResult<Paginated<UserWithId>> {
-    let users = db::query_users(&ctx.state.db_pool, i.page.offset, i.page.limit).await?;
+    // TODO validate
+    let users = db::query_users(&ctx.state.db_pool, &i).await?;
     let total_count = db::user_count(&ctx.state.db_pool).await?;
     let page = Paginated {
         items: users,

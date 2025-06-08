@@ -9,8 +9,7 @@ import common.strings.EmailAddress;
 import common.strings.Password;
 import common.strings.StringNE;
 import common.strings.StringML;
-import common.db_api.PageReq;
-import common.db_api.Paginated;
+import common.db_api.TabularQuery;
 
 import mycscores.db.AppUserId;
 import mycscores.db.CalendarEntry;
@@ -127,7 +126,7 @@ struct ApiRequests {
   };
 
   /// Query users
-  HttpReq<QueryUsersReq, Paginated<UserWithId>> query_users = {
+  TabularQuery<UserWithId> query_users = {
     "method": "get",
     "path": "/users/query",
     "security" : { "tokenWithRole": "admin" }
@@ -238,9 +237,6 @@ struct UpdateRaceResultsReq {
 };
 
 
-struct QueryUsersReq {
-  PageReq page = {};
-};
 
 struct User {
   StringNE fullname;

@@ -2,8 +2,9 @@
 
 use crate::custom::common::time::LocalDate;
 use crate::custom::common::time::LocalTime;
-use crate::gen::common::db_api::PageReq;
 use crate::gen::common::db_api::Paginated;
+use crate::gen::common::db_api::TabularQuery;
+use crate::gen::common::db_api::TabularQueryReq;
 use crate::gen::common::http::HttpMethod;
 use crate::gen::common::http::HttpReq;
 use crate::gen::common::http::HttpSecurity;
@@ -129,7 +130,7 @@ pub struct ApiRequests {
    * Query users
    */
   #[serde(default="ApiRequests::def_query_users")]
-  pub query_users: HttpReq<QueryUsersReq, Paginated<UserWithId>>,
+  pub query_users: TabularQuery<UserWithId>,
 }
 
 impl ApiRequests {
@@ -214,8 +215,8 @@ impl ApiRequests {
     HttpReq::<WithId<AppUserId, UserDetails>, Unit>{method : HttpMethod::Post, path : "/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_query_users() -> HttpReq<QueryUsersReq, Paginated<UserWithId>> {
-    HttpReq::<QueryUsersReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  pub fn def_query_users() -> TabularQuery<UserWithId> {
+    HttpReq::<TabularQueryReq<UserWithId>, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 }
 
@@ -525,24 +526,6 @@ impl UpdateRaceResultsReq {
       start_details: start_details,
       results: results,
     }
-  }
-}
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct QueryUsersReq {
-  #[serde(default="QueryUsersReq::def_page")]
-  pub page: PageReq,
-}
-
-impl QueryUsersReq {
-  pub fn new() -> QueryUsersReq {
-    QueryUsersReq {
-      page: QueryUsersReq::def_page(),
-    }
-  }
-
-  pub fn def_page() -> PageReq {
-    PageReq{offset : 0_u64, limit : 20_u64}
   }
 }
 

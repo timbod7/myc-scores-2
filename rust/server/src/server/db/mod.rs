@@ -4,12 +4,15 @@ use adl::{
         schema,
         types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
-    gen::mycscores::{
-        apis,
-        db::{AppUser, AppUserId},
+    gen::{
+        common::db_api::{SortOrder, TabularQueryReq},
+        mycscores::{
+            apis,
+            db::{AppUser, AppUserId},
+        },
     },
 };
-use sea_query::{Expr, Func, PostgresQueryBuilder, Query};
+use sea_query::{Alias, Expr, Func, Order, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::Row;
 
@@ -99,19 +102,39 @@ pub async fn update_user(pool: &DbPool, user_id: &AppUserId, user: &AppUser) -> 
 
 pub async fn query_users(
     pool: &DbPool,
-    offset: u64,
-    limit: u64,
+    req: &TabularQueryReq<apis::ui::UserWithId>,
 ) -> sqlx::Result<Vec<apis::ui::UserWithId>> {
     type T = schema::AppUser;
-    let (sql, values) = Query::select()
+    let mut query = Query::select();
+
+    let query = query
         .from(T::table())
         .scolumn(T::id())
         .scolumn(T::fullname())
         .scolumn(T::email())
         .scolumn(T::is_admin())
-        .offset(offset)
-        .limit(limit)
-        .build_sqlx(PostgresQueryBuilder);
+        .offset(req.page.offset)
+        .limit(req.page.limit);
+
+    let query = if req.sorting.is_empty() {
+        query
+    } else {
+        let cols: Vec<(Alias, Order)> = req
+            .sorting
+            .iter()
+            .map(|s| {
+                let ord = match s.order {
+                    SortOrder::Asc => Order::Asc,
+                    SortOrder::Desc => Order::Desc,
+                };
+                (Alias::new(&s.column.0), ord)
+            })
+            .collect();
+        query.order_by_columns(cols)
+    };
+
+    let (sql, values) = query.build_sqlx(PostgresQueryBuilder);
+
     let users = sqlx::query_with(&sql, values)
         .map(|r| apis::ui::UserWithId {
             id: T::id().from_row(&r),
