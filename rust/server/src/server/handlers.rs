@@ -1,3 +1,4 @@
+use adl::gen::common::db_api::Paginated;
 use poem::handler;
 use poem::web::cookie::{Cookie, CookieJar};
 use poem::web::Json;
@@ -5,8 +6,8 @@ use poem::web::Json;
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, Paginated, QueryUsersReq, RefreshReq,
-    RefreshResp, User, UserDetails, UserWithId, WithId,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, QueryUsersReq, RefreshReq, RefreshResp, User,
+    UserDetails, UserWithId, WithId,
 };
 use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};

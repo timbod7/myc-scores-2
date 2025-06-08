@@ -1,6 +1,7 @@
+use adl::gen::common::db_api::PageReq;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis;
-use adl::gen::mycscores::apis::ui::{LoginReq, LoginTokens, PageReq, RefreshReq};
+use adl::gen::mycscores::apis::ui::{LoginReq, LoginTokens, RefreshReq};
 
 use crate::server::tests::helpers::{
     create_test_user, login_user, server_auth_req, server_public_req, server_req,

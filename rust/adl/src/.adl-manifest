@@ -3,6 +3,7 @@ gen/adlc/config/mod.rs
 gen/adlc/config/rust.rs
 gen/adlc/mod.rs
 gen/common/db.rs
+gen/common/db_api.rs
 gen/common/http.rs
 gen/common/mod.rs
 gen/common/strings.rs

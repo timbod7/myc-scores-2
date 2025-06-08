@@ -1,0 +1,25 @@
+/// Adl definitions helpful proving api access to db values
+module common.db_api {
+
+  struct PageReq {
+    // Pagination offset
+    Word64 offset = 0;
+  
+    // Max number of items to return
+    Word64 limit = 20;
+  };
+
+  /// A holder for paginated results
+  struct Paginated<T> {
+  
+    /// The paginated items
+    Vector<T> items;
+  
+    /// The offset used for this query
+    Word64 current_offset;
+  
+    /// The size of the entire date set
+    Word64 total_count;
+  };
+
+};

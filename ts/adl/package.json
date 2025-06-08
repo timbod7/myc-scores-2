@@ -19,6 +19,7 @@
     ".": "./dist/index.js",
     "./resolver": "./dist/resolver.js",
     "./common/db": "./dist/common/db.js",
+    "./common/db_api": "./dist/common/db_api.js",
     "./common/http": "./dist/common/http.js",
     "./common/strings": "./dist/common/strings.js",
     "./common/time": "./dist/common/time.js",

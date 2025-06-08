@@ -1,6 +1,7 @@
 /* @generated from adl */
 import { declResolver, ScopedDecl } from "@adllang/adl-runtime";
 import { _AST_MAP as common_db } from "./common/db";
+import { _AST_MAP as common_db_api } from "./common/db_api";
 import { _AST_MAP as common_http } from "./common/http";
 import { _AST_MAP as common_strings } from "./common/strings";
 import { _AST_MAP as common_time } from "./common/time";
@@ -13,6 +14,7 @@ import { _AST_MAP as sys_types } from "./sys/types";
 
 export const ADL: { [key: string]: ScopedDecl } = {
   ...common_db,
+  ...common_db_api,
   ...common_http,
   ...common_strings,
   ...common_time,
