@@ -9,7 +9,7 @@ use adl::{
         db::{AppUser, AppUserId},
     },
 };
-use sea_query::{Expr, Func, PostgresQueryBuilder, Query};
+use sea_query::{Func, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::Row;
 
@@ -131,7 +131,7 @@ pub async fn user_count(pool: &DbPool) -> sqlx::Result<u64> {
 
     let (sql, values) = Query::select()
         .from(M::table())
-        .expr(Func::count(Expr::asterisk()))
+        .expr(Func::count(sea_query::ColumnRef::Asterisk))
         .build_sqlx(PostgresQueryBuilder);
 
     let count: i64 = sqlx::query_with(&sql, values)
