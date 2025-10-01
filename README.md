@@ -6,11 +6,12 @@ This repo implement V2 of the MYC Lasers Scoring System
 
 Currently linux and macos are supported.
 
-Install docker and rust/cargo for your platform. Then install deno, node, pnpm, and adl into a repo
-local directory by sourcing the local setup script:
+Install docker and rust/cargo for your platform. Then install the appropriate versions of deno, node, pnpm, and
+adl locally using the [proto](https://moonrepo.dev/proto) tool.
 
-```bash
-. deno/local-setup.sh
+```
+cd <repo root>
+proto install
 ```
 
 Check installed tool versions with:
@@ -85,7 +86,7 @@ cargo run --bin mycscores-tools -- create-user --is-admin sarah@test.com Sarah a
 ```bash
 (
 cd ts/api-workbench
-# note pnpm is installed by local-setup.sh
+# note pnpm is installed by proto
 pnpm install
 pnpm run dev
 )
