@@ -1,4 +1,3 @@
-use adl::gen::common::db_api::Paginated;
 use poem::handler;
 use poem::web::cookie::{Cookie, CookieJar};
 use poem::web::Json;
@@ -6,18 +5,19 @@ use poem::web::Json;
 use adl::custom::common::db::DbKey;
 use adl::gen::common::http::Unit;
 use adl::gen::mycscores::apis::ui::{
-    ApiRequests, LoginReq, LoginResp, LoginTokens, RefreshReq, RefreshResp, User, UserDetails,
-    UserQueryReq, UserWithId, WithId,
+    ApiRequests, LoginReq, LoginResp, LoginTokens, RefreshReq, RefreshResp, User, UserWithId,
 };
 use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};
 
 use crate::server::jwt::AccessClaims;
-use crate::server::passwords::{hash_password, verify_password};
+use crate::server::passwords::verify_password;
 use crate::server::poem_adl_interop::{
     forbidden, get_adl_request_context, AdlReqContext, HandlerResult,
 };
 use crate::server::{db, jwt, AppState};
+
+pub mod users;
 
 type ReqContext = AdlReqContext<AppState>;
 
@@ -27,7 +27,7 @@ pub async fn healthy(_ctx: ReqContext, _i: ()) -> HandlerResult<()> {
 
 pub async fn login(ctx: ReqContext, i: LoginReq) -> HandlerResult<LoginResp> {
     // Lookup the user details
-    let user = db::get_user_with_email(&ctx.state.db_pool, &i.email).await?;
+    let user = db::users::get_user_with_email(&ctx.state.db_pool, &i.email).await?;
     match user {
         None => Ok(LoginResp::InvalidCredentials),
         Some((user_id, user)) => {
@@ -56,7 +56,7 @@ pub async fn refresh(ctx: ReqContext, i: RefreshReq) -> HandlerResult<RefreshRes
                     Err(_) => return Ok(RefreshResp::InvalidRefreshToken),
                 };
             let user_id: AppUserId = DbKey::from_string(claims.sub.clone());
-            let user = db::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
+            let user = db::users::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
             let user = match user {
                 Some((_, user)) => user,
                 None => return Ok(RefreshResp::InvalidRefreshToken),
@@ -73,7 +73,7 @@ pub async fn logout(_ctx: ReqContext, _i: Unit) -> HandlerResult<Unit> {
 
 pub async fn who_am_i(ctx: ReqContext, _i: ()) -> HandlerResult<UserWithId> {
     let user_id = user_from_claims(&ctx.claims)?;
-    let user = db::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
+    let user = db::users::get_user_with_id(&ctx.state.db_pool, &user_id).await?;
     match user {
         Some((user_id, user)) => Ok(UserWithId {
             id: user_id.clone(),
@@ -85,44 +85,6 @@ pub async fn who_am_i(ctx: ReqContext, _i: ()) -> HandlerResult<UserWithId> {
         }),
         None => Err(forbidden()),
     }
-}
-
-pub async fn create_user(ctx: ReqContext, i: UserDetails) -> HandlerResult<AppUserId> {
-    let hashed_password = hash_password(&i.password).expect("password can be hashed");
-    let user = AppUser {
-        fullname: i.fullname.clone(),
-        email: i.email.clone(),
-        is_admin: i.is_admin,
-        hashed_password,
-    };
-    let id = db::create_user(&ctx.state.db_pool, &user).await?;
-    Ok(id)
-}
-
-pub async fn update_user(
-    ctx: ReqContext,
-    i: WithId<AppUserId, UserDetails>,
-) -> HandlerResult<Unit> {
-    let hashed_password = hash_password(&i.value.password).expect("password can be hashed");
-    let user = AppUser {
-        fullname: i.value.fullname.clone(),
-        email: i.value.email.clone(),
-        is_admin: i.value.is_admin,
-        hashed_password,
-    };
-    db::update_user(&ctx.state.db_pool, &i.id, &user).await?;
-    Ok(Unit {})
-}
-
-pub async fn query_users(ctx: ReqContext, i: UserQueryReq) -> HandlerResult<Paginated<UserWithId>> {
-    let users = db::query_users(&ctx.state.db_pool, &i).await?;
-    let total_count = db::user_count(&ctx.state.db_pool).await?;
-    let page = Paginated {
-        items: users,
-        current_offset: i.page.offset,
-        total_count,
-    };
-    Ok(page)
 }
 
 #[handler]

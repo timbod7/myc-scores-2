@@ -61,7 +61,7 @@ async fn create_user(args: &CreateUserArgs) -> anyhow::Result<()> {
         .connect(&db_connection_url)
         .await
         .expect("db connection to succeed");
-    let id = db::create_user(&pool, &user).await?;
+    let id = db::users::create_user(&pool, &user).await?;
     println!("user created with id {}", id.0);
     Ok(())
 }
