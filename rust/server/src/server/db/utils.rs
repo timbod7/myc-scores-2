@@ -32,7 +32,7 @@ pub trait DbTabular {
         }
     }
 
-    fn sort_cols(sorting: &Vec<SortColumn<Self::S>>) -> Vec<(ColumnRef, Order)> {
+    fn sort_cols(sorting: &[SortColumn<Self::S>]) -> Vec<(ColumnRef, Order)> {
         let cols: Vec<(ColumnRef, Order)> = sorting
             .iter()
             .map(|s| {
