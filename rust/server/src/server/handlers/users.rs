@@ -36,6 +36,11 @@ pub async fn update_user(
     Ok(Unit {})
 }
 
+pub async fn delete_user(ctx: ReqContext, i: AppUserId) -> HandlerResult<Unit> {
+    db::users::delete_user(&ctx.state.db_pool, &i).await?;
+    Ok(Unit {})
+}
+
 pub async fn query_users(ctx: ReqContext, i: UserQueryReq) -> HandlerResult<Paginated<UserWithId>> {
     let users = db::users::query_users(&ctx.state.db_pool, &i).await?;
     let total_count = db::users::user_count(&ctx.state.db_pool).await?;

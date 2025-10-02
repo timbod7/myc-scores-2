@@ -117,20 +117,26 @@ struct ApiRequests {
 
   /// Create a new user
   HttpReq<UserDetails, AppUserId> create_user = {
-    "path": "/users/create",
+    "path": "/crud/users/create",
     "security" : { "tokenWithRole": "admin" }
   };
 
   /// Update a user
   HttpReq<WithId<AppUserId,UserDetails>, Unit> update_user = {
-    "path": "/users/update",
+    "path": "/crud/users/update",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Delete a user
+  HttpReq<AppUserId, Unit> delete_user = {
+    "path": "/crud/users/delete",
     "security" : { "tokenWithRole": "admin" }
   };
 
   /// Query users
   HttpReq<UserQueryReq, Paginated<UserWithId>> query_users = {
     "method": "get",
-    "path": "/users/query",
+    "path": "/crud/users/query",
     "security" : { "tokenWithRole": "admin" }
   };
 };

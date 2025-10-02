@@ -102,6 +102,16 @@ pub async fn update_user(pool: &DbPool, user_id: &AppUserId, user: &AppUser) -> 
     Ok(())
 }
 
+pub async fn delete_user(pool: &DbPool, user_id: &AppUserId) -> sqlx::Result<()> {
+    type T = schema::AppUser;
+    let (sql, values) = Query::delete()
+        .from_table(T::table())
+        .and_where(T::id().eq_value(user_id))
+        .build_sqlx(PostgresQueryBuilder);
+    sqlx::query_with(&sql, values).execute(pool).await?;
+    Ok(())
+}
+
 pub async fn query_users(
     pool: &DbPool,
     req: &UserQueryReq,

@@ -126,6 +126,12 @@ pub struct ApiRequests {
   pub update_user: HttpReq<WithId<AppUserId, UserDetails>, Unit>,
 
   /**
+   * Delete a user
+   */
+  #[serde(default="ApiRequests::def_delete_user")]
+  pub delete_user: HttpReq<AppUserId, Unit>,
+
+  /**
    * Query users
    */
   #[serde(default="ApiRequests::def_query_users")]
@@ -150,6 +156,7 @@ impl ApiRequests {
       get_series_results: ApiRequests::def_get_series_results(),
       create_user: ApiRequests::def_create_user(),
       update_user: ApiRequests::def_update_user(),
+      delete_user: ApiRequests::def_delete_user(),
       query_users: ApiRequests::def_query_users(),
     }
   }
@@ -207,15 +214,19 @@ impl ApiRequests {
   }
 
   pub fn def_create_user() -> HttpReq<UserDetails, AppUserId> {
-    HttpReq::<UserDetails, AppUserId>{method : HttpMethod::Post, path : "/users/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+    HttpReq::<UserDetails, AppUserId>{method : HttpMethod::Post, path : "/crud/users/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_update_user() -> HttpReq<WithId<AppUserId, UserDetails>, Unit> {
-    HttpReq::<WithId<AppUserId, UserDetails>, Unit>{method : HttpMethod::Post, path : "/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+    HttpReq::<WithId<AppUserId, UserDetails>, Unit>{method : HttpMethod::Post, path : "/crud/users/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  }
+
+  pub fn def_delete_user() -> HttpReq<AppUserId, Unit> {
+    HttpReq::<AppUserId, Unit>{method : HttpMethod::Post, path : "/crud/users/delete".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
   pub fn def_query_users() -> HttpReq<UserQueryReq, Paginated<UserWithId>> {
-    HttpReq::<UserQueryReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+    HttpReq::<UserQueryReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/crud/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 }
 
