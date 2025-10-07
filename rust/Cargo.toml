@@ -6,7 +6,8 @@ resolver = "2"
 adl = { path = "adl" }
 
 base64 = "0.21.2"
-env_logger = "0.10.0"
+tracing = "0.1.41"
+tracing-subscriber = {version= "0.3", features = ["json"]}
 sqlx = { version = "0.8.4", features = ["runtime-tokio-native-tls", "postgres", "time", "json"] }
 sea-query = {version="0.32.5", features=["with-json","with-time", "backend-postgres"]}
 sea-query-binder = { version="0.7.0", features = ["sqlx-postgres", "with-json", "with-time"]}

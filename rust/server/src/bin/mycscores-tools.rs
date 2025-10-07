@@ -7,6 +7,8 @@ use sqlx::postgres::PgPoolOptions;
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
+
     let cli = Cli::parse();
     let res = match &cli.command {
         Commands::CreateUser(args) => create_user(args).await,

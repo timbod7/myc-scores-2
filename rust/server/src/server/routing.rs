@@ -1,4 +1,5 @@
 use poem::endpoint::{DynEndpoint, ToDynEndpoint};
+use poem::middleware::Tracing;
 use poem::session::{CookieConfig, CookieSession};
 use poem::{post, EndpointExt, Route};
 
@@ -7,6 +8,8 @@ use adl::gen::mycscores::apis::ui::ApiRequests;
 use crate::server::handlers;
 use crate::server::poem_adl_interop::{new_access_token_checker, RouteExt};
 use crate::server::AppState;
+
+use super::middleware::error_handling::ErrorLogging;
 
 pub fn build_routes(state: AppState) -> Box<dyn DynEndpoint<Output = poem::Response>> {
     let access_token_checker = new_access_token_checker(state.config.jwt_access_secret.clone());
@@ -57,7 +60,9 @@ pub fn build_routes(state: AppState) -> Box<dyn DynEndpoint<Output = poem::Respo
     let routes = routes
         .data(state)
         .data(access_token_checker)
-        .with(CookieSession::new(CookieConfig::default().secure(false)));
+        .with(CookieSession::new(CookieConfig::default().secure(false)))
+        .with(Tracing)
+        .with(ErrorLogging);
 
     Box::new(ToDynEndpoint(routes))
 }

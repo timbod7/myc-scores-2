@@ -9,6 +9,7 @@ use adl::gen::mycscores::config::server::ServerConfig;
 pub mod db;
 mod handlers;
 mod jwt;
+mod middleware;
 pub mod passwords;
 mod poem_adl_interop;
 mod routing;
@@ -44,18 +45,18 @@ pub async fn run(config: ServerConfig) {
         .expect("db connection should work");
 
     // Run any migrations
-    log::info!("Running sqlx migrations...");
+    tracing::info!("Running sqlx migrations...");
     sqlx::migrate!()
         .run(&db_pool)
         .await
         .expect("migrations should run correctly");
-    log::info!("sqlx migrations completed");
+    tracing::info!("sqlx migrations completed");
 
     let app_state = AppState::new(config, db_pool);
     let ep = build_routes(app_state.clone());
     let addr = &app_state.config.http_bind_addr;
     let server = poem::Server::new(TcpListener::bind(addr)).run(ep);
-    log::info!("Listening on http://{}", addr);
+    tracing::info!("Listening on http://{}", addr);
     let _ = server.await;
 }
 
@@ -93,7 +94,7 @@ impl OServer {
             Self::await_receiver(shutdown),
             None,
         );
-        log::info!("Listening on http://{}", addr);
+        tracing::info!("Listening on http://{}", addr);
         let _ = server.await;
     }
 

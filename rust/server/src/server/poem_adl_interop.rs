@@ -186,7 +186,7 @@ impl JwtSecurityCheck for AccessTokenChecker {
         if request_allowed {
             Ok(claims)
         } else {
-            log::error!("request without valid jwt claims");
+            tracing::error!("request without valid jwt claims");
             Err(forbidden())
         }
     }
@@ -198,7 +198,7 @@ fn claims_from_bearer_token(
 ) -> HandlerResult<jwt::AccessClaims> {
     let jwt = jwt::bearer_token_from_auth_header(auth_header).ok_or(unauthorized())?;
     let claims = jwt::decode_access(jwt_secret, &jwt).map_err(|e| {
-        log::error!("failed to validate jwt: {}", e);
+        tracing::error!("failed to validate jwt: {}", e);
         unauthorized()
     })?;
     Ok(claims)
@@ -229,7 +229,7 @@ impl From<sqlx::Error> for HandlerError {
 impl From<HandlerError> for poem::Error {
     fn from(err: HandlerError) -> poem::Error {
         match err {
-            HandlerError::Anyhow(_) => poem::Error::from_status(StatusCode::INTERNAL_SERVER_ERROR),
+            HandlerError::Anyhow(e) => poem::Error::from(e),
             HandlerError::Poem(e) => e,
         }
     }

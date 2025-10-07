@@ -7,8 +7,6 @@ use mycscores::server;
 
 #[tokio::main]
 async fn main() {
-    env_logger::init();
-
     let res = run().await;
 
     match res {
@@ -33,6 +31,8 @@ async fn run() -> anyhow::Result<()> {
     };
     let mut config: ServerConfig = serde_json::from_str(&config_str)
         .map_err(|e| anyhow::anyhow!("unable to parse config file: {}", e))?;
+
+    tracing_subscriber::fmt::init();
 
     inject_secrets(&mut config)?;
     server::run(config).await;
