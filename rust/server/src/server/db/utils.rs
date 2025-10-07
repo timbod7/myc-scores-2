@@ -4,7 +4,6 @@ use sea_query::{ColumnRef, Cond, Order, SimpleExpr, Value};
 pub trait DbTabular {
     type S;
     type F;
-    type R;
 
     fn cref_from_sorting(s: &Self::S) -> ColumnRef;
 

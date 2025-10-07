@@ -17,6 +17,7 @@ use crate::server::poem_adl_interop::{
 };
 use crate::server::{db, jwt, AppState};
 
+pub mod seasons;
 pub mod users;
 
 type ReqContext = AdlReqContext<AppState>;

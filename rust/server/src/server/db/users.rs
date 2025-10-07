@@ -7,7 +7,7 @@ use adl::{
     gen::mycscores::{
         apis::{
             self,
-            ui::{UserFilter, UserQueryReq, UserSorting, UserWithId},
+            ui::{UserFilter, UserQueryReq, UserSorting},
         },
         db::{AppUser, AppUserId},
     },
@@ -151,7 +151,6 @@ struct UserQuery {}
 impl DbTabular for UserQuery {
     type S = UserSorting;
     type F = UserFilter;
-    type R = UserWithId;
 
     fn cref_from_sorting(s: &Self::S) -> ColumnRef {
         match s {

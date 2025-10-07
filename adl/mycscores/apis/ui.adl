@@ -139,6 +139,31 @@ struct ApiRequests {
     "path": "/crud/users/query",
     "security" : { "tokenWithRole": "admin" }
   };
+
+  /// Create a new season
+  HttpReq<Season, SeasonId> create_season = {
+    "path": "/crud/seasons/create",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Update a season 
+  HttpReq<WithId<SeasonId,Season>, Unit> update_season = {
+    "path": "/crud/seasons/update",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Delete a season
+  HttpReq<SeasonId, Unit> delete_season = {
+    "path": "/crud/seasons/delete",
+    "security" : { "tokenWithRole": "admin" }
+  };
+
+  /// Query season
+  HttpReq<SeasonQueryReq, Paginated<WithId<SeasonId,Season>>> query_seasons = {
+    "method": "get",
+    "path": "/crud/seasons/query",
+    "security" : { "tokenWithRole": "admin" }
+  };
 };
 
 struct LoginReq {
@@ -271,6 +296,16 @@ struct UserDetails {
   Bool is_admin;
   Password password;
 };
+
+union SeasonSorting {
+  Void name;
+};
+
+union SeasonFilter {
+  String name_matches;
+};
+
+type SeasonQueryReq = TabularQueryReq<SeasonSorting,SeasonFilter>;
 
 struct WithId<I,T> {
  I id;
