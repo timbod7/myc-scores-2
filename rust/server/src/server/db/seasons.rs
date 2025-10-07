@@ -9,7 +9,7 @@ use adl::{
         db::{Season, SeasonId},
     },
 };
-use sea_query::{ColumnRef, Func, PostgresQueryBuilder, Query};
+use sea_query::{extension::postgres::PgExpr, ColumnRef, Func, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::{Executor, Postgres};
 
@@ -121,9 +121,7 @@ impl DbTabular for SeasonQuery {
 
     fn filter_prim(f: &Self::F) -> sea_query::SimpleExpr {
         match f {
-            SeasonFilter::NameMatches(s) => {
-                schema::AppUser::fullname().expr().like(format!("%{}%", s))
-            }
+            SeasonFilter::NameMatches(s) => schema::Season::name().expr().ilike(format!("%{}%", s)),
         }
     }
 }

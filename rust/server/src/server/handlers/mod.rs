@@ -11,10 +11,10 @@ use adl::gen::mycscores::config::server::ServerConfig;
 use adl::gen::mycscores::db::{AppUser, AppUserId};
 
 use crate::server::jwt::AccessClaims;
-use crate::server::passwords::verify_password;
-use crate::server::poem_adl_interop::{
+use crate::server::middleware::adl_interop::{
     forbidden, get_adl_request_context, AdlReqContext, HandlerResult,
 };
+use crate::server::passwords::verify_password;
 use crate::server::{db, jwt, AppState};
 
 pub mod seasons;

@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 use adl::gen::common::http::{HttpMethod, HttpReq, HttpSecurity};
 
-use super::jwt;
+use crate::server::jwt;
 
 /**
  * Contextual information available to ADL request handlers

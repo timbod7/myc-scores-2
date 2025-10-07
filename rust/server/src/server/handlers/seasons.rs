@@ -4,7 +4,7 @@ use adl::gen::mycscores::apis::ui::{SeasonQueryReq, WithId};
 use adl::gen::mycscores::db::{Season, SeasonId};
 
 use crate::server::db;
-use crate::server::poem_adl_interop::HandlerResult;
+use crate::server::middleware::adl_interop::HandlerResult;
 
 use super::ReqContext;
 

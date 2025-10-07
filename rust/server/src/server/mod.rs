@@ -11,7 +11,6 @@ mod handlers;
 mod jwt;
 mod middleware;
 pub mod passwords;
-mod poem_adl_interop;
 mod routing;
 
 #[cfg(test)]

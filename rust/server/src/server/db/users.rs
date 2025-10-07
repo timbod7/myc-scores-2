@@ -162,7 +162,7 @@ impl DbTabular for UserQuery {
     fn filter_prim(f: &Self::F) -> sea_query::SimpleExpr {
         match f {
             UserFilter::FullnameMatches(s) => {
-                schema::AppUser::fullname().expr().like(format!("%{}%", s))
+                schema::AppUser::fullname().expr().ilike(format!("%{}%", s))
             }
         }
     }

@@ -6,7 +6,7 @@ use poem::{post, EndpointExt, Route};
 use adl::gen::mycscores::apis::ui::ApiRequests;
 
 use crate::server::handlers;
-use crate::server::poem_adl_interop::{new_access_token_checker, RouteExt};
+use crate::server::middleware::adl_interop::{new_access_token_checker, RouteExt};
 use crate::server::AppState;
 
 use super::middleware::error_handling::ErrorLogging;

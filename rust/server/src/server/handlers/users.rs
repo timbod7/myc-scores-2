@@ -4,8 +4,8 @@ use adl::gen::mycscores::apis::ui::{UserDetails, UserQueryReq, UserWithId, WithI
 use adl::gen::mycscores::db::{AppUser, AppUserId};
 
 use crate::server::db;
+use crate::server::middleware::adl_interop::HandlerResult;
 use crate::server::passwords::hash_password;
-use crate::server::poem_adl_interop::HandlerResult;
 
 use super::ReqContext;
 
