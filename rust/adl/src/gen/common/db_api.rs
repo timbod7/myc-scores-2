@@ -1,8 +1,25 @@
 // @generated from adl module common.db_api
 
 use crate::gen::common::http::HttpReq;
+use crate::gen::common::http::Unit;
 use serde::Deserialize;
 use serde::Serialize;
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct WithId<I, T> {
+  pub id: I,
+
+  pub value: T,
+}
+
+impl<I, T> WithId<I, T> {
+  pub fn new(id: I, value: T) -> WithId<I, T> {
+    WithId {
+      id: id,
+      value: value,
+    }
+  }
+}
 
 pub type TabularQuery<F, S, T> = HttpReq<TabularQueryReq<S, F>, Paginated<T>>;
 
@@ -138,6 +155,28 @@ impl<T> Paginated<T> {
       items: items,
       current_offset: current_offset,
       total_count: total_count,
+    }
+  }
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub struct CrudApi<I, T, S, F> {
+  pub create: HttpReq<T, I>,
+
+  pub update: HttpReq<WithId<I, T>, Unit>,
+
+  pub delete: HttpReq<I, Unit>,
+
+  pub query: HttpReq<TabularQueryReq<S, F>, Paginated<WithId<I, T>>>,
+}
+
+impl<I, T, S, F> CrudApi<I, T, S, F> {
+  pub fn new(create: HttpReq<T, I>, update: HttpReq<WithId<I, T>, Unit>, delete: HttpReq<I, Unit>, query: HttpReq<TabularQueryReq<S, F>, Paginated<WithId<I, T>>>) -> CrudApi<I, T, S, F> {
+    CrudApi {
+      create: create,
+      update: update,
+      delete: delete,
+      query: query,
     }
   }
 }

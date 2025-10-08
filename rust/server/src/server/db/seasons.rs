@@ -4,9 +4,12 @@ use adl::{
         schema::{self},
         types::{InsertRow, SelectStatementExt, UpdateStatementExt},
     },
-    gen::mycscores::{
-        apis::ui::{SeasonFilter, SeasonQueryReq, SeasonSorting},
-        db::{Season, SeasonId},
+    gen::{
+        common::db_api::TabularQueryReq,
+        mycscores::{
+            apis::ui::{SeasonFilter, SeasonSorting},
+            db::{Season, SeasonId},
+        },
     },
 };
 use sea_query::{extension::postgres::PgExpr, ColumnRef, Func, PostgresQueryBuilder, Query};
@@ -61,7 +64,7 @@ pub async fn delete_season(pool: &DbPool, id: &SeasonId) -> sqlx::Result<()> {
 
 pub async fn query_seasons(
     pool: &DbPool,
-    req: &SeasonQueryReq,
+    req: &TabularQueryReq<SeasonSorting, SeasonFilter>,
 ) -> sqlx::Result<Vec<(SeasonId, Season)>> {
     type T = schema::Season;
     let mut query = Query::select();
@@ -91,7 +94,10 @@ pub async fn query_seasons(
     Ok(seasons)
 }
 
-pub async fn count_seasons(pool: &DbPool, req: &SeasonQueryReq) -> sqlx::Result<u64> {
+pub async fn count_seasons(
+    pool: &DbPool,
+    req: &TabularQueryReq<SeasonSorting, SeasonFilter>,
+) -> sqlx::Result<u64> {
     type T = schema::Season;
     let mut query = Query::select();
 

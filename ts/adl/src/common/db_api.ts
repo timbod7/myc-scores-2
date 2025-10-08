@@ -3,6 +3,32 @@
 import * as ADL from '@adllang/adl-runtime';
 import * as common_http from './http';
 
+export interface WithId<I, T> {
+  id: I;
+  value: T;
+}
+
+export function makeWithId<I, T>(
+  input: {
+    id: I,
+    value: T,
+  }
+): WithId<I, T> {
+  return {
+    id: input.id,
+    value: input.value,
+  };
+}
+
+const WithId_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"WithId","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"value","serializedName":"value","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}}],"typeParams":["I","T"]}},"version":{"kind":"nothing"}},"moduleName":"common.db_api"};
+
+export const snWithId: ADL.ScopedName = {moduleName:"common.db_api", name:"WithId"};
+
+export function texprWithId<I, T>(texprI : ADL.ATypeExpr<I>, texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<WithId<I, T>> {
+  return {value : {typeRef : {kind: "reference", value : {moduleName : "common.db_api",name : "WithId"}}, parameters : [texprI.value, texprT.value]}};
+}
+
 export type TabularQuery<S, F, T> = common_http.HttpReq<TabularQueryReq<S, F>, Paginated<T>>;
 
 const TabularQuery_AST : ADL.ScopedDecl =
@@ -201,7 +227,40 @@ export function texprPaginated<T>(texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<Pagi
   return {value : {typeRef : {kind: "reference", value : {moduleName : "common.db_api",name : "Paginated"}}, parameters : [texprT.value]}};
 }
 
+export interface CrudApi<I, T, S, F> {
+  create: common_http.HttpReq<T, I>;
+  update: common_http.HttpReq<WithId<I, T>, common_http.Unit>;
+  delete: common_http.HttpReq<I, common_http.Unit>;
+  query: common_http.HttpReq<TabularQueryReq<S, F>, Paginated<WithId<I, T>>>;
+}
+
+export function makeCrudApi<I, T, S, F>(
+  input: {
+    create: common_http.HttpReq<T, I>,
+    update: common_http.HttpReq<WithId<I, T>, common_http.Unit>,
+    delete: common_http.HttpReq<I, common_http.Unit>,
+    query: common_http.HttpReq<TabularQueryReq<S, F>, Paginated<WithId<I, T>>>,
+  }
+): CrudApi<I, T, S, F> {
+  return {
+    create: input.create,
+    update: input.update,
+    delete: input.delete,
+    query: input.query,
+  };
+}
+
+const CrudApi_AST : ADL.ScopedDecl =
+  {"decl":{"annotations":[],"name":"CrudApi","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"create","serializedName":"create","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}},{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"update","serializedName":"update","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}},{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"delete","serializedName":"delete","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"query","serializedName":"query","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"S"}},{"parameters":[],"typeRef":{"kind":"typeParam","value":"F"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"TabularQueryReq"}}},{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}},{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}}],"typeParams":["I","T","S","F"]}},"version":{"kind":"nothing"}},"moduleName":"common.db_api"};
+
+export const snCrudApi: ADL.ScopedName = {moduleName:"common.db_api", name:"CrudApi"};
+
+export function texprCrudApi<I, T, S, F>(texprI : ADL.ATypeExpr<I>, texprT : ADL.ATypeExpr<T>, texprS : ADL.ATypeExpr<S>, texprF : ADL.ATypeExpr<F>): ADL.ATypeExpr<CrudApi<I, T, S, F>> {
+  return {value : {typeRef : {kind: "reference", value : {moduleName : "common.db_api",name : "CrudApi"}}, parameters : [texprI.value, texprT.value, texprS.value, texprF.value]}};
+}
+
 export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
+  "common.db_api.WithId" : WithId_AST,
   "common.db_api.TabularQuery" : TabularQuery_AST,
   "common.db_api.TabularQueryReq" : TabularQueryReq_AST,
   "common.db_api.QuerySorting" : QuerySorting_AST,
@@ -209,5 +268,6 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "common.db_api.SortOrder" : SortOrder_AST,
   "common.db_api.BoolExpr" : BoolExpr_AST,
   "common.db_api.PageReq" : PageReq_AST,
-  "common.db_api.Paginated" : Paginated_AST
+  "common.db_api.Paginated" : Paginated_AST,
+  "common.db_api.CrudApi" : CrudApi_AST
 };

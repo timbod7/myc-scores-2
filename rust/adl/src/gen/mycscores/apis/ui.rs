@@ -2,8 +2,10 @@
 
 use crate::custom::common::time::LocalDate;
 use crate::custom::common::time::LocalTime;
+use crate::gen::common::db_api::CrudApi;
 use crate::gen::common::db_api::Paginated;
 use crate::gen::common::db_api::TabularQueryReq;
+use crate::gen::common::db_api::WithId;
 use crate::gen::common::http::HttpMethod;
 use crate::gen::common::http::HttpReq;
 use crate::gen::common::http::HttpSecurity;
@@ -137,29 +139,8 @@ pub struct ApiRequests {
   #[serde(default="ApiRequests::def_query_users")]
   pub query_users: HttpReq<UserQueryReq, Paginated<UserWithId>>,
 
-  /**
-   * Create a new season
-   */
-  #[serde(default="ApiRequests::def_create_season")]
-  pub create_season: HttpReq<Season, SeasonId>,
-
-  /**
-   * Update a season 
-   */
-  #[serde(default="ApiRequests::def_update_season")]
-  pub update_season: HttpReq<WithId<SeasonId, Season>, Unit>,
-
-  /**
-   * Delete a season
-   */
-  #[serde(default="ApiRequests::def_delete_season")]
-  pub delete_season: HttpReq<SeasonId, Unit>,
-
-  /**
-   * Query season
-   */
-  #[serde(default="ApiRequests::def_query_seasons")]
-  pub query_seasons: HttpReq<SeasonQueryReq, Paginated<WithId<SeasonId, Season>>>,
+  #[serde(default="ApiRequests::def_crud_seasons")]
+  pub crud_seasons: CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter>,
 }
 
 impl ApiRequests {
@@ -182,10 +163,7 @@ impl ApiRequests {
       update_user: ApiRequests::def_update_user(),
       delete_user: ApiRequests::def_delete_user(),
       query_users: ApiRequests::def_query_users(),
-      create_season: ApiRequests::def_create_season(),
-      update_season: ApiRequests::def_update_season(),
-      delete_season: ApiRequests::def_delete_season(),
-      query_seasons: ApiRequests::def_query_seasons(),
+      crud_seasons: ApiRequests::def_crud_seasons(),
     }
   }
 
@@ -257,20 +235,8 @@ impl ApiRequests {
     HttpReq::<UserQueryReq, Paginated<UserWithId>>{method : HttpMethod::Get, path : "/crud/users/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
   }
 
-  pub fn def_create_season() -> HttpReq<Season, SeasonId> {
-    HttpReq::<Season, SeasonId>{method : HttpMethod::Post, path : "/crud/seasons/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
-  }
-
-  pub fn def_update_season() -> HttpReq<WithId<SeasonId, Season>, Unit> {
-    HttpReq::<WithId<SeasonId, Season>, Unit>{method : HttpMethod::Post, path : "/crud/seasons/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
-  }
-
-  pub fn def_delete_season() -> HttpReq<SeasonId, Unit> {
-    HttpReq::<SeasonId, Unit>{method : HttpMethod::Post, path : "/crud/seasons/delete".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
-  }
-
-  pub fn def_query_seasons() -> HttpReq<SeasonQueryReq, Paginated<WithId<SeasonId, Season>>> {
-    HttpReq::<SeasonQueryReq, Paginated<WithId<SeasonId, Season>>>{method : HttpMethod::Get, path : "/crud/seasons/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}
+  pub fn def_crud_seasons() -> CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter> {
+    CrudApi::<SeasonId, Season, SeasonSorting, SeasonFilter>{create : HttpReq::<Season, SeasonId>{method : HttpMethod::Post, path : "/crud/seasons/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, update : HttpReq::<WithId<SeasonId, Season>, Unit>{method : HttpMethod::Post, path : "/crud/seasons/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, delete : HttpReq::<SeasonId, Unit>{method : HttpMethod::Post, path : "/crud/seasons/delete".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, query : HttpReq::<TabularQueryReq<SeasonSorting, SeasonFilter>, Paginated<WithId<SeasonId, Season>>>{method : HttpMethod::Get, path : "/crud/seasons/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}}
   }
 }
 
@@ -653,22 +619,4 @@ pub enum SeasonSorting {
 pub enum SeasonFilter {
   #[serde(rename="name_matches")]
   NameMatches(String),
-}
-
-pub type SeasonQueryReq = TabularQueryReq<SeasonSorting, SeasonFilter>;
-
-#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
-pub struct WithId<I, T> {
-  pub id: I,
-
-  pub value: T,
-}
-
-impl<I, T> WithId<I, T> {
-  pub fn new(id: I, value: T) -> WithId<I, T> {
-    WithId {
-      id: id,
-      value: value,
-    }
-  }
 }

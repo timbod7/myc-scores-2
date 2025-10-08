@@ -25,19 +25,19 @@ pub fn build_routes(state: AppState) -> Box<dyn DynEndpoint<Output = poem::Respo
         .adl_req(ApiRequests::def_delete_user(), handlers::users::delete_user)
         .adl_req(ApiRequests::def_query_users(), handlers::users::query_users)
         .adl_req(
-            ApiRequests::def_create_season(),
+            ApiRequests::def_crud_seasons().create,
             handlers::seasons::create_season,
         )
         .adl_req(
-            ApiRequests::def_update_season(),
+            ApiRequests::def_crud_seasons().update,
             handlers::seasons::update_season,
         )
         .adl_req(
-            ApiRequests::def_delete_season(),
+            ApiRequests::def_crud_seasons().delete,
             handlers::seasons::delete_season,
         )
         .adl_req(
-            ApiRequests::def_query_seasons(),
+            ApiRequests::def_crud_seasons().query,
             handlers::seasons::query_seasons,
         );
 

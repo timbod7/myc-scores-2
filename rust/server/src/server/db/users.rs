@@ -12,7 +12,7 @@ use adl::{
         db::{AppUser, AppUserId},
     },
 };
-use sea_query::{ColumnRef, Func, PostgresQueryBuilder, Query};
+use sea_query::{extension::postgres::PgExpr, ColumnRef, Func, PostgresQueryBuilder, Query};
 use sea_query_binder::SqlxBinder;
 use sqlx::Row;
 

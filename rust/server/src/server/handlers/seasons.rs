@@ -1,6 +1,6 @@
-use adl::gen::common::db_api::Paginated;
+use adl::gen::common::db_api::{Paginated, TabularQueryReq, WithId};
 use adl::gen::common::http::Unit;
-use adl::gen::mycscores::apis::ui::{SeasonQueryReq, WithId};
+use adl::gen::mycscores::apis::ui::{SeasonFilter, SeasonSorting};
 use adl::gen::mycscores::db::{Season, SeasonId};
 
 use crate::server::db;
@@ -25,7 +25,7 @@ pub async fn delete_season(ctx: ReqContext, i: SeasonId) -> HandlerResult<Unit> 
 
 pub async fn query_seasons(
     ctx: ReqContext,
-    i: SeasonQueryReq,
+    i: TabularQueryReq<SeasonSorting, SeasonFilter>,
 ) -> HandlerResult<Paginated<WithId<SeasonId, Season>>> {
     let users = db::seasons::query_seasons(&ctx.state.db_pool, &i).await?;
     let total_count = db::seasons::count_seasons(&ctx.state.db_pool, &i).await?;

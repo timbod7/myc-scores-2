@@ -1,7 +1,8 @@
 import { HttpSecurity, snHttpReq, texprHttpReq } from "@mycscores/adl/common/http";
-import * as API from "@mycscores/adl/mycscores/apis/ui";
 import { RESOLVER } from "@mycscores/adl/resolver";
+import * as API from "@mycscores/adl/mycscores/apis/ui";
 import * as AST from "@mycscores/adl/sys/adlast";
+import * as ATREE from "@/components/forms/model/adl-tree";
 import { texprDoc } from "@mycscores/adl/sys/annotations";
 import { createVEditor } from "@/components/forms/model/veditor/adlfactory";
 import { AdlForm, useAdlFormState } from "@/components/forms/mui/form";
@@ -118,8 +119,8 @@ export function ApiWorkbench() {
     }
   }
 
-  const loginEndpoint = endpoints.find((ep) => ep.name === "login");
-  const logoutEndpoint = endpoints.find((ep) => ep.name === "logout");
+  const loginEndpoint = endpoints.find((ep) => ep.name[0] === "login");
+  const logoutEndpoint = endpoints.find((ep) => ep.name[0] === "logout");
 
   return (
     <Container fixed>
@@ -189,8 +190,8 @@ function ModalChooseEndpoint(props: { endpoints: Endpoint[]; choose: (e: Endpoin
         <div>Select an endpoint:</div>
         <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
         {props.endpoints.map((e) => (
-          <Box key={e.name} sx={{ marginTop: "20px", marginBottom: "20px" }}>
-            <Button onClick={() => props.choose(e)}>{e.name}</Button>
+          <Box key={e.path} sx={{ marginTop: "20px", marginBottom: "20px" }}>
+            <Button onClick={() => props.choose(e)}>{e.method} {e.path}</Button>
             <Typography>{e.docString}</Typography>
           </Box>
         ))}
@@ -307,7 +308,7 @@ function CompletedRequestView<I, O>(props: {
       <Box sx={{ margin: "10px" }}>
         {resp.success ?
           <MyJsonView data={jsonO} />
-        : <Box sx={{ color: "red" }}>
+          : <Box sx={{ color: "red" }}>
             <Box>Http Status: {resp.httpStatus}</Box>
             {resp.responseBody && <Box>Body: {resp.responseBody}</Box>}
           </Box>
@@ -322,7 +323,7 @@ function MyJsonView(props: { data: Json }) {
     <Box sx={{ fontSize: "0.8rem" }}>
       {props.data === null ?
         <div>null</div>
-      : <JsonView src={props.data} />}
+        : <JsonView src={props.data} />}
     </Box>
   );
 }
@@ -377,7 +378,7 @@ async function executeRequest<I, O>(
 function updateAppState<I, O>(appState: AppState, endpoint: HttpEndpoint<I, O>, req: I, resp: O) {
   // All the endpoint handling is generic except for here, where we update the auth state when the
   // login or logout endpoints are called.
-  switch (endpoint.name) {
+  switch (endpoint.name[0]) {
     case "login":
       // Clear the password to avoid showing it on screen in the request history
       (req as API.LoginReq).password = "";
@@ -393,7 +394,7 @@ type Endpoint = HttpEndpoint<unknown, unknown>;
 type Method = "get" | "post";
 
 interface HttpEndpoint<I, O> {
-  name: string;
+  name: string[];
   path: string;
   method: Method;
   security: HttpSecurity;
@@ -405,44 +406,63 @@ interface HttpEndpoint<I, O> {
 }
 
 function getEndpoints<API>(resolver: ADL.DeclResolver, texpr: ADL.ATypeExpr<API>): Endpoint[] {
-  if (texpr.value.typeRef.kind !== "reference" || texpr.value.parameters.length != 0) {
-    throw new Error("API must be a monomorphic declaration");
+  const tree = ATREE.createAdlTree(texpr.value, resolver).details();
+  if (tree.kind !== 'struct') {
+    throw new Error("API must be a monomorphic struct declaration");
   }
-  const decl = resolver(texpr.value.typeRef.value);
-  if (decl.decl.type_.kind !== "struct_") {
-    throw new Error("API must be a struct");
-  }
-  const struct = decl.decl.type_.value;
+  const sdefault = createStructDefault(tree.fields);
+  return getEndpoints_(resolver, tree, [], sdefault);
+}
 
+function getEndpoints_(resolver: ADL.DeclResolver, struct: ATREE.Struct, namePrefix: string[], sdefault: ADL.JsonObject): Endpoint[] {
   const endpoints: Endpoint[] = [];
   for (const f of struct.fields) {
-    if (f.typeExpr.typeRef.kind === "reference") {
-      if (scopedNamesEqual(f.typeExpr.typeRef.value, snHttpReq)) {
-        endpoints.push(getHttpEndpoint(resolver, f));
+    const fTypeExpr = f.adlTree.typeExpr;
+    if (fTypeExpr.typeRef.kind === "reference") {
+      const fdefault: ADL.Json = sdefault[f.astField.serializedName];
+
+      if (scopedNamesEqual(fTypeExpr.typeRef.value, snHttpReq)) {
+        const ep = getHttpEndpoint(resolver, f, fdefault);
+        endpoints.push({ ...ep, name: [...namePrefix, ...ep.name] });
+      } else {
+        const ftree = f.adlTree.details();
+        if (ftree.kind == 'struct' ) {
+          for (const ep of getEndpoints_(resolver, ftree, [...namePrefix, f.astField.name], (fdefault as ADL.JsonObject))) {
+            endpoints.push(ep);
+          }
+        }
       }
     }
   }
   return endpoints;
 }
 
-function getHttpEndpoint<I, O>(resolver: ADL.DeclResolver, field: AST.Field): HttpEndpoint<I, O> {
-  if (field.default.kind !== "just") {
-    throw new Error("API endpoint must have a default value");
+function createStructDefault(fields: ATREE.Field[]): ADL.JsonObject {
+  const result: ADL.JsonObject = {};
+  for (const f0 of fields) {
+    const f = f0.astField;
+    if (f.default.kind === 'just') {
+      result[f.name] = f.default.value;
+    }
   }
-  const texprI = ADL.makeATypeExpr<I>(field.typeExpr.parameters[0]);
-  const texprO = ADL.makeATypeExpr<O>(field.typeExpr.parameters[1]);
+  return result;
+}
+
+function getHttpEndpoint<I, O>(resolver: ADL.DeclResolver, field: ATREE.Field, fdefault: Json): HttpEndpoint<I, O> {
+  const texprI = ADL.makeATypeExpr<I>(field.adlTree.typeExpr.parameters[0]);
+  const texprO = ADL.makeATypeExpr<O>(field.adlTree.typeExpr.parameters[1]);
 
   const jb = createJsonBinding(resolver, texprHttpReq(texprI, texprO));
-  const httpReq = jb.fromJson(field.default.value);
+  const httpReq = jb.fromJson(fdefault);
 
   const veditorI = createVEditor(texprI, resolver, UI_FACTORY);
   const veditorO = createVEditor(texprO, resolver, UI_FACTORY);
   const jsonBindingI = createJsonBinding(resolver, texprI);
   const jsonBindingO = createJsonBinding(resolver, texprO);
 
-  const docString = ADL.getAnnotation(JB_DOC, field.annotations) || "";
+  const docString = ADL.getAnnotation(JB_DOC, field.astField.annotations) || "";
   return {
-    name: field.name,
+    name: [field.astField.name],
     path: httpReq.path,
     method: httpReq.method,
     docString,

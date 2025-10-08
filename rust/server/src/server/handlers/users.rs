@@ -1,6 +1,6 @@
-use adl::gen::common::db_api::Paginated;
+use adl::gen::common::db_api::{Paginated, WithId};
 use adl::gen::common::http::Unit;
-use adl::gen::mycscores::apis::ui::{UserDetails, UserQueryReq, UserWithId, WithId};
+use adl::gen::mycscores::apis::ui::{UserDetails, UserQueryReq, UserWithId};
 use adl::gen::mycscores::db::{AppUser, AppUserId};
 
 use crate::server::db;

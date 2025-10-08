@@ -9,9 +9,11 @@ import common.strings.EmailAddress;
 import common.strings.Password;
 import common.strings.StringNE;
 import common.strings.StringML;
+import common.db_api.CrudApi;
 import common.db_api.TabularQuery;
 import common.db_api.TabularQueryReq;
 import common.db_api.Paginated;
+import common.db_api.WithId;
 
 import mycscores.db.AppUserId;
 import mycscores.db.CalendarEntry;
@@ -140,29 +142,24 @@ struct ApiRequests {
     "security" : { "tokenWithRole": "admin" }
   };
 
-  /// Create a new season
-  HttpReq<Season, SeasonId> create_season = {
-    "path": "/crud/seasons/create",
-    "security" : { "tokenWithRole": "admin" }
-  };
-
-  /// Update a season 
-  HttpReq<WithId<SeasonId,Season>, Unit> update_season = {
-    "path": "/crud/seasons/update",
-    "security" : { "tokenWithRole": "admin" }
-  };
-
-  /// Delete a season
-  HttpReq<SeasonId, Unit> delete_season = {
-    "path": "/crud/seasons/delete",
-    "security" : { "tokenWithRole": "admin" }
-  };
-
-  /// Query season
-  HttpReq<SeasonQueryReq, Paginated<WithId<SeasonId,Season>>> query_seasons = {
-    "method": "get",
-    "path": "/crud/seasons/query",
-    "security" : { "tokenWithRole": "admin" }
+  CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter> crud_seasons = {
+    "create": {
+      "path": "/crud/seasons/create",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "update": {
+      "path": "/crud/seasons/update",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "delete": {
+      "path": "/crud/seasons/delete",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "query": {
+      "method": "get",
+      "path": "/crud/seasons/query",
+      "security" : { "tokenWithRole": "admin" }
+    }
   };
 };
 
@@ -304,12 +301,4 @@ union SeasonSorting {
 union SeasonFilter {
   String name_matches;
 };
-
-type SeasonQueryReq = TabularQueryReq<SeasonSorting,SeasonFilter>;
-
-struct WithId<I,T> {
- I id;
- T value;
-};
-
 };

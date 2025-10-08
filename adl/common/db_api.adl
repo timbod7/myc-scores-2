@@ -2,6 +2,13 @@
 module common.db_api {
 
 import common.http.HttpReq;
+import common.http.Unit;
+
+struct WithId<I,T> {
+ I id;
+ T value;
+};
+
 
 type TabularQuery<S,F,T> = HttpReq<TabularQueryReq<S, F>, Paginated<T>>;
   
@@ -52,5 +59,20 @@ struct Paginated<T> {
   /// The size of the entire date set
   Word64 total_count;
 };
+
+struct CrudApi<I,T,S,F> {
+  // Create a row
+  HttpReq<T, I> create;
+
+  // Update a row
+  HttpReq<WithId<I,T>, Unit> update;
+
+  // Delete a row
+  HttpReq<I, Unit> delete;
+
+  // Query matching rows
+  HttpReq<TabularQueryReq<S,F>, Paginated<WithId<I,T>>> query;
+};
+
 
 };

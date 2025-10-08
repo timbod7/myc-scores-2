@@ -64,7 +64,7 @@ export interface ApiRequests {
   /**
    * Update a user
    */
-  update_user: common_http.HttpReq<WithId<mycscores_db.AppUserId, UserDetails>, common_http.Unit>;
+  update_user: common_http.HttpReq<common_db_api.WithId<mycscores_db.AppUserId, UserDetails>, common_http.Unit>;
   /**
    * Delete a user
    */
@@ -73,22 +73,7 @@ export interface ApiRequests {
    * Query users
    */
   query_users: common_http.HttpReq<UserQueryReq, common_db_api.Paginated<UserWithId>>;
-  /**
-   * Create a new season
-   */
-  create_season: common_http.HttpReq<mycscores_db.Season, mycscores_db.SeasonId>;
-  /**
-   * Update a season 
-   */
-  update_season: common_http.HttpReq<WithId<mycscores_db.SeasonId, mycscores_db.Season>, common_http.Unit>;
-  /**
-   * Delete a season
-   */
-  delete_season: common_http.HttpReq<mycscores_db.SeasonId, common_http.Unit>;
-  /**
-   * Query season
-   */
-  query_seasons: common_http.HttpReq<SeasonQueryReq, common_db_api.Paginated<WithId<mycscores_db.SeasonId, mycscores_db.Season>>>;
+  crud_seasons: common_db_api.CrudApi<mycscores_db.SeasonId, mycscores_db.Season, SeasonSorting, SeasonFilter>;
 }
 
 export function makeApiRequests(
@@ -107,13 +92,10 @@ export function makeApiRequests(
     getSeasonEventResults?: common_http.HttpReq<mycscores_db.SeasonId, EventResults[]>,
     getSeriesResults?: common_http.HttpReq<mycscores_db.SeriesId, GetSeriesResultsResp>,
     create_user?: common_http.HttpReq<UserDetails, mycscores_db.AppUserId>,
-    update_user?: common_http.HttpReq<WithId<mycscores_db.AppUserId, UserDetails>, common_http.Unit>,
+    update_user?: common_http.HttpReq<common_db_api.WithId<mycscores_db.AppUserId, UserDetails>, common_http.Unit>,
     delete_user?: common_http.HttpReq<mycscores_db.AppUserId, common_http.Unit>,
     query_users?: common_http.HttpReq<UserQueryReq, common_db_api.Paginated<UserWithId>>,
-    create_season?: common_http.HttpReq<mycscores_db.Season, mycscores_db.SeasonId>,
-    update_season?: common_http.HttpReq<WithId<mycscores_db.SeasonId, mycscores_db.Season>, common_http.Unit>,
-    delete_season?: common_http.HttpReq<mycscores_db.SeasonId, common_http.Unit>,
-    query_seasons?: common_http.HttpReq<SeasonQueryReq, common_db_api.Paginated<WithId<mycscores_db.SeasonId, mycscores_db.Season>>>,
+    crud_seasons?: common_db_api.CrudApi<mycscores_db.SeasonId, mycscores_db.Season, SeasonSorting, SeasonFilter>,
   }
 ): ApiRequests {
   return {
@@ -131,18 +113,15 @@ export function makeApiRequests(
     getSeasonEventResults: input.getSeasonEventResults === undefined ? {method : "post", path : "/results/season-events", security : {kind : "public"}, reqType : mycscores_db.texprSeasonId(), respType : ADL.texprVector(texprEventResults())} : input.getSeasonEventResults,
     getSeriesResults: input.getSeriesResults === undefined ? {method : "post", path : "/results/series", security : {kind : "public"}, reqType : mycscores_db.texprSeriesId(), respType : texprGetSeriesResultsResp()} : input.getSeriesResults,
     create_user: input.create_user === undefined ? {method : "post", path : "/crud/users/create", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprUserDetails(), respType : mycscores_db.texprAppUserId()} : input.create_user,
-    update_user: input.update_user === undefined ? {method : "post", path : "/crud/users/update", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprWithId(mycscores_db.texprAppUserId(), texprUserDetails()), respType : common_http.texprUnit()} : input.update_user,
+    update_user: input.update_user === undefined ? {method : "post", path : "/crud/users/update", security : {kind : "tokenWithRole", value : "admin"}, reqType : common_db_api.texprWithId(mycscores_db.texprAppUserId(), texprUserDetails()), respType : common_http.texprUnit()} : input.update_user,
     delete_user: input.delete_user === undefined ? {method : "post", path : "/crud/users/delete", security : {kind : "tokenWithRole", value : "admin"}, reqType : mycscores_db.texprAppUserId(), respType : common_http.texprUnit()} : input.delete_user,
     query_users: input.query_users === undefined ? {method : "get", path : "/crud/users/query", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprUserQueryReq(), respType : common_db_api.texprPaginated(texprUserWithId())} : input.query_users,
-    create_season: input.create_season === undefined ? {method : "post", path : "/crud/seasons/create", security : {kind : "tokenWithRole", value : "admin"}, reqType : mycscores_db.texprSeason(), respType : mycscores_db.texprSeasonId()} : input.create_season,
-    update_season: input.update_season === undefined ? {method : "post", path : "/crud/seasons/update", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprWithId(mycscores_db.texprSeasonId(), mycscores_db.texprSeason()), respType : common_http.texprUnit()} : input.update_season,
-    delete_season: input.delete_season === undefined ? {method : "post", path : "/crud/seasons/delete", security : {kind : "tokenWithRole", value : "admin"}, reqType : mycscores_db.texprSeasonId(), respType : common_http.texprUnit()} : input.delete_season,
-    query_seasons: input.query_seasons === undefined ? {method : "get", path : "/crud/seasons/query", security : {kind : "tokenWithRole", value : "admin"}, reqType : texprSeasonQueryReq(), respType : common_db_api.texprPaginated(texprWithId(mycscores_db.texprSeasonId(), mycscores_db.texprSeason()))} : input.query_seasons,
+    crud_seasons: input.crud_seasons === undefined ? {create : {method : "post", path : "/crud/seasons/create", security : {kind : "tokenWithRole", value : "admin"}, reqType : mycscores_db.texprSeason(), respType : mycscores_db.texprSeasonId()}, update : {method : "post", path : "/crud/seasons/update", security : {kind : "tokenWithRole", value : "admin"}, reqType : common_db_api.texprWithId(mycscores_db.texprSeasonId(), mycscores_db.texprSeason()), respType : common_http.texprUnit()}, delete : {method : "post", path : "/crud/seasons/delete", security : {kind : "tokenWithRole", value : "admin"}, reqType : mycscores_db.texprSeasonId(), respType : common_http.texprUnit()}, query : {method : "get", path : "/crud/seasons/query", security : {kind : "tokenWithRole", value : "admin"}, reqType : common_db_api.texprTabularQueryReq(texprSeasonSorting(), texprSeasonFilter()), respType : common_db_api.texprPaginated(common_db_api.texprWithId(mycscores_db.texprSeasonId(), mycscores_db.texprSeason()))}} : input.crud_seasons,
   };
 }
 
 const ApiRequests_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"method":"get","path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets info about the logged in user\n"}],"default":{"kind":"just","value":{"method":"get","path":"/whoami","security":"token"}},"name":"who_am_i","serializedName":"who_am_i","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"just","value":{"path":"/seasons","security":"public"}},"name":"seasons","serializedName":"seasons","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonDetails"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"just","value":{"path":"/race-schedule","security":"public"}},"name":"raceSchedule","serializedName":"raceSchedule","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceScheduleResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch the entrants for a race\n"}],"default":{"kind":"just","value":{"path":"/raceentrants-get","security":"public"}},"name":"getRaceEntrants","serializedName":"getRaceEntrants","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceEntrant"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch the results for a race\n"}],"default":{"kind":"just","value":{"path":"/results/race","security":"public"}},"name":"getRaceResults","serializedName":"getRaceResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetRaceResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Set/update the results for a race\n"}],"default":{"kind":"just","value":{"path":"/results/race/update","security":"token"}},"name":"updateRaceResults","serializedName":"updateRaceResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UpdateRaceResultsReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for an event\n"}],"default":{"kind":"just","value":{"path":"/results/event","security":"public"}},"name":"getEventResults","serializedName":"getEventResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetEventResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for all events in a season\n"}],"default":{"kind":"just","value":{"path":"/results/season-events","security":"public"}},"name":"getSeasonEventResults","serializedName":"getSeasonEventResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EventResults"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for a series\n"}],"default":{"kind":"just","value":{"path":"/results/series","security":"public"}},"name":"getSeriesResults","serializedName":"getSeriesResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetSeriesResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/create","security":{"tokenWithRole":"admin"}}},"name":"create_user","serializedName":"create_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/update","security":{"tokenWithRole":"admin"}}},"name":"update_user","serializedName":"update_user","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Delete a user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/delete","security":{"tokenWithRole":"admin"}}},"name":"delete_user","serializedName":"delete_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query users\n"}],"default":{"kind":"just","value":{"method":"get","path":"/crud/users/query","security":{"tokenWithRole":"admin"}}},"name":"query_users","serializedName":"query_users","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserQueryReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new season\n"}],"default":{"kind":"just","value":{"path":"/crud/seasons/create","security":{"tokenWithRole":"admin"}}},"name":"create_season","serializedName":"create_season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a season \n"}],"default":{"kind":"just","value":{"path":"/crud/seasons/update","security":{"tokenWithRole":"admin"}}},"name":"update_season","serializedName":"update_season","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Delete a season\n"}],"default":{"kind":"just","value":{"path":"/crud/seasons/delete","security":{"tokenWithRole":"admin"}}},"name":"delete_season","serializedName":"delete_season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query season\n"}],"default":{"kind":"just","value":{"method":"get","path":"/crud/seasons/query","security":{"tokenWithRole":"admin"}}},"name":"query_seasons","serializedName":"query_seasons","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonQueryReq"}}},{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"ApiRequests","type_":{"kind":"struct_","value":{"fields":[{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"AWS default compatible health check\n"}],"default":{"kind":"just","value":{"method":"get","path":"/","security":"public"}},"name":"healthy","serializedName":"healthy","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Login a user\n\nThe response will set an httpOnly cookie containing the refresh token\n"}],"default":{"kind":"just","value":{"path":"/login","security":"public"}},"name":"login","serializedName":"login","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"LoginResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Get a refreshed access token\n\nIf the refresh token is not provided in the request body, then it will\nbe read from the refrestToken cookie in the request.\n"}],"default":{"kind":"just","value":{"path":"/refresh","security":"public"}},"name":"refresh","serializedName":"refresh","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RefreshResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Clear the `refreshToken` cookie.\n"}],"default":{"kind":"just","value":{"path":"/logout","security":"public"}},"name":"logout","serializedName":"logout","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Gets info about the logged in user\n"}],"default":{"kind":"just","value":{"method":"get","path":"/whoami","security":"token"}},"name":"who_am_i","serializedName":"who_am_i","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"just","value":{"path":"/seasons","security":"public"}},"name":"seasons","serializedName":"seasons","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"primitive","value":"Void"}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonDetails"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"just","value":{"path":"/race-schedule","security":"public"}},"name":"raceSchedule","serializedName":"raceSchedule","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceScheduleResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch the entrants for a race\n"}],"default":{"kind":"just","value":{"path":"/raceentrants-get","security":"public"}},"name":"getRaceEntrants","serializedName":"getRaceEntrants","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceEntrant"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch the results for a race\n"}],"default":{"kind":"just","value":{"path":"/results/race","security":"public"}},"name":"getRaceResults","serializedName":"getRaceResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetRaceResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Set/update the results for a race\n"}],"default":{"kind":"just","value":{"path":"/results/race/update","security":"token"}},"name":"updateRaceResults","serializedName":"updateRaceResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UpdateRaceResultsReq"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for an event\n"}],"default":{"kind":"just","value":{"path":"/results/event","security":"public"}},"name":"getEventResults","serializedName":"getEventResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetEventResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for all events in a season\n"}],"default":{"kind":"just","value":{"path":"/results/season-events","security":"public"}},"name":"getSeasonEventResults","serializedName":"getSeasonEventResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EventResults"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Fetch results for a series\n"}],"default":{"kind":"just","value":{"path":"/results/series","security":"public"}},"name":"getSeriesResults","serializedName":"getSeriesResults","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"GetSeriesResultsResp"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Create a new user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/create","security":{"tokenWithRole":"admin"}}},"name":"create_user","serializedName":"create_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Update a user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/update","security":{"tokenWithRole":"admin"}}},"name":"update_user","serializedName":"update_user","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserDetails"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Delete a user\n"}],"default":{"kind":"just","value":{"path":"/crud/users/delete","security":{"tokenWithRole":"admin"}}},"name":"delete_user","serializedName":"delete_user","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"Unit"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[{"key":{"moduleName":"sys.annotations","name":"Doc"},"value":"Query users\n"}],"default":{"kind":"just","value":{"method":"get","path":"/crud/users/query","security":{"tokenWithRole":"admin"}}},"name":"query_users","serializedName":"query_users","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserQueryReq"}}},{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"UserWithId"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"Paginated"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.http","name":"HttpReq"}}}},{"annotations":[],"default":{"kind":"just","value":{"create":{"path":"/crud/seasons/create","security":{"tokenWithRole":"admin"}},"delete":{"path":"/crud/seasons/delete","security":{"tokenWithRole":"admin"}},"query":{"method":"get","path":"/crud/seasons/query","security":{"tokenWithRole":"admin"}},"update":{"path":"/crud/seasons/update","security":{"tokenWithRole":"admin"}}}},"name":"crud_seasons","serializedName":"crud_seasons","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonSorting"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonFilter"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"CrudApi"}}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snApiRequests: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"ApiRequests"};
 
@@ -278,14 +257,14 @@ export function texprLoginTokens(): ADL.ATypeExpr<LoginTokens> {
 }
 
 export interface SeasonDetails {
-  season: WithId<mycscores_db.SeasonId, mycscores_db.Season>;
-  series: WithId<mycscores_db.SeriesId, mycscores_db.Series>[];
+  season: common_db_api.WithId<mycscores_db.SeasonId, mycscores_db.Season>;
+  series: common_db_api.WithId<mycscores_db.SeriesId, mycscores_db.Series>[];
 }
 
 export function makeSeasonDetails(
   input: {
-    season: WithId<mycscores_db.SeasonId, mycscores_db.Season>,
-    series: WithId<mycscores_db.SeriesId, mycscores_db.Series>[],
+    season: common_db_api.WithId<mycscores_db.SeasonId, mycscores_db.Season>,
+    series: common_db_api.WithId<mycscores_db.SeriesId, mycscores_db.Series>[],
   }
 ): SeasonDetails {
   return {
@@ -295,7 +274,7 @@ export function makeSeasonDetails(
 }
 
 const SeasonDetails_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"SeasonDetails","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season","serializedName":"season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"series","serializedName":"series","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Series"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"SeasonDetails","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season","serializedName":"season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"series","serializedName":"series","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Series"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snSeasonDetails: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"SeasonDetails"};
 
@@ -307,7 +286,7 @@ export interface RaceScheduleEntry {
   race_id: mycscores_db.RaceId;
   date: common_time.LocalDate;
   race_number: number;
-  events: WithId<mycscores_db.EventId, mycscores_db.Event>[];
+  events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[];
   duty_officer: string;
 }
 
@@ -316,7 +295,7 @@ export function makeRaceScheduleEntry(
     race_id: mycscores_db.RaceId,
     date: common_time.LocalDate,
     race_number: number,
-    events: WithId<mycscores_db.EventId, mycscores_db.Event>[],
+    events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[],
     duty_officer: string,
   }
 ): RaceScheduleEntry {
@@ -330,7 +309,7 @@ export function makeRaceScheduleEntry(
 }
 
 const RaceScheduleEntry_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"RaceScheduleEntry","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"race_number","serializedName":"race_number","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"duty_officer","serializedName":"duty_officer","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"RaceScheduleEntry","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"race_id","serializedName":"race_id","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"RaceId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"date","serializedName":"date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"race_number","serializedName":"race_number","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Word8"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"duty_officer","serializedName":"duty_officer","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"String"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snRaceScheduleEntry: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"RaceScheduleEntry"};
 
@@ -339,14 +318,14 @@ export function texprRaceScheduleEntry(): ADL.ATypeExpr<RaceScheduleEntry> {
 }
 
 export interface RaceEntrant {
-  entrant: WithId<mycscores_db.EntrantId, mycscores_db.Entrant>;
+  entrant: common_db_api.WithId<mycscores_db.EntrantId, mycscores_db.Entrant>;
   handicap: number;
   handicap_secs: number;
 }
 
 export function makeRaceEntrant(
   input: {
-    entrant: WithId<mycscores_db.EntrantId, mycscores_db.Entrant>,
+    entrant: common_db_api.WithId<mycscores_db.EntrantId, mycscores_db.Entrant>,
     handicap: number,
     handicap_secs: number,
   }
@@ -359,7 +338,7 @@ export function makeRaceEntrant(
 }
 
 const RaceEntrant_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"RaceEntrant","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrant","serializedName":"entrant","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Entrant"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_secs","serializedName":"handicap_secs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"RaceEntrant","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"entrant","serializedName":"entrant","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Entrant"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap","serializedName":"handicap","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"handicap_secs","serializedName":"handicap_secs","typeExpr":{"parameters":[],"typeRef":{"kind":"primitive","value":"Double"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snRaceEntrant: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"RaceEntrant"};
 
@@ -459,7 +438,7 @@ export function texprRaceStartDetails(): ADL.ATypeExpr<RaceStartDetails> {
 
 export interface GetRaceResultsResp {
   scheduled_date: common_time.LocalDate;
-  events: WithId<mycscores_db.EventId, mycscores_db.Event>[];
+  events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[];
   start_details: (RaceStartDetails|null);
   results: EntrantRaceResult[];
 }
@@ -467,7 +446,7 @@ export interface GetRaceResultsResp {
 export function makeGetRaceResultsResp(
   input: {
     scheduled_date: common_time.LocalDate,
-    events: WithId<mycscores_db.EventId, mycscores_db.Event>[],
+    events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[],
     start_details: (RaceStartDetails|null),
     results: EntrantRaceResult[],
   }
@@ -481,7 +460,7 @@ export function makeGetRaceResultsResp(
 }
 
 const GetRaceResultsResp_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"GetRaceResultsResp","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"scheduled_date","serializedName":"scheduled_date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"start_details","serializedName":"start_details","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceStartDetails"}}}],"typeRef":{"kind":"primitive","value":"Nullable"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"results","serializedName":"results","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EntrantRaceResult"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"GetRaceResultsResp","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"scheduled_date","serializedName":"scheduled_date","typeExpr":{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"common.time","name":"LocalDate"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"start_details","serializedName":"start_details","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"RaceStartDetails"}}}],"typeRef":{"kind":"primitive","value":"Nullable"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"results","serializedName":"results","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EntrantRaceResult"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snGetRaceResultsResp: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"GetRaceResultsResp"};
 
@@ -574,19 +553,19 @@ export function texprEntrantSeriesResult(): ADL.ATypeExpr<EntrantSeriesResult> {
 }
 
 export interface GetSeriesResultsResp {
-  season: WithId<mycscores_db.SeasonId, mycscores_db.Season>;
-  series: WithId<mycscores_db.SeriesId, mycscores_db.Series>;
-  events: WithId<mycscores_db.EventId, mycscores_db.Event>[];
-  entrants: WithId<mycscores_db.EntrantId, mycscores_db.Entrant>[];
+  season: common_db_api.WithId<mycscores_db.SeasonId, mycscores_db.Season>;
+  series: common_db_api.WithId<mycscores_db.SeriesId, mycscores_db.Series>;
+  events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[];
+  entrants: common_db_api.WithId<mycscores_db.EntrantId, mycscores_db.Entrant>[];
   results: EntrantSeriesResult[];
 }
 
 export function makeGetSeriesResultsResp(
   input: {
-    season: WithId<mycscores_db.SeasonId, mycscores_db.Season>,
-    series: WithId<mycscores_db.SeriesId, mycscores_db.Series>,
-    events: WithId<mycscores_db.EventId, mycscores_db.Event>[],
-    entrants: WithId<mycscores_db.EntrantId, mycscores_db.Entrant>[],
+    season: common_db_api.WithId<mycscores_db.SeasonId, mycscores_db.Season>,
+    series: common_db_api.WithId<mycscores_db.SeriesId, mycscores_db.Series>,
+    events: common_db_api.WithId<mycscores_db.EventId, mycscores_db.Event>[],
+    entrants: common_db_api.WithId<mycscores_db.EntrantId, mycscores_db.Entrant>[],
     results: EntrantSeriesResult[],
   }
 ): GetSeriesResultsResp {
@@ -600,7 +579,7 @@ export function makeGetSeriesResultsResp(
 }
 
 const GetSeriesResultsResp_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"GetSeriesResultsResp","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season","serializedName":"season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"series","serializedName":"series","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Series"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrants","serializedName":"entrants","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Entrant"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"results","serializedName":"results","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EntrantSeriesResult"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"GetSeriesResultsResp","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"season","serializedName":"season","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeasonId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Season"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"series","serializedName":"series","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"SeriesId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Series"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}},{"annotations":[],"default":{"kind":"nothing"},"name":"events","serializedName":"events","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EventId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Event"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"entrants","serializedName":"entrants","typeExpr":{"parameters":[{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"EntrantId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"Entrant"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"results","serializedName":"results","typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"EntrantSeriesResult"}}}],"typeRef":{"kind":"primitive","value":"Vector"}}}],"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snGetSeriesResultsResp: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"GetSeriesResultsResp"};
 
@@ -666,10 +645,10 @@ export function texprUser(): ADL.ATypeExpr<User> {
   return {value : {typeRef : {kind: "reference", value : snUser}, parameters : []}};
 }
 
-export type UserWithId = WithId<mycscores_db.AppUserId, User>;
+export type UserWithId = common_db_api.WithId<mycscores_db.AppUserId, User>;
 
 const UserWithId_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"UserWithId","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"User"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"WithId"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
+  {"decl":{"annotations":[],"name":"UserWithId","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.db","name":"AppUserId"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"User"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"WithId"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
 
 export const snUserWithId: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"UserWithId"};
 
@@ -788,43 +767,6 @@ export function texprSeasonFilter(): ADL.ATypeExpr<SeasonFilter> {
   return {value : {typeRef : {kind: "reference", value : snSeasonFilter}, parameters : []}};
 }
 
-export type SeasonQueryReq = common_db_api.TabularQueryReq<SeasonSorting, SeasonFilter>;
-
-const SeasonQueryReq_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"SeasonQueryReq","type_":{"kind":"type_","value":{"typeExpr":{"parameters":[{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonSorting"}}},{"parameters":[],"typeRef":{"kind":"reference","value":{"moduleName":"mycscores.apis.ui","name":"SeasonFilter"}}}],"typeRef":{"kind":"reference","value":{"moduleName":"common.db_api","name":"TabularQueryReq"}}},"typeParams":[]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
-
-export const snSeasonQueryReq: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"SeasonQueryReq"};
-
-export function texprSeasonQueryReq(): ADL.ATypeExpr<SeasonQueryReq> {
-  return {value : {typeRef : {kind: "reference", value : snSeasonQueryReq}, parameters : []}};
-}
-
-export interface WithId<I, T> {
-  id: I;
-  value: T;
-}
-
-export function makeWithId<I, T>(
-  input: {
-    id: I,
-    value: T,
-  }
-): WithId<I, T> {
-  return {
-    id: input.id,
-    value: input.value,
-  };
-}
-
-const WithId_AST : ADL.ScopedDecl =
-  {"decl":{"annotations":[],"name":"WithId","type_":{"kind":"struct_","value":{"fields":[{"annotations":[],"default":{"kind":"nothing"},"name":"id","serializedName":"id","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"I"}}},{"annotations":[],"default":{"kind":"nothing"},"name":"value","serializedName":"value","typeExpr":{"parameters":[],"typeRef":{"kind":"typeParam","value":"T"}}}],"typeParams":["I","T"]}},"version":{"kind":"nothing"}},"moduleName":"mycscores.apis.ui"};
-
-export const snWithId: ADL.ScopedName = {moduleName:"mycscores.apis.ui", name:"WithId"};
-
-export function texprWithId<I, T>(texprI : ADL.ATypeExpr<I>, texprT : ADL.ATypeExpr<T>): ADL.ATypeExpr<WithId<I, T>> {
-  return {value : {typeRef : {kind: "reference", value : {moduleName : "mycscores.apis.ui",name : "WithId"}}, parameters : [texprI.value, texprT.value]}};
-}
-
 export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "mycscores.apis.ui.ApiRequests" : ApiRequests_AST,
   "mycscores.apis.ui.LoginReq" : LoginReq_AST,
@@ -851,7 +793,5 @@ export const _AST_MAP: { [key: string]: ADL.ScopedDecl } = {
   "mycscores.apis.ui.UserQueryReq" : UserQueryReq_AST,
   "mycscores.apis.ui.UserDetails" : UserDetails_AST,
   "mycscores.apis.ui.SeasonSorting" : SeasonSorting_AST,
-  "mycscores.apis.ui.SeasonFilter" : SeasonFilter_AST,
-  "mycscores.apis.ui.SeasonQueryReq" : SeasonQueryReq_AST,
-  "mycscores.apis.ui.WithId" : WithId_AST
+  "mycscores.apis.ui.SeasonFilter" : SeasonFilter_AST
 };
