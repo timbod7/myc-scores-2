@@ -1,7 +1,6 @@
 import { HttpSecurity, snHttpReq, texprHttpReq } from "@mycscores/adl/common/http";
 import { RESOLVER } from "@mycscores/adl/resolver";
 import * as API from "@mycscores/adl/mycscores/apis/ui";
-import * as AST from "@mycscores/adl/sys/adlast";
 import * as ATREE from "@/components/forms/model/adl-tree";
 import { texprDoc } from "@mycscores/adl/sys/annotations";
 import { createVEditor } from "@/components/forms/model/veditor/adlfactory";
@@ -13,7 +12,7 @@ import { AppState, AuthState, useAppState } from "@/hooks/use-app-state";
 import { AdlRequestError, encodeQueryString, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
-import { Box, Button, Card, CircularProgress, Container, Divider, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, CircularProgress, Container, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -25,7 +24,7 @@ type ModalState = ChooseEndpoint | CreateRequest<unknown>;
 
 interface ChooseEndpoint {
   state: "choose-endpoint";
-  endpoints: Endpoint[];
+  endpoints: EndpointTree
 }
 
 interface CreateRequest<I> {
@@ -59,11 +58,12 @@ export function ApiWorkbench() {
     const allEndpoints = getEndpoints(RESOLVER, API.texprApiRequests());
 
     // only show endpoints accessible for the current authstate
-    return allEndpoints.filter(
-      (ep) =>
+    return filterEndpointTree(allEndpoints,
+      ep => !!(
         ep.security.kind === "public" ||
         (ep.security.kind === "token" && authState.kind == "auth") ||
-        (ep.security.kind === "tokenWithRole" && jwt_decoded && ep.security.value === jwt_decoded.role),
+        (ep.security.kind === "tokenWithRole" && jwt_decoded && ep.security.value === jwt_decoded.role)
+      )
     );
   }, [authState]);
 
@@ -125,8 +125,8 @@ export function ApiWorkbench() {
     }
   }
 
-  const loginEndpoint = endpoints.find((ep) => ep.name[0] === "login");
-  const logoutEndpoint = endpoints.find((ep) => ep.name[0] === "logout");
+  const loginEndpoint: Endpoint | undefined = findEndpoints(endpoints, ep => ep.name[0] === "login")[0];
+  const logoutEndpoint: Endpoint | undefined = findEndpoints(endpoints, ep => ep.name[0] === "logout")[0];
 
   return (
     <Container fixed>
@@ -150,7 +150,7 @@ export function ApiWorkbench() {
             key={i}
             isLast={i === prevRequests.length - 1}
             value={value}
-            refresh={(cr) => refreshCompleted(i,cr)}
+            refresh={(cr) => refreshCompleted(i, cr)}
             reexecute={reexecuteCompleted}
             remove={() => removeCompleted(i)}
           />
@@ -191,24 +191,53 @@ function LoginLogoutButton(props: { authState: AuthState; login: () => void; log
   }
 }
 
-function ModalChooseEndpoint(props: { endpoints: Endpoint[]; choose: (e: Endpoint) => void; cancel: () => void }) {
+function ModalChooseEndpoint(props: { endpoints: EndpointTree; choose: (e: Endpoint) => void; cancel: () => void }) {
+  const choose = props.choose;
+
+  function EndpointBox(props: { endpoint: Endpoint }) {
+    const e = props.endpoint;
+    return (
+      <Box key={e.path} sx={{ marginTop: "20px", marginBottom: "20px" }}>
+        <Button variant="outlined" sx={{ textTransform: "none" }} onClick={() => choose(e)}>
+          {e.method.toUpperCase()} {e.path}
+        </Button>
+        <Typography>{e.docString}</Typography>
+      </Box>
+    )
+  }
+
+  function EndpointGroupCard(props: { name: string, docString: string, subtree: EndpointTree }) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography>{props.docString}</Typography>
+          <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
+          {props.subtree.map((e, i) => <EndpointTreeItem key={i} item={e} />)}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  function EndpointTreeItem(props: { item: EndpointTreeItem }) {
+    if (props.item.kind === 'endpoint') {
+      return <EndpointBox endpoint={props.item.endpoint} />
+    } else {
+      return <EndpointGroupCard {...props.item} />
+    }
+  }
+
   return (
     <Modal onClickBackground={() => props.cancel()}>
       <div>
         <div>Select an endpoint:</div>
         <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
-        {props.endpoints.map((e) => (
-          <Box key={e.path} sx={{ marginTop: "20px", marginBottom: "20px" }}>
-            <Button variant="outlined" sx={{ textTransform: "none" }} onClick={() => props.choose(e)}>
-              {e.method.toUpperCase()} {e.path}
-            </Button>
-            <Typography>{e.docString}</Typography>
-          </Box>
-        ))}
+        {props.endpoints.map((e, i) => <EndpointTreeItem key={i} item={e} />)}
       </div>
     </Modal>
   );
 }
+
+
 
 function ModalCreateRequest<I, O>(props: {
   endpoint: HttpEndpoint<I, O>;
@@ -413,7 +442,15 @@ function updateAppState<I, O>(appState: AppState, endpoint: HttpEndpoint<I, O>, 
   }
 }
 
+type EndpointTree = EndpointTreeItem[];
+
+type EndpointTreeItem =
+  | { kind: 'endpoint', endpoint: Endpoint }
+  | { kind: 'subtree', name: string, docString: string, subtree: EndpointTree }
+  ;
+
 type Endpoint = HttpEndpoint<unknown, unknown>;
+
 type Method = "get" | "post";
 
 interface HttpEndpoint<I, O> {
@@ -428,35 +465,44 @@ interface HttpEndpoint<I, O> {
   jsonBindingO: JsonBinding<O>;
 }
 
-function getEndpoints<API>(resolver: ADL.DeclResolver, texpr: ADL.ATypeExpr<API>): Endpoint[] {
+function getEndpoints<API>(resolver: ADL.DeclResolver, texpr: ADL.ATypeExpr<API>): EndpointTree {
   const tree = ATREE.createAdlTree(texpr.value, resolver).details();
   if (tree.kind !== 'struct') {
     throw new Error("API must be a monomorphic struct declaration");
   }
   const sdefault = createStructDefault(tree.fields);
-  return getEndpoints_(resolver, tree, [], sdefault);
+  return getEndpoints_(resolver, tree, sdefault);
 }
 
-function getEndpoints_(resolver: ADL.DeclResolver, struct: ATREE.Struct, namePrefix: string[], sdefault: ADL.JsonObject): Endpoint[] {
-  const endpoints: Endpoint[] = [];
+function getEndpoints_(resolver: ADL.DeclResolver, struct: ATREE.Struct, sdefault: ADL.JsonObject): EndpointTree {
+  const endpoints: EndpointTree = [];
   for (const f of struct.fields) {
     const fTypeExpr = f.adlTree.typeExpr;
     if (fTypeExpr.typeRef.kind === "reference") {
       const fdefault: ADL.Json = sdefault[f.astField.serializedName];
 
       if (scopedNamesEqual(fTypeExpr.typeRef.value, snHttpReq)) {
-        const ep = getHttpEndpoint(resolver, f, fdefault);
-        endpoints.push({ ...ep, name: [...namePrefix, ...ep.name] });
+        const endpoint = getHttpEndpoint(resolver, f, fdefault);
+        endpoints.push({
+          kind: 'endpoint',
+          endpoint
+        });
       } else {
         const ftree = f.adlTree.details();
         if (ftree.kind == 'struct') {
-          for (const ep of getEndpoints_(resolver, ftree, [...namePrefix, f.astField.name], (fdefault as ADL.JsonObject))) {
-            endpoints.push(ep);
-          }
+          const docString = ADL.getAnnotation(JB_DOC, f.astField.annotations) || "";
+          const subtree = getEndpoints_(resolver, ftree, (fdefault as ADL.JsonObject));
+          endpoints.push({
+            kind: 'subtree',
+            name: f.astField.name,
+            subtree,
+            docString
+          });
         }
       }
     }
   }
+  // Fixme 
   return endpoints;
 }
 
@@ -495,6 +541,38 @@ function getHttpEndpoint<I, O>(resolver: ADL.DeclResolver, field: ATREE.Field, f
     jsonBindingI,
     jsonBindingO,
   };
+}
+
+function filterEndpointTree(tree: EndpointTree, efn: (ep: Endpoint) => boolean): EndpointTree {
+  const result: EndpointTree = [];
+  for (const ei of tree) {
+    if (ei.kind === 'endpoint' && efn(ei.endpoint)) {
+      result.push(ei);
+    }
+    if (ei.kind === 'subtree') {
+      const subtree = filterEndpointTree(ei.subtree, efn);
+      if (subtree.length > 0) {
+        result.push({ ...ei, subtree });
+      }
+    }
+  }
+  return result;
+}
+
+function findEndpoints(tree: EndpointTree, efn: (ep: Endpoint) => boolean): Endpoint[] {
+  const result: Endpoint[] = [];
+  for (const ei of tree) {
+    if (ei.kind === 'endpoint' && efn(ei.endpoint)) {
+      result.push(ei.endpoint);
+    }
+    if (ei.kind === 'subtree') {
+      const endpoints = findEndpoints(ei.subtree, efn);
+      for (const ep of endpoints) {
+        result.push(ep);
+      }
+    }
+  }
+  return result;
 }
 
 function endpointHasReqContent(_endpoint: Endpoint): boolean {

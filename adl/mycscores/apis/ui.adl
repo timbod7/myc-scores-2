@@ -142,6 +142,7 @@ struct ApiRequests {
     "security" : { "tokenWithRole": "admin" }
   };
 
+  /// CRUD operations for seasons
   CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter> crud_seasons = {
     "create": {
       "path": "/crud/seasons/create",

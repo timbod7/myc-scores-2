@@ -139,6 +139,9 @@ pub struct ApiRequests {
   #[serde(default="ApiRequests::def_query_users")]
   pub query_users: HttpReq<UserQueryReq, Paginated<UserWithId>>,
 
+  /**
+   * CRUD operations for seasons
+   */
   #[serde(default="ApiRequests::def_crud_seasons")]
   pub crud_seasons: CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter>,
 }
