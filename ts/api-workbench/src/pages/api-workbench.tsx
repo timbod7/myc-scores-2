@@ -13,9 +13,10 @@ import { AppState, AuthState, useAppState } from "@/hooks/use-app-state";
 import { AdlRequestError, encodeQueryString, ServiceBase } from "@/service/service-base";
 import * as ADL from "@adllang/adl-runtime";
 import { Json, JsonBinding, createJsonBinding, scopedNamesEqual } from "@adllang/adl-runtime";
-import { Box, Button, Card, CircularProgress, Container, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Container, Divider, IconButton, Tooltip, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { JSX, useMemo, useRef, useState } from "react";
 import JsonView from "react18-json-view";
 import "react18-json-view/src/style.css";
@@ -95,6 +96,11 @@ export function ApiWorkbench() {
     setModal({ state: "create-request", endpoint: completed.endpoint, initial: completed.req });
   }
 
+  async function refreshCompleted<I, O>(ci: number, completed: CompletedRequest<I, O>) {
+    removeCompleted(ci);
+    reexecuteCompleted(completed);
+  }
+
   function renderModal(): JSX.Element | undefined {
     if (modal) {
       switch (modal.state) {
@@ -142,7 +148,9 @@ export function ApiWorkbench() {
         {prevRequests.map((value, i) => (
           <CompletedRequestView
             key={i}
+            isLast={i === prevRequests.length - 1}
             value={value}
+            refresh={(cr) => refreshCompleted(i,cr)}
             reexecute={reexecuteCompleted}
             remove={() => removeCompleted(i)}
           />
@@ -191,7 +199,9 @@ function ModalChooseEndpoint(props: { endpoints: Endpoint[]; choose: (e: Endpoin
         <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
         {props.endpoints.map((e) => (
           <Box key={e.path} sx={{ marginTop: "20px", marginBottom: "20px" }}>
-            <Button onClick={() => props.choose(e)}>{e.method} {e.path}</Button>
+            <Button variant="outlined" sx={{ textTransform: "none" }} onClick={() => props.choose(e)}>
+              {e.method.toUpperCase()} {e.path}
+            </Button>
             <Typography>{e.docString}</Typography>
           </Box>
         ))}
@@ -217,7 +227,7 @@ function ModalCreateRequest<I, O>(props: {
   return (
     <Modal onClickBackground={() => props.cancel()}>
       <div>
-        <div>{props.endpoint.name}</div>
+        <div>{props.endpoint.method.toUpperCase()} {props.endpoint.path}</div>
         <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
         {endpointHasReqContent(props.endpoint) && (
           <>
@@ -263,7 +273,9 @@ function ExecutingRequestView<I, O>(props: { value: ExecutingRequest<I, O> }) {
 }
 
 function CompletedRequestView<I, O>(props: {
+  isLast: boolean;
   value: CompletedRequest<I, O>;
+  refresh(cr: CompletedRequest<I, O>): void;
   reexecute(cr: CompletedRequest<I, O>): void;
   remove(): void;
 }) {
@@ -286,14 +298,25 @@ function CompletedRequestView<I, O>(props: {
           alignItems: "center",
         }}
       >
-        <b>{endpoint.name}</b>
+        <b>{endpoint.method.toUpperCase()}&nbsp;{endpoint.path}</b>
         <Box>
-          <IconButton size="small" onClick={() => props.reexecute(props.value)}>
-            <RefreshIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" onClick={() => props.remove()}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
+          {props.isLast &&
+            <Tooltip title="refresh">
+              <IconButton size="small" onClick={() => props.refresh(props.value)}>
+                <RefreshIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          }
+          <Tooltip title="copy and rerun">
+            <IconButton size="small" onClick={() => props.reexecute(props.value)}>
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="delete">
+            <IconButton size="small" onClick={() => props.remove()}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Box>
       <Divider />
@@ -426,7 +449,7 @@ function getEndpoints_(resolver: ADL.DeclResolver, struct: ATREE.Struct, namePre
         endpoints.push({ ...ep, name: [...namePrefix, ...ep.name] });
       } else {
         const ftree = f.adlTree.details();
-        if (ftree.kind == 'struct' ) {
+        if (ftree.kind == 'struct') {
           for (const ep of getEndpoints_(resolver, ftree, [...namePrefix, f.astField.name], (fdefault as ADL.JsonObject))) {
             endpoints.push(ep);
           }
