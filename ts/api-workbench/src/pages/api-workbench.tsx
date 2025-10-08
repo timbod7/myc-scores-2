@@ -208,8 +208,8 @@ function ModalChooseEndpoint(props: { endpoints: EndpointTree; choose: (e: Endpo
 
   function EndpointGroupCard(props: { name: string, docString: string, subtree: EndpointTree }) {
     return (
-      <Card>
-        <CardContent>
+      <Card sx={{mb: '2rem'}}>
+        <CardContent style={{paddingBottom: 0}}>
           <Typography>{props.docString}</Typography>
           <Divider sx={{ marginTop: "10px", marginBottom: "10px" }} />
           {props.subtree.map((e, i) => <EndpointTreeItem key={i} item={e} />)}

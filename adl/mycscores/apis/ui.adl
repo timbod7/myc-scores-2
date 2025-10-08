@@ -162,6 +162,27 @@ struct ApiRequests {
       "security" : { "tokenWithRole": "admin" }
     }
   };
+
+  /// CRUD operations for entrants
+  CrudApi<EntrantId, Entrant, EntrantSorting, EntrantFilter> crud_entrants = {
+    "create": {
+      "path": "/crud/entrants/create",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "update": {
+      "path": "/crud/entrants/update",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "delete": {
+      "path": "/crud/entrants/delete",
+      "security" : { "tokenWithRole": "admin" }
+    },
+    "query": {
+      "method": "get",
+      "path": "/crud/entrants/query",
+      "security" : { "tokenWithRole": "admin" }
+    }
+  };
 };
 
 struct LoginReq {
@@ -302,4 +323,17 @@ union SeasonSorting {
 union SeasonFilter {
   String name_matches;
 };
+
+union EntrantSorting{
+  Void entrant_name;
+  Void boat_name;
+  Void sail_number;
+};
+
+union EntrantFilter {
+  String entrant_name_matches;
+  String boat_name_matches;
+  String sail_number_matches;
+};
+
 };

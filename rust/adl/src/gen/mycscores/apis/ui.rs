@@ -144,6 +144,12 @@ pub struct ApiRequests {
    */
   #[serde(default="ApiRequests::def_crud_seasons")]
   pub crud_seasons: CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter>,
+
+  /**
+   * CRUD operations for entrants
+   */
+  #[serde(default="ApiRequests::def_crud_entrants")]
+  pub crud_entrants: CrudApi<EntrantId, Entrant, EntrantSorting, EntrantFilter>,
 }
 
 impl ApiRequests {
@@ -167,6 +173,7 @@ impl ApiRequests {
       delete_user: ApiRequests::def_delete_user(),
       query_users: ApiRequests::def_query_users(),
       crud_seasons: ApiRequests::def_crud_seasons(),
+      crud_entrants: ApiRequests::def_crud_entrants(),
     }
   }
 
@@ -240,6 +247,10 @@ impl ApiRequests {
 
   pub fn def_crud_seasons() -> CrudApi<SeasonId, Season, SeasonSorting, SeasonFilter> {
     CrudApi::<SeasonId, Season, SeasonSorting, SeasonFilter>{create : HttpReq::<Season, SeasonId>{method : HttpMethod::Post, path : "/crud/seasons/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, update : HttpReq::<WithId<SeasonId, Season>, Unit>{method : HttpMethod::Post, path : "/crud/seasons/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, delete : HttpReq::<SeasonId, Unit>{method : HttpMethod::Post, path : "/crud/seasons/delete".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, query : HttpReq::<TabularQueryReq<SeasonSorting, SeasonFilter>, Paginated<WithId<SeasonId, Season>>>{method : HttpMethod::Get, path : "/crud/seasons/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}}
+  }
+
+  pub fn def_crud_entrants() -> CrudApi<EntrantId, Entrant, EntrantSorting, EntrantFilter> {
+    CrudApi::<EntrantId, Entrant, EntrantSorting, EntrantFilter>{create : HttpReq::<Entrant, EntrantId>{method : HttpMethod::Post, path : "/crud/entrants/create".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, update : HttpReq::<WithId<EntrantId, Entrant>, Unit>{method : HttpMethod::Post, path : "/crud/entrants/update".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, delete : HttpReq::<EntrantId, Unit>{method : HttpMethod::Post, path : "/crud/entrants/delete".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}, query : HttpReq::<TabularQueryReq<EntrantSorting, EntrantFilter>, Paginated<WithId<EntrantId, Entrant>>>{method : HttpMethod::Get, path : "/crud/entrants/query".to_string(), security : HttpSecurity::TokenWithRole("admin".to_string()), req_type : std::marker::PhantomData, resp_type : std::marker::PhantomData}}
   }
 }
 
@@ -622,4 +633,28 @@ pub enum SeasonSorting {
 pub enum SeasonFilter {
   #[serde(rename="name_matches")]
   NameMatches(String),
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum EntrantSorting {
+  #[serde(rename="entrant_name")]
+  EntrantName,
+
+  #[serde(rename="boat_name")]
+  BoatName,
+
+  #[serde(rename="sail_number")]
+  SailNumber,
+}
+
+#[derive(Clone,Deserialize,Eq,Hash,PartialEq,Serialize)]
+pub enum EntrantFilter {
+  #[serde(rename="entrant_name_matches")]
+  EntrantNameMatches(String),
+
+  #[serde(rename="boat_name_matches")]
+  BoatNameMatches(String),
+
+  #[serde(rename="sail_number_matches")]
+  SailNumberMatches(String),
 }
