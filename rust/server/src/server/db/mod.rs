@@ -1,3 +1,8 @@
+use sqlx::Postgres;
+
 pub mod seasons;
 pub mod users;
-mod utils;
+pub mod utils;
+
+pub type DbPool = sqlx::PgPool;
+pub type DbTransaction = sqlx::Transaction<'static, Postgres>;

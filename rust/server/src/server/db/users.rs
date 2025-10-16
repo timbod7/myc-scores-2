@@ -16,7 +16,7 @@ use sea_query::{extension::postgres::PgExpr, ColumnRef, Func, PostgresQueryBuild
 use sea_query_binder::SqlxBinder;
 use sqlx::Row;
 
-use super::utils::DbTabular;
+use super::utils::DbQueryable;
 
 type DbPool = sqlx::PgPool;
 
@@ -148,7 +148,7 @@ pub async fn query_users(
 
 struct UserQuery {}
 
-impl DbTabular for UserQuery {
+impl DbQueryable for UserQuery {
     type S = UserSorting;
     type F = UserFilter;
 
