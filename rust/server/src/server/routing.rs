@@ -39,6 +39,22 @@ pub fn build_routes(state: AppState) -> Box<dyn DynEndpoint<Output = poem::Respo
         .adl_req(
             ApiRequests::def_crud_seasons().query,
             handlers::seasons::query_seasons,
+        )
+        .adl_req(
+            ApiRequests::def_crud_entrants().create,
+            handlers::entrants::create_entrant,
+        )
+        .adl_req(
+            ApiRequests::def_crud_entrants().update,
+            handlers::entrants::update_entrant,
+        )
+        .adl_req(
+            ApiRequests::def_crud_entrants().delete,
+            handlers::entrants::delete_entrant,
+        )
+        .adl_req(
+            ApiRequests::def_crud_entrants().query,
+            handlers::entrants::query_entrants,
         );
 
     // Add handlers that need custom cookie handling

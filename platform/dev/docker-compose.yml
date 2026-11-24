@@ -9,3 +9,5 @@ services:
       POSTGRES_DB: appdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: xyzzy
+      POSTGRES_LOG_MIN_MESSAGES: error
+      POSTGRES_LOG_MIN_ERROR_STATEMENT: error

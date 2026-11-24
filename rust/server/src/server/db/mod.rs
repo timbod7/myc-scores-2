@@ -1,5 +1,6 @@
 use sqlx::Postgres;
 
+pub mod entrants;
 pub mod seasons;
 pub mod users;
 pub mod utils;

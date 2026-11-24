@@ -20,12 +20,12 @@ impl DbReadable for Season {
         schema::Season::table().into_iden()
     }
 
-    fn id_column() -> sea_query::DynIden {
-        schema::Season::id().iden()
+    fn id_column() -> &'static str {
+        schema::Season::id().column
     }
 
-    fn value_columns() -> Vec<sea_query::DynIden> {
-        vec![schema::Season::name().iden()]
+    fn value_columns() -> Vec<&'static str> {
+        vec![schema::Season::name().column]
     }
 
     fn from_db(r: &sqlx::postgres::PgRow) -> Self {

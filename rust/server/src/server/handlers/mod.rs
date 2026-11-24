@@ -17,6 +17,7 @@ use crate::server::middleware::adl_interop::{
 use crate::server::passwords::verify_password;
 use crate::server::{db, jwt, AppState};
 
+pub mod entrants;
 pub mod seasons;
 pub mod users;
 

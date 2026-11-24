@@ -2,14 +2,14 @@ use std::ops::DerefMut;
 
 use adl::{
     custom::common::db::DbKey,
-    db::types::DbConversions,
+    db::types::{DbConversions, SelectStatementExt},
     gen::common::db_api::{
         BoolExpr, PageReq, Paginated, SortColumn, SortOrder, TabularQueryReq, WithId,
     },
 };
 use sea_query::{
-    ColumnRef, Cond, DynIden, Expr, Func, OnConflict, Order, PostgresQueryBuilder, Query,
-    SimpleExpr, Value,
+    ColumnRef, Cond, DynIden, Expr, Func, IntoColumnRef, OnConflict, Order, PostgresQueryBuilder,
+    Query, SimpleExpr, Value,
 };
 use sea_query_binder::SqlxBinder;
 use sqlx::postgres::PgRow;
@@ -20,11 +20,11 @@ pub trait DbReadable: Unpin + Send {
 
     fn table() -> DynIden;
 
-    fn id_column() -> DynIden;
+    fn id_column() -> &'static str;
 
-    fn value_columns() -> Vec<DynIden>;
+    fn value_columns() -> Vec<&'static str>;
 
-    fn all_columns() -> Vec<DynIden> {
+    fn all_columns() -> Vec<&'static str> {
         let mut columns = Self::value_columns();
         columns.push(Self::id_column());
         return columns;
